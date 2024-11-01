@@ -15,25 +15,31 @@ jobs:
 
       - name: Set up Git user identity
         run: |
-          git config --global user.email "your-email@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "test@example.com"
+          git config --global user.name "test"
 
-      - name: Create a new branch for unauthorized push
+      - name: Check for changes and create a new branch for unauthorized push
         run: |
           # Generate a unique branch name using the commit SHA
           NEW_BRANCH="unauthorized-push-${{ github.sha }}"
           
-          # Create a new branch from main
-          git checkout -b "$NEW_BRANCH"
+          # Check if there are any changes
+          if ! git diff-index --quiet HEAD --; then
+            # Create a new branch from main
+            git checkout -b "$NEW_BRANCH"
 
-          # Commit the changes to the new branch
-          git add .
-          git commit -m "Moved unauthorized push from main to $NEW_BRANCH"
-          
-          # Push the new branch to the repository
-          git push origin "$NEW_BRANCH"
+            # Commit the changes to the new branch
+            git add .
+            git commit -m "Moved unauthorized push from main to $NEW_BRANCH"
+            
+            # Push the new branch to the repository
+            git push origin "$NEW_BRANCH"
+            echo "Changes were moved to the branch $NEW_BRANCH."
+          else
+            echo "No changes to commit. No new branch created."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify users (optional)
-        run: echo "An unauthorized push was moved to the branch $NEW_BRANCH."
+        run: echo "An unauthorized push was attempted on main."
