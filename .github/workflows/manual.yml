@@ -41,9 +41,6 @@ jobs:
             git reset --hard HEAD~1
             git push origin main --force
             echo "Main branch has been reset to remove unauthorized push."
-
-            # Create a pull request
-            gh pr create --base main --head "$NEW_BRANCH" --title "Unauthorized Push Moved to $NEW_BRANCH" --body "This pull request moves unauthorized changes from main to the branch $NEW_BRANCH."
           else
             echo "No changes to commit. No new branch created."
           fi
