@@ -15,14 +15,14 @@ jobs:
 
       - name: Set up Git user identity
         run: |
-          git config --global user.email "test@example.com"
-          git config --global user.name "test"
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "Your Name"
 
       - name: Check for changes and create a new branch for unauthorized push
         run: |
           # Generate a unique branch name using the commit SHA
           NEW_BRANCH="unauthorized-push-${{ github.sha }}"
-          
+
           # Check if there are any changes
           if ! git diff-index --quiet HEAD --; then
             # Create a new branch from main
@@ -35,6 +35,12 @@ jobs:
             # Push the new branch to the repository
             git push origin "$NEW_BRANCH"
             echo "Changes were moved to the branch $NEW_BRANCH."
+
+            # Reset main to the last commit before the push
+            git checkout main
+            git reset --hard HEAD~1
+            git push origin main --force
+            echo "Main branch has been reset to remove unauthorized push."
           else
             echo "No changes to commit. No new branch created."
           fi
