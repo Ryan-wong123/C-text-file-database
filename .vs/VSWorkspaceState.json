@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Prog_fun"
+    "\\Prog_fun",
+    "\\Prog_fun\\Prog_fun"
   ],
-  "SelectedNode": "\\Prog_fun\\Prog_fun.sln",
+  "SelectedNode": "\\Prog_fun\\Prog_fun\\cms.c",
   "PreviewInSolutionExplorer": false
 }
