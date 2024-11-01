@@ -20,20 +20,20 @@ jobs:
           git config user.name "${{ secrets.GITHUB_ACTOR }}"
           git config user.email "${{ secrets.GITHUB_EMAIL }}"
 
-      - name: Create new branch
+      - name: Create or update new branch
         run: |
-          git checkout -b new-branch
+          # Check if the branch already exists
+          if git show-ref --verify --quiet refs/heads/new-branch; then
+            # If it exists, checkout the branch
+            git checkout new-branch
+          else
+            # If it does not exist, create it from main
+            git checkout -b new-branch
+          fi
 
-      - name: Cherry-pick commits
-        run: |
-          git cherry-pick main..HEAD
+          # Merge changes from main to new-branch
+          git merge --ff-only main || echo "No changes to merge"
 
       - name: Push new branch
         run: |
           git push origin new-branch --force
-
-      - name: Remove commits from main
-        run: |
-          git checkout main
-          git reset --hard origin/main
-          git push origin main --force
