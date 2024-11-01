@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Git user identity
+        run: |
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "Your Name"
+
       - name: Create a new branch for unauthorized push
         run: |
           # Generate a unique branch name using the commit SHA
