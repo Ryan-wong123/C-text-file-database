@@ -1,4 +1,4 @@
-name: Move Unauthorized Pushes to a New Branch
+name: Transfer Commits to New Branch
 
 on:
   push:
@@ -6,46 +6,34 @@ on:
       - main
 
 jobs:
-  move_to_branch:
+  transfer-commits:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout main branch
         uses: actions/checkout@v2
+        with:
+          ref: main
 
-      - name: Set up Git user identity
+      - name: Set up Git
         run: |
-          git config --global user.email "your-email@example.com"
-          git config --global user.name "Your Name"
+          git config user.name "${{ secrets.GITHUB_ACTOR }}"
+          git config user.email "${{ secrets.GITHUB_EMAIL }}"
 
-      - name: Check for changes and create a new branch for unauthorized push
+      - name: Create new branch
         run: |
-          # Generate a unique branch name using the commit SHA
-          NEW_BRANCH="unauthorized-push-${{ github.sha }}"
+          git checkout -b new-branch
 
-          # Check if there are any changes
-          if ! git diff-index --quiet HEAD --; then
-            # Create a new branch from main
-            git checkout -b "$NEW_BRANCH"
+      - name: Cherry-pick commits
+        run: |
+          git cherry-pick main..HEAD
 
-            # Commit the changes to the new branch
-            git add .
-            git commit -m "Moved unauthorized push from main to $NEW_BRANCH"
-            
-            # Push the new branch to the repository
-            git push origin "$NEW_BRANCH"
-            echo "Changes were moved to the branch $NEW_BRANCH."
+      - name: Push new branch
+        run: |
+          git push origin new-branch --force
 
-            # Reset main to the last commit before the push
-            git checkout main
-            git reset --hard HEAD~1
-            git push origin main --force
-            echo "Main branch has been reset to remove unauthorized push."
-          else
-            echo "No changes to commit. No new branch created."
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Notify users (optional)
-        run: echo "An unauthorized push was attempted on main."
+      - name: Remove commits from main
+        run: |
+          git checkout main
+          git reset --hard origin/main
+          git push origin main --force
