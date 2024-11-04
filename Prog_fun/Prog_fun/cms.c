@@ -115,6 +115,10 @@ void ShowAll(HashMap* hashmap) {
 
 int main() {
     HashMap* hashmap = malloc(sizeof(HashMap));
+    if (hashmap == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memset(hashmap->table, 0, sizeof(hashmap->table)); // Initialize the hashmap to NULL
 
     while (1) {
