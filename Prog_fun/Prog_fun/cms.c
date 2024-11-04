@@ -42,8 +42,6 @@ void OpenFile(const char* filename, StudentRecords* students, int* count) {
         if (strncmp(line, "Table Name:", 11) == 0) {
             sscanf_s(line + 12, "%[^\n]", tableName, (unsigned)_countof(tableName));
             continue; 
-
-
         }
 
         // Check if the line starts with a digit (ID)
