@@ -6,7 +6,7 @@
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
 #define TABLE_NAME_LENGTH 15
-#define INITIAL_HASHMAP_SIZE 1 // Initial size, will dynamically grow
+#define INITIAL_HASHMAP_SIZE 101 // Initial size, will dynamically grow
 #define STUDENT_NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
 
@@ -27,7 +27,7 @@ typedef struct HashMap {
 } HashMap;
 
 unsigned int hash(int id) {
-    return (id * 31) % currentSize; // Use a prime number multiplier for better distribution
+    return (id * 97) % currentSize; // Use a prime number multiplier for better distribution
 }
 
 void resizeHashMap(HashMap* oldHashMap);
@@ -197,7 +197,15 @@ int main() {
             break;
         }
     }
-
+    // Freeing allocated memory
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            StudentRecords* temp = current;
+            current = current->next;
+            free(temp); // Free each student record
+        }
+    }
     free(hashmap->table); // Free hash map table
     free(hashmap);        // Free hash map structure
 
