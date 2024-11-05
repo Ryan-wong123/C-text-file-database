@@ -167,6 +167,37 @@ void ShowAll(HashMap* hashmap) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+void DeleteRecord(HashMap* hashmap) {
+    //int d_id = 0;
+
+    printf("enter delete section\n");
+
+    //scanf_s("DELETE ID=%d",d_id);
+
+    //printf("%d", d_id);
+
+
+    printf("end delete section\n");
+
+}
+
+
+
+
+
+
+
+
 int main() {
     HashMap* hashmap = malloc(sizeof(HashMap));
     if (hashmap == NULL) {
@@ -193,9 +224,45 @@ int main() {
         else if (_stricmp(input, "show all") == 0) {
             ShowAll(hashmap);
         }
+        // str n i cmp to check the front command
+        else if (_strnicmp(input, "delete" , 6) == 0) {
+            char *id_ptr;
+            char s_id[10];
+            int id = 0;
+
+            // find ID location and place ptr 
+            id_ptr = strstr(input, "ID=");
+
+            //check command is enter corrently 
+            if (id_ptr == NULL) {
+                printf("Invalid Command. eg. DELETE ID=<id> \n");
+                continue;
+            }
+            // for loop the ID portion into s_id
+            for (int i = 3; id_ptr[i] != '\0'; i++) {
+                
+                s_id[i-3] = id_ptr[i];
+            }
+            id = atoi(s_id);
+            //printf("%s \n", s_id);
+            printf("%d \n", id);
+
+            // check ID enter correctly 
+            if (id == 0) {
+                printf("Invalid Command. eg. DELETE ID=<id> \n");
+                continue;
+            }
+
+
+            DeleteRecord(hashmap);
+        }
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
+        else {
+            printf("Invalid Command. \n");
+        }
+
     }
     // Freeing allocated memory
     for (int i = 0; i < currentSize; i++) {
