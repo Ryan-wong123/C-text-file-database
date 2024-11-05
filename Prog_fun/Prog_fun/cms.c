@@ -6,34 +6,38 @@
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
 #define TABLE_NAME_LENGTH 15
-#define HASHMAP_SIZE 103 // table size is a prime number which helps reduce collisions
+#define INITIAL_HASHMAP_SIZE 1 // Initial size, will dynamically grow
 #define STUDENT_NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
 
-// Store the table name
 char tableName[TABLE_NAME_LENGTH] = "";
+int currentSize = INITIAL_HASHMAP_SIZE;  // Dynamic size of the hash map
+int recordCount = 0;  // Track the number of records
 
 typedef struct StudentRecords {
     int id;
     char name[STUDENT_NAME_LENGTH];
     char programme[PROGRAMME_LENGTH];
     float mark;
-    struct StudentRecords* next; // Pointer to next node for preventing hash colision
+    struct StudentRecords* next; // Linked list for collision handling
 } StudentRecords;
 
 typedef struct HashMap {
-    StudentRecords* table[HASHMAP_SIZE]; // Array of pointers to StudentRecords
+    StudentRecords** table; // Dynamic array of pointers to StudentRecords
 } HashMap;
 
-// Perform hashing which the result will be between 0 and hashmap size - 1
-// Using prime number for tabel size means that modulo operation will map the different keys to different slots more evenly in the hash map which reduce collision
 unsigned int hash(int id) {
-    return id % HASHMAP_SIZE;
+    return (id * 31) % currentSize; // Use a prime number multiplier for better distribution
 }
 
-// Create a new student record
+void resizeHashMap(HashMap* oldHashMap);
+
 StudentRecords* createStudent(int id, const char* name, const char* programme, float mark) {
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
+    if (newStudent == NULL) {
+        fprintf(stderr, "Memory allocation failed for new student\n");
+        exit(EXIT_FAILURE);
+    }
     newStudent->id = id;
     strncpy_s(newStudent->name, sizeof(newStudent->name), name, _TRUNCATE);
     strncpy_s(newStudent->programme, sizeof(newStudent->programme), programme, _TRUNCATE);
@@ -42,29 +46,75 @@ StudentRecords* createStudent(int id, const char* name, const char* programme, f
     return newStudent;
 }
 
-// Insert a student into the hashmap
 void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
-    unsigned int index = hash(id);
+    unsigned int index = hash(id);  // Hash function with current size
     StudentRecords* newStudent = createStudent(id, name, programme, mark);
 
-    // Insert at the head of the linked list
+    // Insert at the head of the linked list (collision handling)
     newStudent->next = hashmap->table[index];
     hashmap->table[index] = newStudent;
-}
 
-// Function to free all students in the hashmap
-void freeHashMap(HashMap* hashmap) {
-    for (int i = 0; i < HASHMAP_SIZE; i++) {
-        StudentRecords* current = hashmap->table[i];
-        while (current != NULL) {
-            StudentRecords* toDelete = current;
-            current = current->next;
-            free(toDelete);
-        }
+    recordCount++;
+
+    // If load factor exceeds 50%, resize the hash map
+    if (recordCount > (currentSize / 2)) {
+        resizeHashMap(hashmap);
     }
 }
 
-// Modified OpenFile function to use hashmap
+// Function to find the next prime number larger than a given number
+int nextPrime(int n) {
+    int i, j;
+    for (i = n + 1;; i++) {
+        for (j = 2; j * j <= i; j++) {
+            if (i % j == 0) {
+                break;
+            }
+        }
+        if (j * j > i) {
+            return i;  // Return the next prime number
+        }
+    }
+}
+void resizeHashMap(HashMap* oldHashMap) {
+    int newSize = nextPrime(currentSize * 2); // Find the next prime size
+
+    HashMap* newHashMap = malloc(sizeof(HashMap));
+    if (newHashMap == NULL) {
+        fprintf(stderr, "Memory allocation failed during resizing\n");
+        exit(EXIT_FAILURE);
+    }
+    newHashMap->table = malloc(newSize * sizeof(StudentRecords*));
+    if (newHashMap->table == NULL) {
+        fprintf(stderr, "Memory allocation failed for new hash map table\n");
+        exit(EXIT_FAILURE);
+    }
+    memset(newHashMap->table, 0, newSize * sizeof(StudentRecords*));
+
+    // Rehash all records from the old hash map to the new one
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = oldHashMap->table[i];
+        while (current != NULL) {
+            // Manually calculate new index and reinsert records
+            unsigned int newIndex = current->id % newSize;
+            StudentRecords* nextRecord = current->next; // Save the next record
+
+            // Insert into new hash map
+            current->next = newHashMap->table[newIndex];
+            newHashMap->table[newIndex] = current;
+
+            current = nextRecord; // Move to the next record
+        }
+    }
+
+    free(oldHashMap->table);  // Free the old table memory
+    currentSize = newSize;    // Update global variable with new size
+
+    // Copy the new hash map structure into the old hash map pointer
+    *oldHashMap = *newHashMap;
+    free(newHashMap);  // Free temporary new hash map structure
+}
+
 void OpenFile(const char* filename, HashMap* hashmap) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -102,13 +152,15 @@ void OpenFile(const char* filename, HashMap* hashmap) {
     fclose(file);
 }
 
-// Show all student records in the hashmap
 void ShowAll(HashMap* hashmap) {
     printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
-    for (int i = 0; i < HASHMAP_SIZE; i++) {
+    for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
+        if (current != NULL) {
+            printf("Bucket %d:\n", i); // Print bucket number
+        }
         while (current != NULL) {
-            printf("ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",
+            printf("    ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",
                 current->id, current->name, current->programme, current->mark);
             current = current->next;
         }
@@ -121,7 +173,14 @@ int main() {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
-    memset(hashmap->table, 0, sizeof(hashmap->table)); // Initialize the hashmap to NULL
+
+    hashmap->table = malloc(currentSize * sizeof(StudentRecords*));
+    if (hashmap->table == NULL) {
+        fprintf(stderr, "Memory allocation failed for table\n");
+        exit(EXIT_FAILURE);
+    }
+    memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*)); // Initialize the hash map
+
 
     while (1) {
         printf("Enter an operation\n");
@@ -139,7 +198,8 @@ int main() {
         }
     }
 
-    freeHashMap(hashmap); // Free the hashmap
-    free(hashmap); // Free the allocated memory for the hashmap
+    free(hashmap->table); // Free hash map table
+    free(hashmap);        // Free hash map structure
+
     return 0;
 }
