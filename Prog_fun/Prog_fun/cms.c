@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
+
+#define DEBUG_MODE 0
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
 #define TABLE_NAME_LENGTH 15
@@ -177,17 +179,81 @@ void ShowAll(HashMap* hashmap) {
 
 
 
-void DeleteRecord(HashMap* hashmap) {
-    //int d_id = 0;
-
-    printf("enter delete section\n");
-
-    //scanf_s("DELETE ID=%d",d_id);
-
-    //printf("%d", d_id);
+void DeleteRecord(HashMap* hashmap, int id) {
+    int id_check_flag = 0;
+    char check_delete;
 
 
-    printf("end delete section\n");
+    if (DEBUG_MODE == 1)printf("enter delete section\n");
+    unsigned int index = hash(id);
+    
+    StudentRecords* current = hashmap->table[index];
+    StudentRecords* prev = NULL;
+
+    // loop through bucket if not the same ID
+    while (current != NULL) {
+        if (current->id == id) {
+            if (DEBUG_MODE == 1)printf("ID: %d hash index:%d \n", current->id, index);
+            id_check_flag = 1;
+            break;
+        }
+        else {
+            if (DEBUG_MODE == 1)printf(" not ID: %d hash index:%d \n", current->id, index);
+            prev = current;
+            current = current->next;
+            
+        }
+
+    }
+    
+    if (id_check_flag == 0) {
+        printf("The record with ID=%d does not exist \n", id);
+        return;
+    }
+    
+    while (1) {
+
+        printf("Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", id);
+        
+        scanf_s(" %c", &check_delete);
+        if (check_delete == 'Y') {
+            
+
+            if(DEBUG_MODE ==1)printf("The deletion is processing.\n");
+            if(DEBUG_MODE == 1)printf("%p \n", current);
+
+            // if current is a head of bucket set ptr to next record
+            if (prev == NULL) {
+                hashmap->table[index] = current->next;
+
+            }
+            // if at middle skip this node by setting last node pointer to this node next pointer
+            else {
+                prev->next = current->next;
+
+            }
+            printf("The record with ID=%d is successfully deleted.\n", id);
+            recordCount--;
+            break;
+
+
+        }
+        else if (check_delete == 'N') {
+            printf("The deletion is cancelled.\n");
+            break;
+
+        }
+        else {
+            printf("Invalid Command\n");
+        }
+
+    }
+
+
+
+
+
+    if (DEBUG_MODE == 1)printf("end delete section\n");
 
 }
 
@@ -229,6 +295,7 @@ int main() {
             char *id_ptr;
             char s_id[10];
             int id = 0;
+            int letter_count = 0;
 
             // find ID location and place ptr 
             id_ptr = strstr(input, "ID=");
@@ -239,13 +306,14 @@ int main() {
                 continue;
             }
             // for loop the ID portion into s_id
-            for (int i = 3; id_ptr[i] != '\0'; i++) {
+            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
                 
                 s_id[i-3] = id_ptr[i];
+                letter_count++;
             }
             id = atoi(s_id);
-            //printf("%s \n", s_id);
-            printf("%d \n", id);
+            
+            if (DEBUG_MODE == 1)printf("%d \n", id);
 
             // check ID enter correctly 
             if (id == 0) {
@@ -254,14 +322,17 @@ int main() {
             }
 
 
-            DeleteRecord(hashmap);
+            DeleteRecord(hashmap, id);
+            
         }
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
         else {
-            printf("Invalid Command. \n");
+            printf("Invalid Command m. \n");
+            printf("%s", input);
         }
+
 
     }
     // Freeing allocated memory
