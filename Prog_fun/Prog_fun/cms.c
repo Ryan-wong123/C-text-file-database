@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
 #define TABLE_NAME_LENGTH 15
@@ -181,7 +181,7 @@ void ShowAll(HashMap* hashmap) {
 
 void DeleteRecord(HashMap* hashmap, int id) {
     int id_check_flag = 0;
-    char check_delete;
+    char check_delete[3];
 
 
     if (DEBUG_MODE == 1)printf("enter delete section\n");
@@ -214,9 +214,10 @@ void DeleteRecord(HashMap* hashmap, int id) {
     while (1) {
 
         printf("Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", id);
-        
-        scanf_s(" %c", &check_delete);
-        if (check_delete == 'Y') {
+       
+        check_delete[strcspn(fgets(check_delete, sizeof(check_delete), stdin), "\n")] = 0;
+
+        if (_strnicmp(check_delete, "Y", 1) == 0) {
             
 
             if(DEBUG_MODE ==1)printf("The deletion is processing.\n");
@@ -238,7 +239,7 @@ void DeleteRecord(HashMap* hashmap, int id) {
 
 
         }
-        else if (check_delete == 'N') {
+        else if (_strnicmp(check_delete, "Y", 1) == 0) {
             printf("The deletion is cancelled.\n");
             break;
 
@@ -283,7 +284,7 @@ int main() {
         printf("Enter an operation\n");
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
-
+       
         if (_stricmp(input, "open") == 0) {
             OpenFile(FILE_PATH, hashmap);
         }
