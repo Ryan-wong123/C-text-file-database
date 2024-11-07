@@ -374,6 +374,8 @@ void DeleteRecord(HashMap* hashmap, int id) {
 
 
 
+int open_flag = 0; // to check for db open status
+
 
 
 
@@ -400,12 +402,24 @@ int main() {
        
         if (_stricmp(input, "open") == 0) {
             OpenFile(FILE_PATH, hashmap);
+            open_flag = 1;
         }
         else if (_stricmp(input, "show all") == 0) {
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                continue;
+            }
+
             ShowAll(hashmap);
         }
 
         else if (_stricmp(input, "update") == 0) {
+
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                    continue;
+            }
+
             printf("UPDATE ID=");
             int id;
             scanf("%d", &id);
@@ -414,6 +428,12 @@ int main() {
         }
         // str n i cmp to check the front command
         else if (_strnicmp(input, "delete" , 6) == 0) {
+
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                    continue;
+            }
+
             char *id_ptr;
             char s_id[10];
             int id = 0;
