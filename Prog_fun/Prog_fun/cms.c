@@ -168,7 +168,7 @@ void ShowAll(HashMap* hashmap) {
     }
 }
 
-void QueryRecord(HashMap* hashmap, int id) {
+struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
     while (current != NULL) {
@@ -176,11 +176,12 @@ void QueryRecord(HashMap* hashmap, int id) {
             printf("Record Found:\n");
             printf("    ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",
                 current->id, current->name, current->programme, current->mark);
-            return;
+            return current;
         }
         current = current->next;
     }
     printf("No record found with ID=%d\n", id);
+    return NULL;
 }
 
 void DeleteRecord(HashMap* hashmap, int id) {
