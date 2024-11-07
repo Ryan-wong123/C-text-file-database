@@ -64,6 +64,97 @@ void insertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     }
 }
 
+
+StudentRecords* findStudentByID(HashMap* hashmap, int id) {
+    unsigned int index = hash(id);
+    StudentRecords* current = hashmap->table[index];
+    while (current != NULL) {
+        if (current->id == id) {
+            return current;  // Record found
+        }
+        current = current->next;
+    }
+    return NULL;  // Record not found
+}
+
+
+void saveToFile(const char* filename, HashMap* hashmap);
+
+// Save changes to file
+void saveToFile(const char* filename, HashMap* hashmap) {
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        perror("Error opening file for writing");
+        return;
+    }
+
+    // Write header information
+    fprintf(file, "Database Name: %s\n", USERNAME);
+    fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
+    fprintf(file, "Table Name: %s\n", tableName);
+    fprintf(file, "ID\tName\tProgramme\tMark\n");
+
+    // Iterate through each bucket and write records
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            fprintf(file, "%d\t%s\t%s\t%.2f\n", current->id, current->name, current->programme, current->mark);
+            current = current->next;
+        }
+    }
+
+    // printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
+    fclose(file);
+}
+// Function to update a student record by ID
+void updateStudentByID(HashMap* hashmap, int id) {
+    unsigned int index = hash(id);
+    StudentRecords* current = hashmap->table[index];
+
+    // Traverse the linked list to find the record
+    while (current != NULL) {
+        if (current->id == id) {  // Found the record
+            // Prompt the user for new values
+            printf("Enter new name (current: %s): ", current->name);
+            char newName[STUDENT_NAME_LENGTH];
+            fgets(newName, sizeof(newName), stdin);
+            newName[strcspn(newName, "\n")] = 0;  // Remove newline character
+            if (strlen(newName) > 0) {  // Only update if input is not empty
+                strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1);
+                current->name[STUDENT_NAME_LENGTH - 1] = '\0';
+            }
+
+            printf("Enter new programme (current: %s): ", current->programme);
+            char newProgramme[PROGRAMME_LENGTH];
+            fgets(newProgramme, sizeof(newProgramme), stdin);
+            newProgramme[strcspn(newProgramme, "\n")] = 0;  // Remove newline character
+            if (strlen(newProgramme) > 0) {  // Only update if input is not empty
+                strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
+                current->programme[PROGRAMME_LENGTH - 1] = '\0';
+            }
+
+            printf("Enter new mark (current: %.2f): ", current->mark);
+            char newMarkStr[10];
+            fgets(newMarkStr, sizeof(newMarkStr), stdin);
+            newMarkStr[strcspn(newMarkStr, "\n")] = 0;  // Remove newline character
+            if (strlen(newMarkStr) > 0) {  // Only update if input is not empty
+                float newMark = atof(newMarkStr);  // Convert string to float
+                current->mark = newMark;
+            }
+
+            printf("\nThe record with ID=%d is successfully updated.\n", id);
+            saveToFile(FILE_PATH, hashmap);
+            return;
+        }
+        current = current->next;
+    }
+
+    // If the record was not found
+    printf("The record with ID=%d does not exist.\n", id);
+}
+
+
+
 // Function to find the next prime number larger than a given number
 int nextPrime(int n) {
     int i, j;
@@ -78,6 +169,7 @@ int nextPrime(int n) {
         }
     }
 }
+
 void resizeHashMap(HashMap* oldHashMap) {
     int newSize = nextPrime(currentSize * 2); // Find the next prime size
 
@@ -139,11 +231,24 @@ void OpenFile(const char* filename, HashMap* hashmap) {
 
         if (isdigit(line[0])) {
             int id;
-            char name[30], programme[30];
+            char name[STUDENT_NAME_LENGTH], programme[PROGRAMME_LENGTH];
             float mark;
             int fields = sscanf(line, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
-            if (fields == 4) {
-                insertStudent(hashmap, id, name, programme, mark);
+            if (fields == 4) {// Check if the student with the given ID already exists
+                StudentRecords* existingStudent = findStudentByID(hashmap, id);
+                if (existingStudent != NULL) {
+                    // Update the existing record
+                    strncpy(existingStudent->name, name, STUDENT_NAME_LENGTH - 1);
+                    existingStudent->name[STUDENT_NAME_LENGTH - 1] = '\0';
+                    strncpy(existingStudent->programme, programme, PROGRAMME_LENGTH - 1);
+                    existingStudent->programme[PROGRAMME_LENGTH - 1] = '\0';
+                    existingStudent->mark = mark;
+                } 
+                else {
+                    // Insert a new record if no duplicate exists
+                    insertStudent(hashmap, id, name, programme, mark);
+                }
+
             }
             else {
                 fprintf(stderr, "Error parsing line: %s\n", line);
@@ -168,13 +273,6 @@ void ShowAll(HashMap* hashmap) {
         }
     }
 }
-
-
-
-
-
-
-
 
 
 
@@ -291,6 +389,14 @@ int main() {
         else if (_stricmp(input, "show all") == 0) {
             ShowAll(hashmap);
         }
+
+        else if (_stricmp(input, "update") == 0) {
+            printf("UPDATE ID=");
+            int id;
+            scanf("%d", &id);
+            getchar();  // Consume the newline character left by scanf
+            updateStudentByID(hashmap, id);
+
         // str n i cmp to check the front command
         else if (_strnicmp(input, "delete" , 6) == 0) {
             char *id_ptr;
@@ -325,6 +431,7 @@ int main() {
 
             DeleteRecord(hashmap, id);
             
+
         }
         else if (_stricmp(input, "exit") == 0) {
             break;
