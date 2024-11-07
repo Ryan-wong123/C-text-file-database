@@ -282,20 +282,55 @@ void OpenFile(const char* filename, HashMap* hashmap) {
     fclose(file);
 }
 
+// Comparison function for sorting by ID
+int compareByID(const void* a, const void* b) {
+    StudentRecords* studentA = *(StudentRecords**)a;
+    StudentRecords* studentB = *(StudentRecords**)b;
+    return studentA->id - studentB->id;  // Sort in ascending order of IDs
+}
+
 void ShowAll(HashMap* hashmap) {
-    printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
+    if (recordCount == 0) {
+        printf("No records to display.\n");
+        return;
+    }
+
+    // Dynamically allocate memory for an array of pointers to StudentRecords
+    StudentRecords** allRecords = malloc(recordCount * sizeof(StudentRecords*));
+    if (allRecords == NULL) {
+        fprintf(stderr, "Memory allocation failed for allRecords.\n");
+        return;
+    }
+
+    int index = 0;
+
+    // Traverse through all buckets in the hash map and collect all records
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
-        if (current != NULL) {
-            printf("Bucket %d:\n", i); // Print bucket number
-        }
         while (current != NULL) {
-            printf("    ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",
-                current->id, current->name, current->programme, current->mark);
+            allRecords[index++] = current;  // Add each student to the array
             current = current->next;
         }
     }
+
+    // Sort the array of records by ID
+    qsort(allRecords, recordCount, sizeof(StudentRecords*), compareByID);
+
+    // Print the records in the desired format
+    printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
+    printf("ID        Name                  Programme                  Mark\n");
+
+    // Print each student in the sorted order
+    for (int i = 0; i < recordCount; i++) {
+        StudentRecords* student = allRecords[i];
+        printf("%-8d  %-20s  %-25s  %.2f\n",
+            student->id, student->name, student->programme, student->mark);
+    }
+
+    // Free the dynamically allocated memory
+    free(allRecords);
 }
+
 
 
 struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
@@ -304,7 +339,8 @@ struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
     while (current != NULL) {
         if (current->id == id) {
             printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
-            printf("    ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",
+            printf("ID        Name                  Programme                  Mark\n");
+            printf("%-8d  %-20s  %-25s  %.2f\n",
                 current->id, current->name, current->programme, current->mark);
             return current;
         }
@@ -465,9 +501,6 @@ int main() {
                 printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
             }
         }
-
-
-
 
         else if (_stricmp(input, "update") == 0) {
             printf("UPDATE ID=");
