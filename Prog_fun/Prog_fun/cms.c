@@ -3,9 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
+#define GROUP_NAME "P1_3"
 #define TABLE_NAME_LENGTH 15
 #define INITIAL_HASHMAP_SIZE 101 // Initial size, will dynamically grow
 #define STUDENT_NAME_LENGTH 30
@@ -302,14 +303,15 @@ struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
     StudentRecords* current = hashmap->table[index];
     while (current != NULL) {
         if (current->id == id) {
-            printf("Record Found:\n");
+            printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
             printf("    ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",
                 current->id, current->name, current->programme, current->mark);
             return current;
         }
         current = current->next;
     }
-    printf("No record found with ID=%d\n", id);
+
+    printf("%s: The record with ID=%d does not exist.\n",USERNAME, id);
     return NULL;
 }
 
@@ -339,13 +341,14 @@ void DeleteRecord(HashMap* hashmap, int id) {
     }
 
     if (id_check_flag == 0) {
-        printf("The record with ID=%d does not exist \n", id);
+        printf("%s: The record with ID=%d does not exist \n",USERNAME, id);
         return;
     }
 
     while (1) {
-        printf("Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", id);
+        printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n",USERNAME, id);
 
+        printf("%s:", GROUP_NAME);
         check_delete[strcspn(fgets(check_delete, sizeof(check_delete), stdin), "\n")] = 0;
 
         if (_strnicmp(check_delete, "Y", 1) == 0) {
@@ -358,12 +361,12 @@ void DeleteRecord(HashMap* hashmap, int id) {
             else {
                 prev->next = current->next;
             }
-            printf("The record with ID=%d is successfully deleted.\n", id);
+            printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
             recordCount--;
             break;
         }
         else if (_strnicmp(check_delete, "N", 1) == 0) {
-            printf("The deletion is cancelled.\n");
+            printf("%s: The deletion is cancelled.\n", USERNAME);
             break;
         }
         else {
@@ -388,7 +391,7 @@ int main() {
     memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*)); // Initialize the hash map
 
     while (1) {
-        printf("Enter an operation\n");
+        printf("%s:", GROUP_NAME);
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
 
@@ -455,7 +458,7 @@ int main() {
                 else {
                     // If student does not exist, insert the new student
                     insertStudent(hashmap, id, name, programme, mark);
-                    printf("A new record with ID=%d is successfully inserted.\n", id);
+                    printf("%s: A new record with ID=%d is successfully inserted.\n", USERNAME, id);
                 }
             }
             else {
@@ -473,34 +476,7 @@ int main() {
             getchar();  // Consume the newline character left by scanf
             updateStudentByID(hashmap, id);
         }
-        // str n i cmp to check the front command
-        else if (_strnicmp(input, "delete", 6) == 0) {
-            char* id_ptr;
 
-            char s_id[10];
-            int id = 0;
-            int letter_count = 0;
-
-            // Find the ID location and place pointer
-            id_ptr = strstr(input, "ID=");
-            if (id_ptr == NULL) {
-                printf("Invalid Command. Usage: QUERY ID=<id>\n");
-                continue;
-            }
-
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
-
-            if (id == 0) {
-                printf("Invalid Command. Usage: QUERY ID=<id>\n");
-                continue;
-            }
-            QueryRecord(hashmap, id);
-        }
         else if (_strnicmp(input, "delete", 6) == 0) {
             char* id_ptr;
             char s_id[10];
