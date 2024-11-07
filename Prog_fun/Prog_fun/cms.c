@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
 #define TABLE_NAME_LENGTH 15
@@ -373,10 +373,43 @@ void DeleteRecord(HashMap* hashmap, int id) {
 
 
 
+void DisplayDeclaration() {
+    
+char declare[1400] = {
+"\t\t\t\t\tDeclaration \n \
+SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
+from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
+solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible\n \
+by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.\n\n \
+We hereby declare that:\n \
+We fully understand and agree to the abovementioned plagiarism policy.\n \
+We did not copy any code from others or from other places.\n \
+We did not share our codes with others or upload to any other places for public access and will\n \
+not do that in the future.\n \
+We agree that our project will receive Zero mark if there is any plagiarism detected.\n \
+We agree that we will not disclose any information or material of the group project to others or\n \
+upload to any other places for public access.\n\n \
+Declared by: Group 2-3\n \
+Team members:\n \
+1. NAVEEN GOPALKRISHNAN \t(2402612)\n \
+2. LEE ZHI HONG TIMOTHY \t(2400592)\n \
+3. DEVIN TAN ZHEN WEI \t\t(2400649)\n \
+4. TNG ZHENG YANG \t\t(2401113)\n \
+5. SABIHAH AMIRUDEEN \t\t(2401670)\n \
+6. WONG HOI YOUNG, RYAN \t(2401725)\n \
+Date: (please insert the date when you submit your group project)\n" };
+
+// print declaration    
+puts(declare);
+
+
+
+}
+
+
+
 
 int open_flag = 0; // to check for db open status
-
-
 
 
 
@@ -393,8 +426,9 @@ int main() {
         exit(EXIT_FAILURE);
     }
     memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*)); // Initialize the hash map
-
-
+    
+    // print declaration uncomment when sending
+    DisplayDeclaration();
     while (1) {
         printf("Enter an operation\n");
         char input[256];
@@ -472,8 +506,8 @@ int main() {
             break;
         }
         else {
-            printf("Invalid Command m. \n");
-            printf("%s", input);
+            printf("Invalid Command. \n");
+            if (DEBUG_MODE == 1)printf("%s", input);
         }
 
 
