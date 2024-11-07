@@ -77,37 +77,10 @@ StudentRecords* findStudentByID(HashMap* hashmap, int id) {
     return NULL;  // Record not found
 }
 
-
 void saveToFile(const char* filename, HashMap* hashmap);
 
-// Save changes to file
-void saveToFile(const char* filename, HashMap* hashmap) {
-    FILE* file = fopen(filename, "w");
-    if (file == NULL) {
-        perror("Error opening file for writing");
-        return;
-    }
-
-    // Write header information
-    fprintf(file, "Database Name: %s\n", USERNAME);
-    fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
-    fprintf(file, "Table Name: %s\n", tableName);
-    fprintf(file, "ID\tName\tProgramme\tMark\n");
-
-    // Iterate through each bucket and write records
-    for (int i = 0; i < currentSize; i++) {
-        StudentRecords* current = hashmap->table[i];
-        while (current != NULL) {
-            fprintf(file, "%d\t%s\t%s\t%.2f\n", current->id, current->name, current->programme, current->mark);
-            current = current->next;
-        }
-    }
-
-    // printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
-    fclose(file);
-}
 // Function to update a student record by ID
-void updateStudentByID(HashMap* hashmap, int id) {
+void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag) {
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
 
@@ -115,35 +88,25 @@ void updateStudentByID(HashMap* hashmap, int id) {
     while (current != NULL) {
         if (current->id == id) {  // Found the record
             // Prompt the user for new values
-            printf("Enter new name (current: %s): ", current->name);
-            char newName[STUDENT_NAME_LENGTH];
-            fgets(newName, sizeof(newName), stdin);
-            newName[strcspn(newName, "\n")] = 0;  // Remove newline character
-            if (strlen(newName) > 0) {  // Only update if input is not empty
+            if (nameFlag && newName != NULL) {
                 strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1);
                 current->name[STUDENT_NAME_LENGTH - 1] = '\0';
+                printf("Name updated to: %s\n", current->name);
             }
 
-            printf("Enter new programme (current: %s): ", current->programme);
-            char newProgramme[PROGRAMME_LENGTH];
-            fgets(newProgramme, sizeof(newProgramme), stdin);
-            newProgramme[strcspn(newProgramme, "\n")] = 0;  // Remove newline character
-            if (strlen(newProgramme) > 0) {  // Only update if input is not empty
+            if (programmeFlag && newProgramme != NULL) {
                 strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
                 current->programme[PROGRAMME_LENGTH - 1] = '\0';
+                printf("Programme updated to: %s\n", current->programme);
             }
 
-            printf("Enter new mark (current: %.2f): ", current->mark);
-            char newMarkStr[10];
-            fgets(newMarkStr, sizeof(newMarkStr), stdin);
-            newMarkStr[strcspn(newMarkStr, "\n")] = 0;  // Remove newline character
-            if (strlen(newMarkStr) > 0) {  // Only update if input is not empty
-                float newMark = atof(newMarkStr);  // Convert string to float
+            if (markFlag) {
                 current->mark = newMark;
+                printf("Mark updated to: %.2f\n", current->mark);
             }
 
             printf("\nThe record with ID=%d is successfully updated.\n", id);
-            saveToFile(FILE_PATH, hashmap);
+            saveToFile(FILE_PATH, hashmap);  // Save changes automatically
             return;
         }
         current = current->next;
@@ -151,6 +114,76 @@ void updateStudentByID(HashMap* hashmap, int id) {
 
     // If the record was not found
     printf("The record with ID=%d does not exist.\n", id);
+}
+
+void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
+    int id;
+    char newName[STUDENT_NAME_LENGTH] = "";
+    char newProgramme[PROGRAMME_LENGTH] = "";
+    float newMark = -1;
+    int nameFlag = 0, programmeFlag = 0, markFlag = 0;
+
+    // Extract ID from input
+    if (sscanf(input, "UPDATE ID=%d", &id) != 1) {
+        printf("Invalid command format. Expected format: 'UPDATE ID=<id> <Field>=<Value>'\n");
+        return;
+    }
+
+    // Find the start of the fields section after "UPDATE ID=<id>"
+    const char* fieldsStart = strstr(input, "ID=");
+    if (fieldsStart == NULL) {
+        printf("Error: ID not found in command.\n");
+        return;
+    }
+
+    fieldsStart = strchr(fieldsStart, ' '); // Move past "ID=<id>" to fields
+    if (fieldsStart == NULL) {
+        printf("No fields to update.\n");
+        return;
+    }
+    fieldsStart++; // Move to the first character after the space
+
+    // Duplicate the fields section for safe tokenization
+    char* fieldsCopy = strdup(fieldsStart);
+    char* token = strtok(fieldsCopy, " ");
+
+    while (token != NULL) {
+        char* equalSign = strchr(token, '=');
+        if (equalSign == NULL) {
+            printf("Invalid format: Missing '=' in field assignment.\n");
+            free(fieldsCopy);
+            return;
+        }
+
+        *equalSign = '\0';
+        const char* field = token;
+        const char* value = equalSign + 1;
+
+        // Match the field and set the appropriate flag and value
+        if (strcmp(field, "Name") == 0) {
+            strncpy(newName, value, STUDENT_NAME_LENGTH - 1);
+            newName[STUDENT_NAME_LENGTH - 1] = '\0';
+            nameFlag = 1;
+        } else if (strcmp(field, "Programme") == 0) {
+            strncpy(newProgramme, value, PROGRAMME_LENGTH - 1);
+            newProgramme[PROGRAMME_LENGTH - 1] = '\0';
+            programmeFlag = 1;
+        } else if (strcmp(field, "Mark") == 0) {
+            newMark = atof(value);  // Convert string to float
+            markFlag = 1;
+        } else {
+            printf("Unknown field: %s\n", field);
+            free(fieldsCopy);
+            return;
+        }
+
+        // Move to the next field
+        token = strtok(NULL, " ");
+    }
+
+    // Call the update function with flags indicating which fields to update
+    updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag);
+    free(fieldsCopy);
 }
 
 
@@ -290,8 +323,6 @@ void ShowAll(HashMap* hashmap) {
 }
 
 
-
-
 void DeleteRecord(HashMap* hashmap, int id) {
     int id_check_flag = 0;
     char check_delete[3];
@@ -375,6 +406,34 @@ void DeleteRecord(HashMap* hashmap, int id) {
 
 
 
+// Save changes to file
+void saveToFile(const char* filename, HashMap* hashmap) {
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        perror("Error opening file for writing");
+        return;
+    }
+
+    // Write header information
+    fprintf(file, "Database Name: %s\n", USERNAME);
+    fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
+    fprintf(file, "Table Name: %s\n", tableName);
+    fprintf(file, "ID\tName\tProgramme\tMark\n");
+
+    // Iterate through each bucket and write records
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            fprintf(file, "%d\t%s\t%s\t%.2f\n", current->id, current->name, current->programme, current->mark);
+            current = current->next;
+        }
+    }
+
+    // printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
+    fclose(file);
+}
+
+
 
 
 
@@ -405,13 +464,10 @@ int main() {
             ShowAll(hashmap);
         }
 
-        else if (_stricmp(input, "update") == 0) {
-            printf("UPDATE ID=");
-            int id;
-            scanf("%d", &id);
-            getchar();  // Consume the newline character left by scanf
-            updateStudentByID(hashmap, id);
+        else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
+            parseAndExecuteUpdate(hashmap, input);  // Process the UPDATE command
         }
+
         // str n i cmp to check the front command
         else if (_strnicmp(input, "delete" , 6) == 0) {
             char *id_ptr;
