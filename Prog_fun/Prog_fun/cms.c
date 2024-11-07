@@ -401,7 +401,30 @@ int main() {
 
         else if (_strnicmp(input, "query", 5) == 0) {
             char* id_ptr;
+            char s_id[10];
+            int id = 0;
+            int letter_count = 0;
 
+            // Find the ID location and place pointer
+            id_ptr = strstr(input, "ID=");
+            if (id_ptr == NULL) {
+                printf("Invalid Command. Usage: QUERY ID=<id>\n");
+                continue;
+            }
+
+            // Extract ID from input
+            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
+                s_id[i - 3] = id_ptr[i];
+                letter_count++;
+            }
+            id = atoi(s_id);
+
+            if (id == 0) {
+                printf("Invalid Command. Usage: QUERY ID=<id>\n");
+                continue;
+            }
+
+            QueryRecord(hashmap, id);
         }
         else if (strncmp(input, "INSERT ID=", 10) == 0) {
             int id;
