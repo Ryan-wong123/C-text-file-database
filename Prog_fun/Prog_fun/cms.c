@@ -209,7 +209,22 @@ void resizeHashMap(HashMap* oldHashMap) {
     free(newHashMap);  // Free temporary new hash map structure
 }
 
+void clearHashMap(HashMap* hashmap) {
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            StudentRecords* temp = current;
+            current = current->next;
+            free(temp);
+        }
+        hashmap->table[i] = NULL;
+    }
+    recordCount = 0;
+}
+
 void OpenFile(const char* filename, HashMap* hashmap) {
+   //d clearHashMap(hashmap); 
+
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
@@ -396,7 +411,7 @@ int main() {
             scanf("%d", &id);
             getchar();  // Consume the newline character left by scanf
             updateStudentByID(hashmap, id);
-
+        }
         // str n i cmp to check the front command
         else if (_strnicmp(input, "delete" , 6) == 0) {
             char *id_ptr;
