@@ -170,8 +170,7 @@ void ShowAll(HashMap* hashmap) {
 
 void QueryRecord(HashMap* hashmap, int id) {
     unsigned int index = hash(id);
-    StudentRecords* current = hashmap->table[1];
-    //printf("    ID: %d, Name: %s, Programme: %s, Mark: %.2f\n",current->id, current->name, current->programme, current->mark);
+    StudentRecords* current = hashmap->table[index];
     while (current != NULL) {
         if (current->id == id) {
             printf("Record Found:\n");
