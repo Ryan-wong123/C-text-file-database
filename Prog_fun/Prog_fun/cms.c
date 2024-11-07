@@ -222,6 +222,14 @@ void clearHashMap(HashMap* hashmap) {
     recordCount = 0;
 }
 
+void trimTrailingSpaces(char* str) {
+    int len = strlen(str);
+    while (len > 0 && isspace((unsigned char)str[len - 1])) {
+        str[len - 1] = '\0';
+        len--;
+    }
+}
+
 void OpenFile(const char* filename, HashMap* hashmap) {
    //d clearHashMap(hashmap); 
 
@@ -404,6 +412,46 @@ int main() {
         else if (_stricmp(input, "show all") == 0) {
             ShowAll(hashmap);
         }
+        
+        else if (strncmp(input, "INSERT ID=", 10) == 0) {
+            int id;
+            char name[STUDENT_NAME_LENGTH];
+            char programme[PROGRAMME_LENGTH];
+            float mark;
+
+            // Adjust pointer to skip "INSERT " and move to the actual parameters
+            char* params = input + 7;  // Move past "INSERT "
+
+            // Ensure all strings are cleared before parsing
+            memset(name, 0, sizeof(name));
+            memset(programme, 0, sizeof(programme));
+
+            // Parse the input using `sscanf()`, ensuring to capture spaces properly
+            int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
+
+            // Remove trailing spaces from name and programme
+            trimTrailingSpaces(name);
+            trimTrailingSpaces(programme);
+
+            if (fields == 4) {
+                // Check if the student with this ID already exists
+                StudentRecords* existingStudent = findStudentByID(hashmap, id);
+                if (existingStudent != NULL) {
+                    printf("The record with ID=%d already exists.\n", id);
+                }
+                else {
+                    // If student does not exist, insert the new student
+                    insertStudent(hashmap, id, name, programme, mark);
+                    printf("A new record with ID=%d is successfully inserted.\n", id);
+                }
+            }
+            else {
+                printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
+            }
+        }
+
+
+
 
         else if (_stricmp(input, "update") == 0) {
             printf("UPDATE ID=");
