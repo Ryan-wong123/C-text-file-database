@@ -376,6 +376,7 @@ void DeleteRecord(HashMap* hashmap, int id) {
 void DisplayDeclaration() {
     
 char declare[1400] = {
+
 "\t\t\t\t\tDeclaration \n \
 SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
 from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
