@@ -402,7 +402,7 @@ int main() {
         else if (_strnicmp(input, "query", 5) == 0) {
             char* id_ptr;
 
-        
+        }
         else if (strncmp(input, "INSERT ID=", 10) == 0) {
             int id;
             char name[STUDENT_NAME_LENGTH];
@@ -451,8 +451,8 @@ int main() {
             updateStudentByID(hashmap, id);
         }
         // str n i cmp to check the front command
-        else if (_strnicmp(input, "delete" , 6) == 0) {
-            char *id_ptr;
+        else if (_strnicmp(input, "delete", 6) == 0) {
+            char* id_ptr;
 
             char s_id[10];
             int id = 0;
@@ -517,19 +517,20 @@ int main() {
             printf("Invalid Command.\n");
             printf("%s", input);
         }
-    }
-
-    // Freeing allocated memory
-    for (int i = 0; i < currentSize; i++) {
-        StudentRecords* current = hashmap->table[i];
-        while (current != NULL) {
-            StudentRecords* temp = current;
-            current = current->next;
-            free(temp); // Free each student record
         }
-    }
-    free(hashmap->table); // Free hash map table
-    free(hashmap);        // Free hash map structure
 
-    return 0;
-}
+        // Freeing allocated memory
+        for (int i = 0; i < currentSize; i++) {
+            StudentRecords* current = hashmap->table[i];
+            while (current != NULL) {
+                StudentRecords* temp = current;
+                current = current->next;
+                free(temp); // Free each student record
+            }
+        }
+        free(hashmap->table); // Free hash map table
+        free(hashmap);        // Free hash map structure
+
+        return 0;
+    }
+
