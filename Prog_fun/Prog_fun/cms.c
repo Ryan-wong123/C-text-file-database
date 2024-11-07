@@ -223,10 +223,22 @@ void clearHashMap(HashMap* hashmap) {
 }
 
 void trimTrailingSpaces(char* str) {
+    // Trim trailing spaces
     int len = strlen(str);
     while (len > 0 && isspace((unsigned char)str[len - 1])) {
         str[len - 1] = '\0';
         len--;
+    }
+
+    // Trim leading spaces
+    char* start = str;
+    while (*start && isspace((unsigned char)*start)) {
+        start++;
+    }
+
+    // Shift the string back to remove leading spaces
+    if (start != str) {
+        memmove(str, start, strlen(start) + 1);  // +1 to include null terminator
     }
 }
 
@@ -430,6 +442,7 @@ int main() {
         printf("%s:", GROUP_NAME);
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
+        trimTrailingSpaces(input);
 
         if (_stricmp(input, "open") == 0) {
             OpenFile(FILE_PATH, hashmap);
