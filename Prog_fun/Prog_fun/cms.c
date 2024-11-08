@@ -553,17 +553,17 @@ int main() {
         }
 
 
-        else if (_stricmp(input, "update") == 0) {
-            if (open_flag == 0) {
-                printf("Database file not open yet.\n");
-                continue;
-            }
-            printf("UPDATE ID=");
-            int id;
-            scanf("%d", &id);
-            getchar();  // Consume the newline character left by scanf
-            updateStudentByID(hashmap, id);
-
+        //else if (_stricmp(input, "update") == 0) {
+        //    if (open_flag == 0) {
+        //        printf("Database file not open yet.\n");
+        //        continue;
+        //    }
+        //    printf("UPDATE ID=");
+        //    int id;
+        //    scanf("%d", &id);
+        //    getchar();  // Consume the newline character left by scanf
+        //    updateStudentByID(hashmap, id);
+        //}
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
             parseAndExecuteUpdate(hashmap, input);
               // Process the UPDATE command
