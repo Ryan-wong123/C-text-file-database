@@ -123,7 +123,7 @@ void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
     float newMark = -1;
     int nameFlag = 0, programmeFlag = 0, markFlag = 0;
 
-    // Extract ID from input
+    // Extract the ID first
     if (sscanf(input, "UPDATE ID=%d", &id) != 1) {
         printf("Invalid command format. Expected format: 'UPDATE ID=<id> <Field>=<Value>'\n");
         return;
@@ -131,61 +131,48 @@ void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
 
     // Find the start of the fields section after "UPDATE ID=<id>"
     const char* fieldsStart = strstr(input, "ID=");
-    if (fieldsStart == NULL) {
-        printf("Error: ID not found in command.\n");
-        return;
-    }
-
     fieldsStart = strchr(fieldsStart, ' '); // Move past "ID=<id>" to fields
-    if (fieldsStart == NULL) {
+    if (!fieldsStart) {
         printf("No fields to update.\n");
         return;
     }
     fieldsStart++; // Move to the first character after the space
 
-    // Duplicate the fields section for safe tokenization
-    char* fieldsCopy = strdup(fieldsStart);
-    char* token = strtok(fieldsCopy, " ");
+    // Buffer to hold the rest of the input fields
+    char remainingFields[256];
+    strncpy(remainingFields, fieldsStart, sizeof(remainingFields) - 1);
+    remainingFields[sizeof(remainingFields) - 1] = '\0';
 
-    while (token != NULL) {
-        char* equalSign = strchr(token, '=');
-        if (equalSign == NULL) {
-            printf("Invalid format: Missing '=' in field assignment.\n");
-            free(fieldsCopy);
-            return;
-        }
-
-        *equalSign = '\0';
-        const char* field = token;
-        const char* value = equalSign + 1;
-
-        // Match the field and set the appropriate flag and value
-        if (strcmp(field, "Name") == 0) {
-            strncpy(newName, value, STUDENT_NAME_LENGTH - 1);
-            newName[STUDENT_NAME_LENGTH - 1] = '\0';
-            nameFlag = 1;
-        } else if (strcmp(field, "Programme") == 0) {
-            strncpy(newProgramme, value, PROGRAMME_LENGTH - 1);
-            newProgramme[PROGRAMME_LENGTH - 1] = '\0';
-            programmeFlag = 1;
-        } else if (strcmp(field, "Mark") == 0) {
-            newMark = atof(value);  // Convert string to float
-            markFlag = 1;
-        } else {
-            printf("Unknown field: %s\n", field);
-            free(fieldsCopy);
-            return;
-        }
-
-        // Move to the next field
-        token = strtok(NULL, " ");
+    // Parse each field
+    char *valueStart;
+    if ((valueStart = strstr(remainingFields, "Name="))) {
+        valueStart += 5; // Move past "Name="
+        char *nextField = strstr(valueStart, " Programme=");
+        if (!nextField) nextField = strstr(valueStart, " Mark=");
+        if (nextField) *nextField = '\0'; // Temporarily end the string here
+        strncpy(newName, valueStart, STUDENT_NAME_LENGTH - 1);
+        newName[STUDENT_NAME_LENGTH - 1] = '\0';
+        nameFlag = 1;
+        if (nextField) *nextField = ' '; // Restore the space
+    }
+    if ((valueStart = strstr(remainingFields, "Programme="))) {
+        valueStart += 10; // Move past "Programme="
+        char *nextField = strstr(valueStart, " Mark=");
+        if (nextField) *nextField = '\0';
+        strncpy(newProgramme, valueStart, PROGRAMME_LENGTH - 1);
+        newProgramme[PROGRAMME_LENGTH - 1] = '\0';
+        programmeFlag = 1;
+        if (nextField) *nextField = ' ';
+    }
+    if ((valueStart = strstr(remainingFields, "Mark="))) {
+        valueStart += 5; // Move past "Mark="
+        newMark = atof(valueStart); // Convert string to float
+        markFlag = 1;
     }
 
     // Call the update function with flags indicating which fields to update
     updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag);
-    free(fieldsCopy);
 }
-
 
 
 // Function to find the next prime number larger than a given number
@@ -524,13 +511,14 @@ int main() {
 
 
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
-            parseAndExecuteUpdate(hashmap, input);  // Process the UPDATE command
+            parseAndExecuteUpdate(hashmap, input);
+              // Process the UPDATE command
         }
 
         // str n i cmp to check the front command
         else if (_strnicmp(input, "delete" , 6) == 0) {
             char *id_ptr;
-
+        }
         else if (_strnicmp(input, "query", 5) == 0) {
             char* id_ptr;
             char s_id[10];
@@ -595,13 +583,6 @@ int main() {
             }
         }
 
-        else if (_stricmp(input, "update") == 0) {
-            printf("UPDATE ID=");
-            int id;
-            scanf("%d", &id);
-            getchar();  // Consume the newline character left by scanf
-            updateStudentByID(hashmap, id);
-        }
 
         else if (_strnicmp(input, "delete", 6) == 0) {
             char* id_ptr;
