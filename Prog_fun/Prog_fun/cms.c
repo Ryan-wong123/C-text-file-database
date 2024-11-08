@@ -569,14 +569,42 @@ int main() {
               // Process the UPDATE command
 
         }
-
-        // str n i cmp to check the front command
-        else if (_strnicmp(input, "delete" , 6) == 0) {
+       
+        else if (_strnicmp(input, "delete", 6) == 0) {
             if (open_flag == 0) {
                 printf("Database file not open yet.\n");
                 continue;
             }
-            char *id_ptr;
+            char* id_ptr;
+            char s_id[10];
+            int id = 0;
+            int letter_count = 0;
+
+            // Find ID location and place ptr 
+            id_ptr = strstr(input, "ID=");
+
+            // Check command is entered correctly 
+            if (id_ptr == NULL) {
+                printf("Invalid Command. Usage: DELETE ID=<id>\n");
+                continue;
+            }
+            // Extract ID from input
+            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
+                s_id[i - 3] = id_ptr[i];
+                letter_count++;
+            }
+            id = atoi(s_id);
+
+            if (DEBUG_MODE == 1) printf("%d \n", id);
+
+            // Check if ID entered correctly 
+            if (id == 0) {
+                printf("Invalid Command. Usage: DELETE ID=<id>\n");
+                continue;
+            }
+
+            DeleteRecord(hashmap, id);
+
         }
         else if (_strnicmp(input, "query", 5) == 0) {
             char* id_ptr;
