@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
+
 #define DEBUG_MODE 0
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
@@ -477,10 +478,44 @@ void saveToFile(const char* filename, HashMap* hashmap) {
     fclose(file);
 }
 
+void DisplayDeclaration() {
+    
+char declare[1400] = {
+
+"\t\t\t\t\tDeclaration \n \
+SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
+from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
+solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible\n \
+by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.\n\n \
+We hereby declare that:\n \
+We fully understand and agree to the abovementioned plagiarism policy.\n \
+We did not copy any code from others or from other places.\n \
+We did not share our codes with others or upload to any other places for public access and will\n \
+not do that in the future.\n \
+We agree that our project will receive Zero mark if there is any plagiarism detected.\n \
+We agree that we will not disclose any information or material of the group project to others or\n \
+upload to any other places for public access.\n\n \
+Declared by: Group 2-3\n \
+Team members:\n \
+1. NAVEEN GOPALKRISHNAN \t(2402612)\n \
+2. LEE ZHI HONG TIMOTHY \t(2400592)\n \
+3. DEVIN TAN ZHEN WEI \t\t(2400649)\n \
+4. TNG ZHENG YANG \t\t(2401113)\n \
+5. SABIHAH AMIRUDEEN \t\t(2401670)\n \
+6. WONG HOI YOUNG, RYAN \t(2401725)\n \
+Date: (please insert the date when you submit your group project)\n" };
+
+// print declaration    
+puts(declare);
+
+
+
+}
 
 
 
 
+int open_flag = 0; // to check for db open status
 
 int main() {
     HashMap* hashmap = malloc(sizeof(HashMap));
@@ -496,6 +531,9 @@ int main() {
     }
     memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*)); // Initialize the hash map
 
+    // print declaration uncomment when sending
+    DisplayDeclaration();
+
     while (1) {
         printf("%s:", GROUP_NAME);
         char input[256];
@@ -504,19 +542,40 @@ int main() {
 
         if (_stricmp(input, "open") == 0) {
             OpenFile(FILE_PATH, hashmap);
+            open_flag = 1;
         }
         else if (_stricmp(input, "show all") == 0) {
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                continue;
+            }
             ShowAll(hashmap);
         }
 
 
+        else if (_stricmp(input, "update") == 0) {
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                continue;
+            }
+            printf("UPDATE ID=");
+            int id;
+            scanf("%d", &id);
+            getchar();  // Consume the newline character left by scanf
+            updateStudentByID(hashmap, id);
+
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
             parseAndExecuteUpdate(hashmap, input);
               // Process the UPDATE command
+
         }
 
         // str n i cmp to check the front command
         else if (_strnicmp(input, "delete" , 6) == 0) {
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                continue;
+            }
             char *id_ptr;
         }
         else if (_strnicmp(input, "query", 5) == 0) {
@@ -621,8 +680,11 @@ int main() {
             break;
         }
         else {
-            printf("Invalid Command.\n");
-            printf("%s", input);
+
+            printf("Invalid Command. \n");
+            if (DEBUG_MODE == 1)printf("%s", input);
+
+
         }
         }
 
