@@ -160,24 +160,18 @@ void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
     updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag);
 }
 
-
-// Function to find the next prime number larger than a given number
-int nextPrime(int n) {
-    int i, j;
-    for (i = n + 1;; i++) {
+void resizeHashMap(HashMap* oldHashMap) {
+    int i, j, newSize ;
+    for (i = currentSize * 2 + 1;; i++) {
         for (j = 2; j * j <= i; j++) {
             if (i % j == 0) {
                 break;
             }
         }
         if (j * j > i) {
-            return i;  // Return the next prime number
+            newSize = i;  
         }
     }
-}
-
-void resizeHashMap(HashMap* oldHashMap) {
-    int newSize = nextPrime(currentSize * 2); // Find the next prime size
 
     HashMap* newHashMap = malloc(sizeof(HashMap));
     if (newHashMap == NULL) {
@@ -213,19 +207,6 @@ void resizeHashMap(HashMap* oldHashMap) {
     // Copy the new hash map structure into the old hash map pointer
     *oldHashMap = *newHashMap;
     free(newHashMap);  // Free temporary new hash map structure
-}
-
-void clearHashMap(HashMap* hashmap) {
-    for (int i = 0; i < currentSize; i++) {
-        StudentRecords* current = hashmap->table[i];
-        while (current != NULL) {
-            StudentRecords* temp = current;
-            current = current->next;
-            free(temp);
-        }
-        hashmap->table[i] = NULL;
-    }
-    recordCount = 0;
 }
 
 void trimTrailingSpaces(char* str) {
@@ -297,7 +278,7 @@ void OpenFile(const char* filename, HashMap* hashmap) {
 }
 
 // Comparison function for sorting by ID
-int compareByID(const void* a, const void* b) {
+int SortbyID(const void* a, const void* b) {
     StudentRecords* studentA = *(StudentRecords**)a;
     StudentRecords* studentB = *(StudentRecords**)b;
     return studentA->id - studentB->id;  // Sort in ascending order of IDs
@@ -328,7 +309,7 @@ void ShowAll(HashMap* hashmap) {
     }
 
     // Sort the array of records by ID
-    qsort(allRecords, recordCount, sizeof(StudentRecords*), compareByID);
+    qsort(allRecords, recordCount, sizeof(StudentRecords*), SortbyID);
 
     // Print the records in the desired format
     printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
