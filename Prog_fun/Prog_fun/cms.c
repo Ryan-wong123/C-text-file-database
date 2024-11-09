@@ -576,7 +576,7 @@ int main() {
                 continue;
             }
             char* id_ptr;
-            char s_id[10];
+            char s_id[10] = {'\0'};
             int id = 0;
             int letter_count = 0;
 
