@@ -261,8 +261,6 @@ void trimTrailingSpaces(char* str) {
 }
 
 void OpenFile(const char* filename, HashMap* hashmap) {
-   //d clearHashMap(hashmap); 
-
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
@@ -501,35 +499,33 @@ void DisplayDeclaration() {
 
 int GetId(const char* input, const char* error_message) {
     char* id_ptr;
-    char s_id[10] = { '\0' };
+    char tempId[10] = { '\0' };
     int id = 0;
     int letter_count = 0;
 
-    // Find the ID location and place pointer
     id_ptr = strstr(input, "ID=");
     if (id_ptr == NULL) {
         printf("%s", error_message);
-        return 0; // Indicate failure
+        return 0; 
     }
 
-    // Extract ID from input
     for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-        s_id[i - 3] = id_ptr[i];
+        tempId[i - 3] = id_ptr[i];
         letter_count++;
     }
-    id = atoi(s_id);
+    id = atoi(tempId);
 
-    // Check if ID entered correctly
+ 
     if (id == 0) {
         printf("%s", error_message);
-        return 0; // Indicate failure
+        return 0; 
     }
 
-    return id; // Return the extracted and valid ID
+    return id;
 }
 
 
-int open_flag = 0; // to check for db open status
+int isFileOpened = 0; // to check for db open status
 
 int main() {
     HashMap* hashmap = malloc(sizeof(HashMap));
@@ -553,19 +549,19 @@ int main() {
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         trimTrailingSpaces(input);
 
-        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "UPDATE ID=", 10) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "INSERT ID =",10) == 0) && open_flag == 0) {
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "UPDATE ID=", 10) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "INSERT ID =",10) == 0) && isFileOpened == 0) {
             OpenFile(FILE_PATH, hashmap);
-            open_flag = 1;
+            isFileOpened = 1;
         }
 
         if (_stricmp(input, "open") == 0) {
-            if (open_flag == 1) {
+            if (isFileOpened == 1) {
                 printf("Database file is open already.\n");
                 continue;
             }
 
             OpenFile(FILE_PATH, hashmap);
-            open_flag = 1;
+            isFileOpened = 1;
             printf("%s: The database file \"%s\" is successfully opened.\n", USERNAME, FILE_PATH);
         }
         else if (_stricmp(input, "show all") == 0) {
@@ -580,8 +576,6 @@ int main() {
             if (id == 0) {
                 continue;
             }
-
-            if (DEBUG_MODE == 1) printf("%d \n", id);
 
             DeleteRecord(hashmap, id);
         }
