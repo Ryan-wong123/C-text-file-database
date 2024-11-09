@@ -541,6 +541,11 @@ int main() {
         trimTrailingSpaces(input);
 
         if (_stricmp(input, "open") == 0) {
+            if (open_flag == 1) {
+                printf("Database file is open already.\n");
+                continue;
+            }
+
             OpenFile(FILE_PATH, hashmap);
             open_flag = 1;
         }
@@ -707,7 +712,7 @@ int main() {
 
         }
         }
-// 
+
         // Freeing allocated memory
         for (int i = 0; i < currentSize; i++) {
             StudentRecords* current = hashmap->table[i];
