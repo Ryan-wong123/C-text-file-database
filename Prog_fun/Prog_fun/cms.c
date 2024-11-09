@@ -413,6 +413,7 @@ void DeleteRecord(HashMap* hashmap, int id) {
             }
             printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
             recordCount--;
+            free(current);
             break;
         }
         else if (_strnicmp(check_delete, "N", 1) == 0) {
@@ -423,7 +424,6 @@ void DeleteRecord(HashMap* hashmap, int id) {
             printf("Invalid Command\n");
         }
     }
-    free(current);
 }
 
 // Save changes to file
