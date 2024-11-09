@@ -456,7 +456,7 @@ void saveToFile(const char* filename, HashMap* hashmap) {
         }
     }
 
-    // printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
+    printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
     fclose(file);
 }
 
@@ -624,11 +624,9 @@ int main() {
         }
         else if (_stricmp(input, "SAVE") == 0) {
             saveToFile(FILE_PATH, hashmap);
-            printf("Data has been successfully saved to %s.\n", FILE_PATH);
         }
         else {
             printf("Invalid Command. \n");
-            if (DEBUG_MODE == 1)printf("%s", input);
         }
     }
 
