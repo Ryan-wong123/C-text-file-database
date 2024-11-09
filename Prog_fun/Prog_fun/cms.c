@@ -34,6 +34,7 @@ unsigned int hash(int id) {
 }
 
 void resizeHashMap(HashMap* oldHashMap);
+void saveToFile(const char* filename, HashMap* hashmap);
 
 StudentRecords* createStudent(int id, const char* name, const char* programme, float mark) {
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
@@ -42,8 +43,8 @@ StudentRecords* createStudent(int id, const char* name, const char* programme, f
         exit(EXIT_FAILURE);
     }
     newStudent->id = id;
-    strncpy_s(newStudent->name, sizeof(newStudent->name), name, _TRUNCATE);
-    strncpy_s(newStudent->programme, sizeof(newStudent->programme), programme, _TRUNCATE);
+    strncpy(newStudent->name, name, sizeof(newStudent->name));
+    strncpy(newStudent->programme,programme, sizeof(newStudent->programme));
     newStudent->mark = mark;
     newStudent->next = NULL;
     return newStudent;
@@ -65,7 +66,6 @@ void insertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     }
 }
 
-
 StudentRecords* findStudentByID(HashMap* hashmap, int id) {
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
@@ -77,8 +77,6 @@ StudentRecords* findStudentByID(HashMap* hashmap, int id) {
     }
     return NULL;  // Record not found
 }
-
-// void saveToFile(const char* filename, HashMap* hashmap);
 
 // Function to update a student record by ID
 void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag) {
@@ -107,7 +105,6 @@ void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char
             }
 
             printf("\nThe record with ID=%d is successfully updated.\n", id);
-            // saveToFile(FILE_PATH, hashmap);  // Save changes automatically
             return;
         }
         current = current->next;
@@ -281,7 +278,7 @@ void OpenFile(const char* filename, HashMap* hashmap) {
         }
 
         if (strncmp(line, "Table Name:", 11) == 0) {
-            sscanf_s(line + 12, "%[^\n]", tableName, (unsigned)_countof(tableName));
+            sscanf(line + 12, "%[^\n]", tableName);
             continue;
         }
 
@@ -294,10 +291,8 @@ void OpenFile(const char* filename, HashMap* hashmap) {
                 StudentRecords* existingStudent = findStudentByID(hashmap, id);
                 if (existingStudent != NULL) {
                     // Update the existing record
-                    strncpy(existingStudent->name, name, STUDENT_NAME_LENGTH - 1);
-                    existingStudent->name[STUDENT_NAME_LENGTH - 1] = '\0';
-                    strncpy(existingStudent->programme, programme, PROGRAMME_LENGTH - 1);
-                    existingStudent->programme[PROGRAMME_LENGTH - 1] = '\0';
+                    snprintf(existingStudent->name, STUDENT_NAME_LENGTH, "%s", name);
+                    snprintf(existingStudent->programme, PROGRAMME_LENGTH, "%s", programme);
                     existingStudent->mark = mark;
                 } 
                 else {
@@ -311,7 +306,7 @@ void OpenFile(const char* filename, HashMap* hashmap) {
             }
         }
     }
-    printf("%s: The database file \"%s\" is successfully opened.\n", USERNAME, FILE_PATH);
+
     fclose(file);
 }
 
@@ -363,9 +358,6 @@ void ShowAll(HashMap* hashmap) {
     // Free the dynamically allocated memory
     free(allRecords);
 }
-
-
-
 
 struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
     unsigned int index = hash(id);
@@ -443,13 +435,10 @@ void DeleteRecord(HashMap* hashmap, int id) {
             printf("Invalid Command\n");
         }
     }
+    free(current);
+
     if (DEBUG_MODE == 1) printf("end delete section\n");
 }
-
-
-
-
-
 
 // Save changes to file
 void saveToFile(const char* filename, HashMap* hashmap) {
@@ -480,40 +469,35 @@ void saveToFile(const char* filename, HashMap* hashmap) {
 
 void DisplayDeclaration() {
     
-char declare[1400] = {
+    char declare[1400] = {
 
-"\t\t\t\t\tDeclaration \n \
-SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
-from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
-solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible\n \
-by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.\n\n \
-We hereby declare that:\n \
-We fully understand and agree to the abovementioned plagiarism policy.\n \
-We did not copy any code from others or from other places.\n \
-We did not share our codes with others or upload to any other places for public access and will\n \
-not do that in the future.\n \
-We agree that our project will receive Zero mark if there is any plagiarism detected.\n \
-We agree that we will not disclose any information or material of the group project to others or\n \
-upload to any other places for public access.\n\n \
-Declared by: Group 2-3\n \
-Team members:\n \
-1. NAVEEN GOPALKRISHNAN \t(2402612)\n \
-2. LEE ZHI HONG TIMOTHY \t(2400592)\n \
-3. DEVIN TAN ZHEN WEI \t\t(2400649)\n \
-4. TNG ZHENG YANG \t\t(2401113)\n \
-5. SABIHAH AMIRUDEEN \t\t(2401670)\n \
-6. WONG HOI YOUNG, RYAN \t(2401725)\n \
-Date: (please insert the date when you submit your group project)\n" };
+    "\t\t\t\t\tDeclaration \n \
+    SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
+    from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
+    solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible\n \
+    by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.\n\n \
+    We hereby declare that:\n \
+    We fully understand and agree to the abovementioned plagiarism policy.\n \
+    We did not copy any code from others or from other places.\n \
+    We did not share our codes with others or upload to any other places for public access and will\n \
+    not do that in the future.\n \
+    We agree that our project will receive Zero mark if there is any plagiarism detected.\n \
+    We agree that we will not disclose any information or material of the group project to others or\n \
+    upload to any other places for public access.\n\n \
+    Declared by: Group 2-3\n \
+    Team members:\n \
+    1. NAVEEN GOPALKRISHNAN \t(2402612)\n \
+    2. LEE ZHI HONG TIMOTHY \t(2400592)\n \
+    3. DEVIN TAN ZHEN WEI \t(2400649)\n \
+    4. TNG ZHENG YANG \t\t(2401113)\n \
+    5. SABIHAH AMIRUDEEN \t(2401670)\n \
+    6. WONG HOI YOUNG, RYAN \t(2401725)\n \
+    Date: (please insert the date when you submit your group project)\n" };
 
-// print declaration    
-puts(declare);
-
-
+    // print declaration    
+    puts(declare);
 
 }
-
-
-
 
 int open_flag = 0; // to check for db open status
 
@@ -531,7 +515,6 @@ int main() {
     }
     memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*)); // Initialize the hash map
 
-    // print declaration uncomment when sending
     DisplayDeclaration();
 
     while (1) {
@@ -539,6 +522,11 @@ int main() {
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         trimTrailingSpaces(input);
+
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "UPDATE ID=", 10) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "INSERT ID =",10) == 0) && open_flag == 0) {
+            OpenFile(FILE_PATH, hashmap);
+            open_flag = 1;
+        }
 
         if (_stricmp(input, "open") == 0) {
             if (open_flag == 1) {
@@ -548,26 +536,15 @@ int main() {
 
             OpenFile(FILE_PATH, hashmap);
             open_flag = 1;
+            printf("%s: The database file \"%s\" is successfully opened.\n", USERNAME, FILE_PATH);
         }
         else if (_stricmp(input, "show all") == 0) {
-            if (open_flag == 0) {
-                printf("Database file not open yet.\n");
-                continue;
-            }
             ShowAll(hashmap);
         }
-
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
             parseAndExecuteUpdate(hashmap, input);
-              // Process the UPDATE command
-
         }
-       
         else if (_strnicmp(input, "delete", 6) == 0) {
-            if (open_flag == 0) {
-                printf("Database file not open yet.\n");
-                continue;
-            }
             char* id_ptr;
             char s_id[10] = {'\0'};
             int id = 0;
@@ -662,41 +639,6 @@ int main() {
                 printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
             }
         }
-
-
-        else if (_strnicmp(input, "delete", 6) == 0) {
-            char* id_ptr;
-
-            char s_id[10];
-            int id = 0;
-            int letter_count = 0;
-
-            // Find ID location and place ptr 
-            id_ptr = strstr(input, "ID=");
-
-            // Check command is entered correctly 
-            if (id_ptr == NULL) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
-                continue;
-            }
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
-
-            if (DEBUG_MODE == 1) printf("%d \n", id);
-
-            // Check if ID entered correctly 
-            if (id == 0) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
-                continue;
-            }
-
-            DeleteRecord(hashmap, id);
-
-        }
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
@@ -705,13 +647,11 @@ int main() {
             printf("Data has been successfully saved to %s.\n", FILE_PATH);
         }
         else {
-
             printf("Invalid Command. \n");
             if (DEBUG_MODE == 1)printf("%s", input);
-
-
         }
-        }
+    }
+
 
         // Freeing allocated memory
         for (int i = 0; i < currentSize; i++) {
@@ -722,9 +662,8 @@ int main() {
                 free(temp); // Free each student record
             }
         }
-        free(hashmap->table); // Free hash map table
-        free(hashmap);        // Free hash map structure
+        free(hashmap->table); // free the pointers of head node in each LL 
+        free(hashmap);        // free the memory of the overall hash map
 
         return 0;
     }
-
