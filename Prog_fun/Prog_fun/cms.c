@@ -78,7 +78,7 @@ StudentRecords* findStudentByID(HashMap* hashmap, int id) {
     return NULL;  // Record not found
 }
 
-void saveToFile(const char* filename, HashMap* hashmap);
+// void saveToFile(const char* filename, HashMap* hashmap);
 
 // Function to update a student record by ID
 void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag) {
@@ -107,7 +107,7 @@ void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char
             }
 
             printf("\nThe record with ID=%d is successfully updated.\n", id);
-            saveToFile(FILE_PATH, hashmap);  // Save changes automatically
+            // saveToFile(FILE_PATH, hashmap);  // Save changes automatically
             return;
         }
         current = current->next;
@@ -552,18 +552,6 @@ int main() {
             ShowAll(hashmap);
         }
 
-
-        //else if (_stricmp(input, "update") == 0) {
-        //    if (open_flag == 0) {
-        //        printf("Database file not open yet.\n");
-        //        continue;
-        //    }
-        //    printf("UPDATE ID=");
-        //    int id;
-        //    scanf("%d", &id);
-        //    getchar();  // Consume the newline character left by scanf
-        //    updateStudentByID(hashmap, id);
-        //}
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
             parseAndExecuteUpdate(hashmap, input);
               // Process the UPDATE command
@@ -707,6 +695,10 @@ int main() {
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
+        else if (_stricmp(input, "SAVE") == 0) {
+            saveToFile(FILE_PATH, hashmap);
+            printf("Data has been successfully saved to %s.\n", FILE_PATH);
+        }
         else {
 
             printf("Invalid Command. \n");
@@ -715,7 +707,7 @@ int main() {
 
         }
         }
-
+// 
         // Freeing allocated memory
         for (int i = 0; i < currentSize; i++) {
             StudentRecords* current = hashmap->table[i];
