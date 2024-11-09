@@ -499,6 +499,36 @@ void DisplayDeclaration() {
 
 }
 
+int GetId(const char* input, const char* error_message) {
+    char* id_ptr;
+    char s_id[10] = { '\0' };
+    int id = 0;
+    int letter_count = 0;
+
+    // Find the ID location and place pointer
+    id_ptr = strstr(input, "ID=");
+    if (id_ptr == NULL) {
+        printf("%s", error_message);
+        return 0; // Indicate failure
+    }
+
+    // Extract ID from input
+    for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
+        s_id[i - 3] = id_ptr[i];
+        letter_count++;
+    }
+    id = atoi(s_id);
+
+    // Check if ID entered correctly
+    if (id == 0) {
+        printf("%s", error_message);
+        return 0; // Indicate failure
+    }
+
+    return id; // Return the extracted and valid ID
+}
+
+
 int open_flag = 0; // to check for db open status
 
 int main() {
@@ -545,59 +575,20 @@ int main() {
             parseAndExecuteUpdate(hashmap, input);
         }
         else if (_strnicmp(input, "delete", 6) == 0) {
-            char* id_ptr;
-            char s_id[10] = {'\0'};
-            int id = 0;
-            int letter_count = 0;
+            int id = GetId(input, "Invalid Command. Usage: DELETE ID=<id>\n");
 
-            // Find ID location and place ptr 
-            id_ptr = strstr(input, "ID=");
-
-            // Check command is entered correctly 
-            if (id_ptr == NULL) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
+            if (id == 0) {
                 continue;
             }
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
 
             if (DEBUG_MODE == 1) printf("%d \n", id);
 
-            // Check if ID entered correctly 
-            if (id == 0) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
-                continue;
-            }
-
             DeleteRecord(hashmap, id);
-
         }
         else if (_strnicmp(input, "query", 5) == 0) {
-            char* id_ptr;
-            char s_id[10]={'\0'};
-            int id = 0;
-            int letter_count = 0;
-
-            // Find the ID location and place pointer
-            id_ptr = strstr(input, "ID=");
-            if (id_ptr == NULL) {
-                printf("Invalid Command. Usage: QUERY ID=<id>\n");
-                continue;
-            }
-
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
+            int id = GetId(input, "Invalid Command. Usage: QUERY ID=<id>\n");
 
             if (id == 0) {
-                printf("Invalid Command. Usage: QUERY ID=<id>\n");
                 continue;
             }
 
@@ -651,7 +642,6 @@ int main() {
             if (DEBUG_MODE == 1)printf("%s", input);
         }
     }
-
 
         // Freeing allocated memory
         for (int i = 0; i < currentSize; i++) {
