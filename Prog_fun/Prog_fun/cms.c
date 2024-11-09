@@ -4,8 +4,6 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-
-#define DEBUG_MODE 0
 #define FILE_PATH "database.txt"
 #define USERNAME "CMS"
 #define GROUP_NAME "P1_3"
@@ -375,7 +373,7 @@ void DeleteRecord(HashMap* hashmap, int id) {
     int id_check_flag = 0;
     char check_delete[3];
 
-    if (DEBUG_MODE == 1) printf("enter delete section\n");
+
     unsigned int index = hash(id);
 
     StudentRecords* current = hashmap->table[index];
@@ -384,12 +382,10 @@ void DeleteRecord(HashMap* hashmap, int id) {
     // loop through bucket if not the same ID
     while (current != NULL) {
         if (current->id == id) {
-            if (DEBUG_MODE == 1) printf("ID: %d hash index:%d \n", current->id, index);
             id_check_flag = 1;
             break;
         }
         else {
-            if (DEBUG_MODE == 1) printf(" not ID: %d hash index:%d \n", current->id, index);
             prev = current;
             current = current->next;
         }
@@ -407,7 +403,6 @@ void DeleteRecord(HashMap* hashmap, int id) {
         check_delete[strcspn(fgets(check_delete, sizeof(check_delete), stdin), "\n")] = 0;
 
         if (_strnicmp(check_delete, "Y", 1) == 0) {
-            if (DEBUG_MODE == 1) printf("The deletion is processing.\n");
 
             // if current is a head of bucket set ptr to next record
             if (prev == NULL) {
@@ -429,8 +424,6 @@ void DeleteRecord(HashMap* hashmap, int id) {
         }
     }
     free(current);
-
-    if (DEBUG_MODE == 1) printf("end delete section\n");
 }
 
 // Save changes to file
