@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 
 #define DEBUG_MODE 0
@@ -35,6 +36,7 @@ unsigned int hash(int id) {
 
 void resizeHashMap(HashMap* oldHashMap);
 void saveToFile(const char* filename, HashMap* hashmap);
+struct StudentRecords* QueryRecord(HashMap* hashmap, int id, bool printrecord);
 
 StudentRecords* createStudent(int id, const char* name, const char* programme, float mark) {
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
@@ -64,18 +66,6 @@ void insertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     if (recordCount > (currentSize / 2)) {
         resizeHashMap(hashmap);
     }
-}
-
-StudentRecords* findStudentByID(HashMap* hashmap, int id) {
-    unsigned int index = hash(id);
-    StudentRecords* current = hashmap->table[index];
-    while (current != NULL) {
-        if (current->id == id) {
-            return current;  // Record found
-        }
-        current = current->next;
-    }
-    return NULL;  // Record not found
 }
 
 // Function to update a student record by ID
@@ -286,7 +276,7 @@ void OpenFile(const char* filename, HashMap* hashmap) {
             float mark;
             int fields = sscanf(line, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
             if (fields == 4) {// Check if the student with the given ID already exists
-                StudentRecords* existingStudent = findStudentByID(hashmap, id);
+                StudentRecords* existingStudent = QueryRecord(hashmap, id, false);
                 if (existingStudent != NULL) {
                     // Update the existing record
                     snprintf(existingStudent->name, STUDENT_NAME_LENGTH, "%s", name);
@@ -357,21 +347,26 @@ void ShowAll(HashMap* hashmap) {
     free(allRecords);
 }
 
-struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
+struct StudentRecords* QueryRecord(HashMap* hashmap, int id, bool printrecord) {
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
     while (current != NULL) {
         if (current->id == id) {
-            printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
-            printf("ID        Name                  Programme                  Mark\n");
-            printf("%-8d  %-20s  %-25s  %.2f\n",
-                current->id, current->name, current->programme, current->mark);
+
+            if (printrecord == true) {
+                printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
+                printf("ID        Name                  Programme                  Mark\n");
+                printf("%-8d  %-20s  %-25s  %.2f\n",
+                    current->id, current->name, current->programme, current->mark);
+            }
             return current;
         }
         current = current->next;
     }
-
-    printf("%s: The record with ID=%d does not exist.\n",USERNAME, id);
+    if (printrecord == true) {
+        printf("%s: The record with ID=%d does not exist.\n", USERNAME, id);
+    }
+   
     return NULL;
 }
 
@@ -586,7 +581,7 @@ int main() {
                 continue;
             }
 
-            QueryRecord(hashmap, id);
+            QueryRecord(hashmap, id ,true);
         }
         else if (strncmp(input, "INSERT ID=", 10) == 0) {
             int id;
@@ -610,7 +605,7 @@ int main() {
 
             if (fields == 4) {
                 // Check if the student with this ID already exists
-                StudentRecords* existingStudent = findStudentByID(hashmap, id);
+                StudentRecords* existingStudent = QueryRecord(hashmap, id, false);
                 if (existingStudent != NULL) {
                     printf("The record with ID=%d already exists.\n", id);
                 }
