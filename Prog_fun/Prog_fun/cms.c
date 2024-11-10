@@ -8,7 +8,7 @@
 #define USERNAME "CMS"
 #define GROUP_NAME "P1_3"
 #define TABLE_NAME_LENGTH 15
-#define HASHMAP_LENGTH 103
+#define HASHMAP_LENGTH 1
 #define NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
 #define GENERAL_LENGTH 70
@@ -354,9 +354,10 @@ void resizeHashMap(HashMap* currentHashmap) {
     int newSize;
 
     // Find the next prime number greater than currentSize * 2
-    for (newSize = currentSize * 2 + 1; ; newSize++) {
+    for (newSize = currentSize * 2 + 1; ; newSize += 2) {  // Skip even numbers
         int isPrime = 1;
-        for (int j = 2; j * j <= newSize; j++) {
+        if (newSize % 2 == 0) continue;  // Skip even numbers
+        for (int j = 3; j * j <= newSize; j += 2) {  // Skip even divisors
             if (newSize % j == 0) {
                 isPrime = 0;
                 break;
