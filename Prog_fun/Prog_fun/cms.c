@@ -496,7 +496,7 @@ int main() {
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         TrimTrailingSpaces(input);
 
-        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "INSERT ID=",10) == 0) && isFileOpened == 0) {
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert",6) == 0) && isFileOpened == 0) {
             OpenFile(FILE_PATH, hashmap);
             isFileOpened = 1;
         }
@@ -515,6 +515,19 @@ int main() {
             ShowAll(hashmap);
         }
         else if (_strnicmp(input, "update", 6) == 0) {
+            char* value = GetField(input, "ID=", sizeof(input));
+            if (value == NULL) {
+                printf("Invalid Command. Usage: UPDATE ID=<id>\n");
+                continue;
+            }
+
+            int id = atoi(value);
+
+            if (id == 0) {
+                printf("Please enter valid ID.\n");
+                continue;
+            }
+
             UpdateStudent(hashmap, input);
         }
         else if (_strnicmp(input, "delete", 6) == 0) {
@@ -548,8 +561,21 @@ int main() {
 
             QueryStudent(hashmap, id ,true);
         }
-        else if (strncmp(input, "INSERT ID=", 10) == 0) {
-            int id;
+        else if (_strnicmp(input, "insert", 6) == 0) {
+
+            char* value = GetField(input, "ID=", sizeof(input));
+            if (value == NULL) {
+                printf("Invalid Command. Usage: INSERT ID=<id>\n");
+                continue;
+            }
+
+            int id = atoi(value);
+
+            if (id == 0) {
+                printf("Please enter valid ID.\n");
+                continue;
+            }
+
             char name[NAME_LENGTH];
             char programme[PROGRAMME_LENGTH];
             float mark;
@@ -588,6 +614,10 @@ int main() {
             break;
         }
         else if (_stricmp(input, "SAVE") == 0) {
+            if (isFileOpened == 0) {
+                printf("Database file is not opened.\n");
+                continue;
+            }
             saveToFile(FILE_PATH, hashmap);
         }
         else {
