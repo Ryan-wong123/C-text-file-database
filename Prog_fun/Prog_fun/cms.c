@@ -44,12 +44,13 @@ int SortbyID(const void* a, const void* b);
 void ShowAll(HashMap* hashmap);
 void DeleteRecord(HashMap* hashmap, int id);
 void saveToFile(const char* filename, HashMap* hashmap);
+char* GetField(const char* input, const char* key, int maxLength, const char* error_message);
 
 void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
     // Allocate memory for a new student record
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
     if (newStudent == NULL) {
-        fprintf(stderr, "Memory allocation failed for new student\n");
+        perror("Memory allocation failed for new student\n");
         exit(EXIT_FAILURE);
     }
 
@@ -111,64 +112,55 @@ void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char
     // If the record was not found
     printf("The record with ID=%d does not exist.\n", id);
 }
+void UpdateUser(HashMap* hashmap, const char* input) {
+    int id = atoi(GetField(input, "ID=", sizeof(input), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n"));
+    if (id == 0) return;  // If ID is invalid, exit
 
-void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
-    int id;
-    char newName[STUDENT_NAME_LENGTH] = "";
-    char newProgramme[PROGRAMME_LENGTH] = "";
+    char newName[STUDENT_NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
     float newMark = -1;
-    int nameFlag = 0, programmeFlag = 0, markFlag = 0;
 
-    // Extract the ID first
-    if (sscanf(input, "UPDATE ID=%d", &id) != 1) {
-        printf("Invalid command format. Expected format: 'UPDATE ID=<id> <Field>=<Value>'\n");
-        return;
+    // Get fields, update flags as needed
+    char* currentName = GetField(input, "Name=", sizeof(newName), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n");
+    if (currentName) strncpy(newName, currentName, STUDENT_NAME_LENGTH - 1);
+
+    char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n");
+    if (currentProgramme) strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
+
+    char* currentMark = GetField(input, "Mark=", sizeof(input), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n");
+    if (currentMark) newMark = atof(currentMark);
+
+    unsigned int index = hash(id);
+    StudentRecords* current = hashmap->table[index];
+
+    while (current != NULL) {
+        if (current->id == id) {
+            // Update fields if present
+            if (*newName) {
+                strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1);
+                current->name[STUDENT_NAME_LENGTH - 1] = '\0';
+                printf("Name updated to: %s\n", current->name);
+            }
+
+            if (*newProgramme) {
+                strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
+                current->programme[PROGRAMME_LENGTH - 1] = '\0';
+                printf("Programme updated to: %s\n", current->programme);
+            }
+
+            if (newMark != -1) {
+                current->mark = newMark;
+                printf("Mark updated to: %.2f\n", current->mark);
+            }
+
+            printf("\nThe record with ID=%d is successfully updated.\n", id);
+            return;
+        }
+        current = current->next;
     }
 
-    // Find the start of the fields section after "UPDATE ID=<id>"
-    const char* fieldsStart = strstr(input, "ID=");
-    fieldsStart = strchr(fieldsStart, ' '); // Move past "ID=<id>" to fields
-    if (!fieldsStart) {
-        printf("No fields to update.\n");
-        return;
-    }
-    fieldsStart++; // Move to the first character after the space
-
-    // Buffer to hold the rest of the input fields
-    char remainingFields[256];
-    strncpy(remainingFields, fieldsStart, sizeof(remainingFields) - 1);
-    remainingFields[sizeof(remainingFields) - 1] = '\0';
-
-    // Parse each field
-    char *valueStart;
-    if ((valueStart = strstr(remainingFields, "Name="))) {
-        valueStart += 5; // Move past "Name="
-        char *nextField = strstr(valueStart, " Programme=");
-        if (!nextField) nextField = strstr(valueStart, " Mark=");
-        if (nextField) *nextField = '\0'; // Temporarily end the string here
-        strncpy(newName, valueStart, STUDENT_NAME_LENGTH - 1);
-        newName[STUDENT_NAME_LENGTH - 1] = '\0';
-        nameFlag = 1;
-        if (nextField) *nextField = ' '; // Restore the space
-    }
-    if ((valueStart = strstr(remainingFields, "Programme="))) {
-        valueStart += 10; // Move past "Programme="
-        char *nextField = strstr(valueStart, " Mark=");
-        if (nextField) *nextField = '\0';
-        strncpy(newProgramme, valueStart, PROGRAMME_LENGTH - 1);
-        newProgramme[PROGRAMME_LENGTH - 1] = '\0';
-        programmeFlag = 1;
-        if (nextField) *nextField = ' ';
-    }
-    if ((valueStart = strstr(remainingFields, "Mark="))) {
-        valueStart += 5; // Move past "Mark="
-        newMark = atof(valueStart); // Convert string to float
-        markFlag = 1;
-    }
-
-    // Call the update function with flags indicating which fields to update
-    updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag);
+    printf("The record with ID=%d does not exist.\n", id);
 }
+
 
 void resizeHashMap(HashMap* oldHashMap) {
     int i, j, newSize ;
@@ -474,38 +466,50 @@ void DisplayDeclaration() {
     puts(declare);
 
 }
-
-int GetId(const char* input, const char* error_message) {
-    char* id_ptr;
-    char tempId[10] = { '\0' };
-    int id = 0;
-    int letter_count = 0;
-
-    id_ptr = strstr(input, "ID=");
-    if (id_ptr == NULL) {
+char* GetField(const char* input, const char* key, int maxLength, const char* error_message) {
+    const char* start = strstr(input, key);  // Find the key
+    if (!start) {
         printf("%s", error_message);
-        return 0; 
+        return NULL;
     }
 
-    for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-        tempId[i - 3] = id_ptr[i];
-        letter_count++;
-    }
-    id = atoi(tempId);
+    start += strlen(key);  // Move past the key (e.g., "Name=")
 
- 
-    if (id == 0) {
-        printf("%s", error_message);
-        return 0; 
+    // Now look for the next key (e.g., "ID=", "Name=", "Programme=", "Mark=") or the end of the string
+    const char* nextKey = strpbrk(start, "I");  // Look for characters in next key 'ID=', 'Name=', etc.
+    if (!nextKey) {
+        nextKey = input + strlen(input);  // If no next key, go to the end of the string
     }
 
-    return id;
+    // Find the boundary (either next key or end of string)
+    const char* end = strstr(start, "ID=");
+    if (!end) end = strstr(start, "Name=");
+    if (!end) end = strstr(start, "Programme=");
+    if (!end) end = strstr(start, "Mark=");
+    if (!end) end = input + strlen(input);  // No next keyword, go to end
+
+    int length = end - start;
+    if (length > maxLength - 1) length = maxLength - 1;  // Ensure within bounds
+
+    // Allocate memory for the output value and copy the substring
+    char* output = malloc(length + 1);
+    if (!output) {
+        printf("Memory allocation failed!\n");
+        return NULL;
+    }
+
+    strncpy(output, start, length);
+    output[length] = '\0';  // Null-terminate the string
+
+    return output;
 }
 
 
 int isFileOpened = 0; // to check for db open status
 
 int main() {
+    char idBuffer[10] = "";
+
     HashMap* hashmap = malloc(sizeof(HashMap));
     if (hashmap == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -546,10 +550,13 @@ int main() {
             ShowAll(hashmap);
         }
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
-            parseAndExecuteUpdate(hashmap, input);
+            UpdateUser(hashmap, input);
         }
         else if (_strnicmp(input, "delete", 6) == 0) {
-            int id = GetId(input, "Invalid Command. Usage: DELETE ID=<id>\n");
+            //int id = GetId(input, "Invalid Command. Usage: DELETE ID=<id>\n");
+
+            char* value = GetField(input, "ID=",sizeof(input), "Invalid Command. Usage: DELETE ID=<id>\n");
+            int id = atoi(value);
 
             if (id == 0) {
                 continue;
@@ -558,7 +565,8 @@ int main() {
             DeleteRecord(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
-            int id = GetId(input, "Invalid Command. Usage: QUERY ID=<id>\n");
+            char* value = GetField(input, "ID=", sizeof(input), "Invalid Command. Usage: QUERY ID=<id>\n");
+            int id = atoi(value);
 
             if (id == 0) {
                 continue;
