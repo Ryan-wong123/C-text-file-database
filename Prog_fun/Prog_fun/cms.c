@@ -11,6 +11,7 @@
 #define HASHMAP_LENGTH 103
 #define NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
+#define GENERAL_LENGTH 70
 
 char tableName[TABLE_NAME_LENGTH] = "";
 int currentSize = HASHMAP_LENGTH;  
@@ -421,40 +422,34 @@ int SortbyID(const void* a, const void* b) {
 }
 
 char* GetField(const char* input, const char* key, int maxLength) {
+    static char desiredFieldOutput[GENERAL_LENGTH];  // Static buffer for reuse
+
+    // Find the start of the key in the input string
     const char* start = strstr(input, key);
     if (!start) {
-        return NULL;
+        return NULL;  // Key not found
     }
 
-    start += strlen(key);
+    start += strlen(key);  // Move past the key to the field value
 
-
-    const char* nextKey = strpbrk(start, "I");
-    if (!nextKey) {
-        nextKey = input + strlen(input);
-    }
-
-
+    // Look for the next field or the end of the input
     const char* end = strstr(start, "ID=");
     if (!end) end = strstr(start, "Name=");
     if (!end) end = strstr(start, "Programme=");
     if (!end) end = strstr(start, "Mark=");
-    if (!end) end = input + strlen(input);
+    if (!end) end = start + strlen(start);  // No other fields found, go to the end
 
+    // Calculate the length of the field, making sure it doesn't exceed maxLength
     int length = end - start;
-    if (length > maxLength - 1) length = maxLength - 1;
-
-
-    char* output = malloc(length + 1);
-    if (!output) {
-        printf("Memory allocation failed!\n");
-        return NULL;
+    if (length >= maxLength) {
+        length = maxLength - 1;  // Ensure the value fits within the buffer
     }
 
-    strncpy(output, start, length);
-    output[length] = '\0';
+    // Copy the field value into the static buffer
+    strncpy(desiredFieldOutput, start, length);
+    desiredFieldOutput[length] = '\0';  // Null-terminate the string
 
-    return output;
+    return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
 int main() {
@@ -469,12 +464,11 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    hashmap->table = malloc(currentSize * sizeof(StudentRecords*));
-    if (hashmap->table == NULL) {
+    hashmap->table = calloc(currentSize, sizeof(StudentRecords*));
+    if (!hashmap->table) {
         fprintf(stderr, "Memory allocation failed for table\n");
         exit(EXIT_FAILURE);
     }
-    memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*));
 
     DisplayDeclaration();
 
