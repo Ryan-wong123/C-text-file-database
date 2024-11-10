@@ -1,12 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdbool.h>
+#define _CRTDBG_MAP_ALLOC // allow debugging to find where is the cause of memory leak
+#define _CRT_SECURE_NO_WARNINGS // suppress unnecassary warnings
 
-#define FILE_PATH "database.txt"
-#define USERNAME "CMS"
-#define GROUP_NAME "P1_3"
+#include <stdio.h> // library for input and output
+#include <stdlib.h> // library for memory allocation
+#include <string.h> // library for strcpy, strlen
+#include <ctype.h> // library for islower and isspace
+#include <stdbool.h> //library for boolean
+#include <crtdbg.h> // library used to detecting memory leaks
+
+#define FILE_PATH "database.txt" // path name for the txt file
+#define USERNAME "CMS" // username to display in the console
+#define GROUP_NAME "P1_3" // group name used to display in the console
 #define TABLE_NAME_LENGTH 15
 #define HASHMAP_LENGTH 1
 #define NAME_LENGTH 30
@@ -457,6 +461,8 @@ char* GetField(const char* input, const char* key, int maxLength) {
 }
 
 int main() {
+    //check for memory leaks
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
     char idBuffer[10] = "";
     int isFileOpened = 0;
@@ -582,16 +588,16 @@ int main() {
     }
 
         
-        for (int i = 0; i < currentSize; i++) {
-            StudentRecords* current = hashmap->table[i];
-            while (current != NULL) {
-                StudentRecords* temp = current;
-                current = current->next;
-                free(temp); 
-            }
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            StudentRecords* temp = current;
+            current = current->next;
+            free(temp); 
         }
-        free(hashmap->table);
-        free(hashmap);        
-
-        return 0;
     }
+    free(hashmap->table);
+    free(hashmap);        
+
+    return 0;
+}
