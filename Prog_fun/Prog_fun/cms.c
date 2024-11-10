@@ -90,8 +90,8 @@ void InsertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     }
     
     newStudent->id = id;
-    strncpy(newStudent->name, name, sizeof(newStudent->name));
-    strncpy(newStudent->programme, programme, sizeof(newStudent->programme));
+    strncpy(newStudent->name, name, sizeof(newStudent->name) - 1), newStudent->name[sizeof(newStudent->name) - 1] = '\0';
+    strncpy(newStudent->programme, programme, sizeof(newStudent->programme) - 1), newStudent->programme[sizeof(newStudent->programme) - 1] = '\0';
     newStudent->mark = mark;
     newStudent->next = NULL;
 
@@ -478,7 +478,7 @@ int main() {
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         TrimTrailingSpaces(input);
 
-        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert",6) == 0) && isFileOpened == 0) {
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "INSERT ID=",10) == 0) && isFileOpened == 0) {
             OpenFile(FILE_PATH, hashmap);
             isFileOpened = 1;
         }
@@ -530,7 +530,7 @@ int main() {
 
             QueryStudent(hashmap, id ,true);
         }
-        else if (strncmp(input, "insert", 6) == 0) {
+        else if (strncmp(input, "INSERT ID=", 10) == 0) {
             int id;
             char name[NAME_LENGTH];
             char programme[PROGRAMME_LENGTH];
