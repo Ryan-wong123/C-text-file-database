@@ -78,42 +78,36 @@ StudentRecords* findStudentByID(HashMap* hashmap, int id) {
     return NULL;  // Record not found
 }
 
-// void saveToFile(const char* filename, HashMap* hashmap);
+
 
 // Function to update a student record by ID
 void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag) {
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
 
-    // Traverse the linked list to find the record
     while (current != NULL) {
-        if (current->id == id) {  // Found the record
-            // Prompt the user for new values
-            if (nameFlag && newName != NULL) {
-                strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1);
-                current->name[STUDENT_NAME_LENGTH - 1] = '\0';
-                printf("Name updated to: %s\n", current->name);
+        if (current->id == id) {  // when ID matches with input ID
+            
+            if (nameFlag && newName != NULL) { 
+                strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1); // copy content of 'newName' into current. Max characters set to STUDENT_NAME_LENGTH - 1 to prevent buffer overflow
+                current->name[STUDENT_NAME_LENGTH - 1] = '\0'; // set last character to '/0'(null character) to properly null terminate string  
             }
 
             if (programmeFlag && newProgramme != NULL) {
                 strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
-                current->programme[PROGRAMME_LENGTH - 1] = '\0';
-                printf("Programme updated to: %s\n", current->programme);
+                current->programme[PROGRAMME_LENGTH - 1] = '\0'; 
             }
 
             if (markFlag) {
                 current->mark = newMark;
-                printf("Mark updated to: %.2f\n", current->mark);
             }
-
-            printf("\nThe record with ID=%d is successfully updated.\n", id);
-            // saveToFile(FILE_PATH, hashmap);  // Save changes automatically
+            // printf("\nThe record with ID=%d is successfully updated.\n", id);
             return;
         }
         current = current->next;
     }
+    
 
-    // If the record was not found
     printf("The record with ID=%d does not exist.\n", id);
 }
 
@@ -122,7 +116,7 @@ void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
     char newName[STUDENT_NAME_LENGTH] = "";
     char newProgramme[PROGRAMME_LENGTH] = "";
     float newMark = -1;
-    int nameFlag = 0, programmeFlag = 0, markFlag = 0;
+    int nameFlag = 0, programmeFlag = 0, markFlag = 0; //flags to indicate which fields should be updated
 
     // Extract the ID first
     if (sscanf(input, "UPDATE ID=%d", &id) != 1) {
@@ -130,49 +124,60 @@ void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
         return;
     }
 
-    // Find the start of the fields section after "UPDATE ID=<id>"
-    const char* fieldsStart = strstr(input, "ID=");
-    fieldsStart = strchr(fieldsStart, ' '); // Move past "ID=<id>" to fields
+    
+    const char* fieldsStart = strstr(input, "ID="); // Find the start of the fields section after "UPDATE ID=<id>"
+    fieldsStart = strchr(fieldsStart, ' '); // Move past "ID=" to fields
     if (!fieldsStart) {
         printf("No fields to update.\n");
         return;
     }
-    fieldsStart++; // Move to the first character after the space
+    fieldsStart++; // Moves to the first character after the space
 
-    // Buffer to hold the rest of the input fields
-    char remainingFields[256];
-    strncpy(remainingFields, fieldsStart, sizeof(remainingFields) - 1);
+    
+    char remainingFields[256]; // Buffer to hold the rest of the input fields
+    strncpy(remainingFields, fieldsStart, sizeof(remainingFields) - 1); // copy remaining parts of input into buffer. last char set to '/0' to fully null-terminate
     remainingFields[sizeof(remainingFields) - 1] = '\0';
+    
+    char *valueStart; // Parse each field
 
-    // Parse each field
-    char *valueStart;
     if ((valueStart = strstr(remainingFields, "Name="))) {
+        
         valueStart += 5; // Move past "Name="
-        char *nextField = strstr(valueStart, " Programme=");
+        char *nextField = strstr(valueStart, " Programme="); //searches for either 'Programme=' or 'Mark=' to know where the 'Name=' value ends
         if (!nextField) nextField = strstr(valueStart, " Mark=");
-        if (nextField) *nextField = '\0'; // Temporarily end the string here
-        strncpy(newName, valueStart, STUDENT_NAME_LENGTH - 1);
+        if (!nextField) nextField = strstr(valueStart, " Programme=");
+        if (nextField) *nextField = '\0'; // Temporarily end the string here if next field is found
+        strncpy(newName, valueStart, STUDENT_NAME_LENGTH - 1); // copy new name value wihtout exceeding the limit 'STUDENT_NAME_LENGTH - 1'
         newName[STUDENT_NAME_LENGTH - 1] = '\0';
         nameFlag = 1;
         if (nextField) *nextField = ' '; // Restore the space
     }
+
     if ((valueStart = strstr(remainingFields, "Programme="))) {
+       
         valueStart += 10; // Move past "Programme="
-        char *nextField = strstr(valueStart, " Mark=");
+        char *nextField = strstr(valueStart, " Name=" );
+        if (!nextField) nextField = strstr(valueStart, " Mark=");
         if (nextField) *nextField = '\0';
         strncpy(newProgramme, valueStart, PROGRAMME_LENGTH - 1);
         newProgramme[PROGRAMME_LENGTH - 1] = '\0';
         programmeFlag = 1;
         if (nextField) *nextField = ' ';
     }
+    
     if ((valueStart = strstr(remainingFields, "Mark="))) {
+        
         valueStart += 5; // Move past "Mark="
         newMark = atof(valueStart); // Convert string to float
         markFlag = 1;
     }
 
-    // Call the update function with flags indicating which fields to update
-    updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag);
+    
+    
+
+    
+    updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag); // Call the update function with flags indicating which fields to update
+    printf("The record with ID=%d is successfully updated.\n", id);
 }
 
 
@@ -558,8 +563,8 @@ int main() {
         }
 
         else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
-            parseAndExecuteUpdate(hashmap, input);
-              // Process the UPDATE command
+            parseAndExecuteUpdate(hashmap, input); // Process the UPDATE command
+              
 
         }
        
