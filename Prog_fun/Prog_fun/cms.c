@@ -3,9 +3,19 @@
 #include <string.h>
 #include <ctype.h>
 
+//#include "cms.h"
 
+#define TEST_MODE 1
 #define DEBUG_MODE 0
+
+#if TEST_MODE == 1
+
+#define FILE_PATH "testdb.txt"
+
+#else 
 #define FILE_PATH "database.txt"
+#endif
+
 #define USERNAME "CMS"
 #define GROUP_NAME "P1_3"
 #define TABLE_NAME_LENGTH 15
@@ -517,7 +527,19 @@ puts(declare);
 
 int open_flag = 0; // to check for db open status
 
+
+
+
 int main() {
+
+    #if TEST_MODE == 1
+    printf("TESTING MODE ON\n");
+
+    // add test inputs into stdin
+    FILE* input_fp = freopen("testinput.txt", "r", stdin);
+
+    #endif
+
     HashMap* hashmap = malloc(sizeof(HashMap));
     if (hashmap == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -725,6 +747,64 @@ int main() {
         free(hashmap->table); // Free hash map table
         free(hashmap);        // Free hash map structure
 
+
+
+
+
+        #if TEST_MODE == 1
+
+        fclose(input_fp);
+        #endif
+
+
         return 0;
     }
+
+
+
+
+
+
+
+
+
+/*
+
+OPEN TEST CASES
+
+test 1
+open invalid command 
+"openc"
+
+expected 
+"invalid command"
+
+Test 2
+testing of other commands not to operate before open
+insert
+show all
+query
+update
+delete
+
+expected 
+"db not open"
+
+Test 3
+testing of open
+
+open
+
+expected
+"The database file “testdb.txt” is successfully opened.
+
+
+
+
+
+
+
+
+
+*/
 

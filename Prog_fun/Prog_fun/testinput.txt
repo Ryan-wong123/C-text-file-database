@@ -1,0 +1,9 @@
+openc
+insert
+show all
+query
+update
+delete
+open
+open
+exit
