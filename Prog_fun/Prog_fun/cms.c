@@ -44,7 +44,7 @@ int SortbyID(const void* a, const void* b);
 void ShowAll(HashMap* hashmap);
 void DeleteRecord(HashMap* hashmap, int id);
 void saveToFile(const char* filename, HashMap* hashmap);
-char* GetField(const char* input, const char* key, int maxLength, const char* error_message);
+char* GetField(const char* input, const char* key, int maxLength);
 
 void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
     // Allocate memory for a new student record
@@ -113,20 +113,20 @@ void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char
     printf("The record with ID=%d does not exist.\n", id);
 }
 void UpdateUser(HashMap* hashmap, const char* input) {
-    int id = atoi(GetField(input, "ID=", sizeof(input), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n"));
+    int id = atoi(GetField(input, "ID=", sizeof(input)));
     if (id == 0) return;  // If ID is invalid, exit
 
     char newName[STUDENT_NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
     float newMark = -1;
 
     // Get fields, update flags as needed
-    char* currentName = GetField(input, "Name=", sizeof(newName), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n");
+    char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) strncpy(newName, currentName, STUDENT_NAME_LENGTH - 1);
 
-    char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n");
+    char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
     if (currentProgramme) strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
 
-    char* currentMark = GetField(input, "Mark=", sizeof(input), "Invalid Command. Usage: UPDATE ID=<id> Name=<name> Programme=<programme> Mark=<mark>\n");
+    char* currentMark = GetField(input, "Mark=", sizeof(input));
     if (currentMark) newMark = atof(currentMark);
 
     unsigned int index = hash(id);
@@ -138,18 +138,13 @@ void UpdateUser(HashMap* hashmap, const char* input) {
             if (*newName) {
                 strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1);
                 current->name[STUDENT_NAME_LENGTH - 1] = '\0';
-                printf("Name updated to: %s\n", current->name);
             }
-
             if (*newProgramme) {
                 strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
                 current->programme[PROGRAMME_LENGTH - 1] = '\0';
-                printf("Programme updated to: %s\n", current->programme);
             }
-
             if (newMark != -1) {
                 current->mark = newMark;
-                printf("Mark updated to: %.2f\n", current->mark);
             }
 
             printf("\nThe record with ID=%d is successfully updated.\n", id);
@@ -466,10 +461,9 @@ void DisplayDeclaration() {
     puts(declare);
 
 }
-char* GetField(const char* input, const char* key, int maxLength, const char* error_message) {
+char* GetField(const char* input, const char* key, int maxLength) {
     const char* start = strstr(input, key);  // Find the key
     if (!start) {
-        printf("%s", error_message);
         return NULL;
     }
 
@@ -555,7 +549,12 @@ int main() {
         else if (_strnicmp(input, "delete", 6) == 0) {
             //int id = GetId(input, "Invalid Command. Usage: DELETE ID=<id>\n");
 
-            char* value = GetField(input, "ID=",sizeof(input), "Invalid Command. Usage: DELETE ID=<id>\n");
+            char* value = GetField(input, "ID=",sizeof(input));
+            if (value == NULL) {
+                printf("Invalid Command. Usage: DELETE ID=<id>\n");
+                continue;
+            }
+
             int id = atoi(value);
 
             if (id == 0) {
@@ -565,10 +564,15 @@ int main() {
             DeleteRecord(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
-            char* value = GetField(input, "ID=", sizeof(input), "Invalid Command. Usage: QUERY ID=<id>\n");
+            char* value = GetField(input, "ID=", sizeof(input));
+            if (value == NULL) {
+                printf("Invalid Command. Usage: QUERY ID=<id>\n");
+                continue;
+            }
             int id = atoi(value);
 
             if (id == 0) {
+                printf("no escti 0");
                 continue;
             }
 
