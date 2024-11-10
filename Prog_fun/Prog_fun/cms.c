@@ -36,8 +36,7 @@ void resizeHashMap(HashMap* oldHashMap);
 void saveToFile(const char* filename, HashMap* hashmap);
 struct StudentRecords* QueryRecord(HashMap* hashmap, int id, bool printrecord);
 void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark);
-void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag);
-void parseAndExecuteUpdate(HashMap* hashmap, const char* input);
+void UpdateUser(HashMap* hashmap, const char* input);
 void TrimTrailingSpaces(char* str);
 void OpenFile(const char* filename, HashMap* hashmap);
 int SortbyID(const void* a, const void* b);
@@ -77,41 +76,6 @@ void insertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     }
 }
 
-// Function to update a student record by ID
-void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag) {
-    unsigned int index = hash(id);
-    StudentRecords* current = hashmap->table[index];
-
-    // Traverse the linked list to find the record
-    while (current != NULL) {
-        if (current->id == id) {  // Found the record
-            // Prompt the user for new values
-            if (nameFlag && newName != NULL) {
-                strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1);
-                current->name[STUDENT_NAME_LENGTH - 1] = '\0';
-                printf("Name updated to: %s\n", current->name);
-            }
-
-            if (programmeFlag && newProgramme != NULL) {
-                strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
-                current->programme[PROGRAMME_LENGTH - 1] = '\0';
-                printf("Programme updated to: %s\n", current->programme);
-            }
-
-            if (markFlag) {
-                current->mark = newMark;
-                printf("Mark updated to: %.2f\n", current->mark);
-            }
-
-            printf("\nThe record with ID=%d is successfully updated.\n", id);
-            return;
-        }
-        current = current->next;
-    }
-
-    // If the record was not found
-    printf("The record with ID=%d does not exist.\n", id);
-}
 void UpdateUser(HashMap* hashmap, const char* input) {
     int id = atoi(GetField(input, "ID=", sizeof(input)));
     if (id == 0) return;  // If ID is invalid, exit
@@ -341,7 +305,6 @@ struct StudentRecords* QueryRecord(HashMap* hashmap, int id, bool printrecord) {
     if (printrecord == true) {
         printf("%s: The record with ID=%d does not exist.\n", USERNAME, id);
     }
-   
     return NULL;
 }
 
