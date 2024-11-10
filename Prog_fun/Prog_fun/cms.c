@@ -134,8 +134,16 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
+    // Check if currentMark is a valid number
     if (currentMark) {
-        newMark = atof(currentMark);
+        char* endptr;
+        newMark = strtof(currentMark, &endptr); // Convert string to float
+
+        // Check for conversion errors
+        if (endptr == currentMark || *endptr != '\0') {
+            printf("Invalid input for marks. Please enter a valid number.\n");
+            return;
+        }
     }
 
     unsigned int index = hash(id);
