@@ -723,8 +723,23 @@ int main() {
             break;
         }
         else if (_stricmp(input, "SAVE") == 0) {
-            saveToFile(FILE_PATH, hashmap);
-            printf("Data has been successfully saved to %s.\n", FILE_PATH);
+            if (open_flag == 0) {
+                printf("Database file not open yet.\n");
+                continue;
+            }
+
+            #if TEST_MODE == 1
+                saveToFile("testdb2.txt", hashmap);
+                printf("Data has been successfully saved to testdb2.txt.\n");
+
+
+            #else
+                saveToFile(FILE_PATH, hashmap);
+                printf("Data has been successfully saved to %s.\n", FILE_PATH);
+
+            #endif
+
+
         }
         else {
 
@@ -753,7 +768,7 @@ int main() {
 
         #if TEST_MODE == 1
 
-        fclose(input_fp);
+            fclose(input_fp);
         #endif
 
 
@@ -786,6 +801,7 @@ show all
 query
 update
 delete
+save
 
 expected 
 "db not open"

@@ -4,6 +4,7 @@ show all
 query
 update
 delete
+save
 open
 open
 exit
