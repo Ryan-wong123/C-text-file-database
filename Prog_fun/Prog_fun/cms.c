@@ -120,13 +120,19 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
    
     char* currentName = GetField(input, "Name=", sizeof(newName));
-    if (currentName) strncpy(newName, currentName, NAME_LENGTH - 1);
+    if (currentName) {
+        strncpy(newName, currentName, NAME_LENGTH - 1);
+    }
 
     char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
-    if (currentProgramme) strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
+    if (currentProgramme) {
+        strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
+    }
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
-    if (currentMark) newMark = atof(currentMark);
+    if (currentMark) {
+        newMark = atof(currentMark);
+    }
 
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
@@ -135,12 +141,10 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
         if (current->id == id) {
             
             if (*newName) {
-                strncpy(current->name, newName, NAME_LENGTH - 1);
-                current->name[NAME_LENGTH - 1] = '\0';
+                strncpy(current->name, newName, sizeof(current->name) - 1), current->name[sizeof(current->name) - 1] = '\0';
             }
             if (*newProgramme) {
-                strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
-                current->programme[PROGRAMME_LENGTH - 1] = '\0';
+                strncpy(current->programme, newProgramme, sizeof(current->programme) - 1), current->programme[sizeof(current->programme) - 1] = '\0';
             }
             if (newMark != -1) {
                 current->mark = newMark;
@@ -446,8 +450,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
     }
 
     // Copy the field value into the static buffer
-    strncpy(desiredFieldOutput, start, length);
-    desiredFieldOutput[length] = '\0';  // Null-terminate the string
+    strncpy(desiredFieldOutput, start, length)[length] = '\0';
 
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
