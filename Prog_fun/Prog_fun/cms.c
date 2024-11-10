@@ -35,32 +35,42 @@ unsigned int hash(int id) {
 void resizeHashMap(HashMap* oldHashMap);
 void saveToFile(const char* filename, HashMap* hashmap);
 struct StudentRecords* QueryRecord(HashMap* hashmap, int id, bool printrecord);
+void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark);
+void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag);
+void parseAndExecuteUpdate(HashMap* hashmap, const char* input);
+void TrimTrailingSpaces(char* str);
+void OpenFile(const char* filename, HashMap* hashmap);
+int SortbyID(const void* a, const void* b);
+void ShowAll(HashMap* hashmap);
+void DeleteRecord(HashMap* hashmap, int id);
+void saveToFile(const char* filename, HashMap* hashmap);
 
-StudentRecords* createStudent(int id, const char* name, const char* programme, float mark) {
+void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
+    // Allocate memory for a new student record
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
     if (newStudent == NULL) {
         fprintf(stderr, "Memory allocation failed for new student\n");
         exit(EXIT_FAILURE);
     }
+
+    // Initialize the new student record
     newStudent->id = id;
     strncpy(newStudent->name, name, sizeof(newStudent->name));
-    strncpy(newStudent->programme,programme, sizeof(newStudent->programme));
+    strncpy(newStudent->programme, programme, sizeof(newStudent->programme));
     newStudent->mark = mark;
     newStudent->next = NULL;
-    return newStudent;
-}
 
-void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
-    unsigned int index = hash(id);  // Hash function with current size
-    StudentRecords* newStudent = createStudent(id, name, programme, mark);
+    // Calculate the index using the hash function
+    unsigned int index = hash(id);
 
-    // Insert at the head of the linked list (collision handling)
+    // Insert the new student at the head of the linked list at the index
     newStudent->next = hashmap->table[index];
     hashmap->table[index] = newStudent;
 
+    // Increment the record count
     recordCount++;
 
-    // If load factor exceeds 50%, resize the hash map
+    // Resize the hash map if the load factor exceeds 50%
     if (recordCount > (currentSize / 2)) {
         resizeHashMap(hashmap);
     }
@@ -209,12 +219,11 @@ void resizeHashMap(HashMap* oldHashMap) {
     free(newHashMap);  // Free temporary new hash map structure
 }
 
-void trimTrailingSpaces(char* str) {
+void TrimTrailingSpaces(char* str) {
     // Trim trailing spaces
     int len = strlen(str);
     while (len > 0 && isspace((unsigned char)str[len - 1])) {
-        str[len - 1] = '\0';
-        len--;
+        str[--len] = '\0';
     }
 
     // Trim leading spaces
@@ -516,7 +525,7 @@ int main() {
         printf("%s:", GROUP_NAME);
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
-        trimTrailingSpaces(input);
+        TrimTrailingSpaces(input);
 
         if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "UPDATE ID=", 10) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "INSERT ID =",10) == 0) && isFileOpened == 0) {
             OpenFile(FILE_PATH, hashmap);
@@ -574,8 +583,8 @@ int main() {
             int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
 
             // Remove trailing spaces from name and programme
-            trimTrailingSpaces(name);
-            trimTrailingSpaces(programme);
+            TrimTrailingSpaces(name);
+            TrimTrailingSpaces(programme);
 
             if (fields == 4) {
                 // Check if the student with this ID already exists
