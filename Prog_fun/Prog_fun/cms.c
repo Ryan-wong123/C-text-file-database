@@ -78,7 +78,11 @@ void insertStudent(HashMap* hashmap, int id, const char* name, const char* progr
 
 void UpdateUser(HashMap* hashmap, const char* input) {
     int id = atoi(GetField(input, "ID=", sizeof(input)));
-    if (id == 0) return;  // If ID is invalid, exit
+    if (id == 0) {
+        printf("Please enter valid ID.\n");
+        return;
+    }
+       
 
     char newName[STUDENT_NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
     float newMark = -1;
@@ -521,6 +525,7 @@ int main() {
             int id = atoi(value);
 
             if (id == 0) {
+                printf("Please enter valid ID.\n");
                 continue;
             }
 
@@ -535,7 +540,7 @@ int main() {
             int id = atoi(value);
 
             if (id == 0) {
-                printf("no escti 0");
+                printf("Please enter valid ID.\n");
                 continue;
             }
 
