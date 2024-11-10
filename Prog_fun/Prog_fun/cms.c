@@ -530,6 +530,7 @@ int open_flag = 0; // to check for db open status
 
 
 
+
 int main() {
 
     #if TEST_MODE == 1
@@ -537,6 +538,7 @@ int main() {
 
     // add test inputs into stdin
     FILE* input_fp = freopen("testinput.txt", "r", stdin);
+    //FILE* output_fp = freopen("output.txt", "w", stdin);
 
     #endif
 
@@ -748,6 +750,10 @@ int main() {
 
 
         }
+
+
+
+
         }
 
         // Freeing allocated memory
@@ -769,6 +775,8 @@ int main() {
         #if TEST_MODE == 1
 
             fclose(input_fp);
+            //fclose(output_fp);
+
         #endif
 
 
@@ -814,11 +822,46 @@ open
 expected
 "The database file “testdb.txt” is successfully opened.
 
+Test 4
+testing different uppercase and random command
+ Insert
+sHow all
+Query
+Update
+del ete
+
+INSERT
+SHOW ALL
+QUERY
+UPDATE
+DELETE
 
 
+test 5
+test if data match db file
+
+show all 
+
+test 6
+test insert with record alr in
+insert id=2301234
+INSERT ID=2301234 Name=sam  Programme=cybersecurity  Mark=90
 
 
+test 7
+test insert with no record in 
 
+INSERT ID=2304444 Name=sam  Programme=cybersecurity  Mark=90
+show all
+
+
+test 8
+test insert with different data type
+INSERT ID=230445 Name=ssgfe3!  Programme=cybersecurity  Mark=85
+INSERT ID=230446 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
+INSERT ID=230447 Name=tester  Programme=cybersecurity Mark=rgdf
+INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
+INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
 
 
 
