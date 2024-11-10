@@ -10,7 +10,7 @@
 
 #define FILE_PATH "database.txt" // path name for the txt file
 #define USERNAME "CMS" // username to display in the console
-#define GROUP_NAME "P1_3" // group name used to display in the console
+#define GROUP_NAME "P2_3" // group name used to display in the console
 #define TABLE_NAME_LENGTH 15
 #define HASHMAP_LENGTH 1
 #define NAME_LENGTH 30
