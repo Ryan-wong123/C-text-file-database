@@ -28,11 +28,11 @@
 
 
 #define TABLE_NAME_LENGTH 15
-#define HASHMAP_LENGTH 1
+#define HASHMAP_LENGTH 103
 #define NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
 #define GENERAL_LENGTH 70
-#define ID_LENGTH 6
+#define ID_LENGTH 7
 
 char tableName[TABLE_NAME_LENGTH] = "";
 int currentSize = HASHMAP_LENGTH;  
@@ -118,6 +118,7 @@ void InsertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     newStudent->next = NULL;
 
     unsigned int index = hash(id);
+    
 
     newStudent->next = hashmap->table[index];
     hashmap->table[index] = newStudent;
@@ -219,12 +220,13 @@ void DeleteStudent(HashMap* hashmap, int id) {
 
 
     unsigned int index = hash(id);
-
+    
     StudentRecords* current = hashmap->table[index];
     StudentRecords* prev = NULL;
 
-
+    
     while (current != NULL) {
+        
         if (current->id == id) {
             id_check_flag = 1;
             break;
@@ -334,6 +336,7 @@ void ShowAll(HashMap* hashmap) {
 
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
+        
         while (current != NULL) {
             allRecords[index++] = current;
             current = current->next;
@@ -518,18 +521,18 @@ char* GetField(const char* input, const char* key, int maxLength) {
 
 
 int main() {
-  
-    #if TEST_MODE == 1
+
+#if TEST_MODE == 1
     printf("TESTING MODE ON\n");
 
     // add test inputs into stdin
     FILE* input_fp = freopen("testinput.txt", "r", stdin);
     //FILE* output_fp = freopen("output.txt", "w", stdin);
 
-    #endif
-  
+#endif
 
-    //check for memory leaks
+
+//check for memory leaks
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
     char idBuffer[10] = "";
@@ -549,7 +552,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    DisplayDeclaration();
+    //DisplayDeclaration();
 
     while (1) {
         printf("%s:", GROUP_NAME);
@@ -557,7 +560,7 @@ int main() {
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         TrimTrailingSpaces(input);
 
-        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert",6) == 0) && isFileOpened == 0) {
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0) && isFileOpened == 0) {
             OpenFile(FILE_PATH, hashmap);
             isFileOpened = 1;
         }
@@ -600,7 +603,7 @@ int main() {
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
-
+            printf("%d\n", id);
             DeleteStudent(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
@@ -615,7 +618,7 @@ int main() {
                 continue;
             }
 
-            QueryStudent(hashmap, id ,true);
+            QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
 
@@ -634,17 +637,17 @@ int main() {
             char programme[PROGRAMME_LENGTH];
             float mark;
 
-     
-            char* params = input + 7; 
 
-         
+            char* params = input + 7;
+
+
             memset(name, 0, sizeof(name));
             memset(programme, 0, sizeof(programme));
 
-        
+
             int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
 
-   
+
             TrimTrailingSpaces(name);
             TrimTrailingSpaces(programme);
 
@@ -655,7 +658,7 @@ int main() {
                     printf("The record with ID=%d already exists.\n", id);
                 }
                 else {
-                    
+
                     InsertStudent(hashmap, id, name, programme, mark);
                     printf("%s: A new record with ID=%d is successfully inserted.\n", USERNAME, id);
                 }
@@ -675,13 +678,13 @@ int main() {
             }
 
             #if TEST_MODE == 1
-                saveToFile("testdb2.txt", hashmap);
-                printf("Data has been successfully saved to testdb2.txt.\n");
+            saveToFile("testdb2.txt", hashmap);
+            printf("Data has been successfully saved to testdb2.txt.\n");
 
 
             #else
-                saveToFile(FILE_PATH, hashmap);
-                printf("Data has been successfully saved to %s.\n", FILE_PATH);
+            saveToFile(FILE_PATH, hashmap);
+            printf("Data has been successfully saved to %s.\n", FILE_PATH);
 
             #endif
 
@@ -692,29 +695,30 @@ int main() {
         }
     }
 
-        
+
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
             StudentRecords* temp = current;
             current = current->next;
-            free(temp); 
+            free(temp);
         }
 
         free(hashmap->table);
-        free(hashmap);  
+        free(hashmap);
 
-        #if TEST_MODE == 1
+#if TEST_MODE == 1
 
-            fclose(input_fp);
-            //fclose(output_fp);
+        fclose(input_fp);
+        //fclose(output_fp);
 
-        #endif
+#endif
 
 
         return 0;
 
     }
+}
       
 
 
