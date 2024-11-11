@@ -477,6 +477,17 @@ char* GetField(const char* input, const char* key, int maxLength) {
     strncpy(desiredFieldOutput, start, length);
     desiredFieldOutput[length] = '\0';  // Null-terminate the result
 
+    // Special handling for the ID field to check for negative values
+    if (strcmp(key, "ID=") == 0) {
+        int idValue = atoi(desiredFieldOutput);
+        if (idValue < 0) {
+            printf("ID cannot be negative.\n");
+        }
+        else if (idValue == 0) {
+            printf("ID cannot be 0.\n");
+        }
+    }
+
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
@@ -536,8 +547,7 @@ int main() {
 
             int id = atoi(value);
 
-            if (id == 0) {
-                printf("Please enter valid ID.\n");
+            if (id == 0 || id < 0) {
                 continue;
             }
 
@@ -552,8 +562,7 @@ int main() {
 
             int id = atoi(value);
 
-            if (id == 0) {
-                printf("Please enter valid ID.\n");
+            if (id == 0 || id < 0) {
                 continue;
             }
 
@@ -567,8 +576,7 @@ int main() {
             }
             int id = atoi(value);
 
-            if (id == 0) {
-                printf("Please enter valid ID.\n");
+            if (id == 0 || id < 0) {
                 continue;
             }
 
@@ -584,8 +592,7 @@ int main() {
 
             int id = atoi(value);
 
-            if (id == 0) {
-                printf("Please enter valid ID.\n");
+            if (id == 0 || id < 0) {
                 continue;
             }
 
