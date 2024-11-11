@@ -862,6 +862,30 @@ INSERT ID=230446 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
 INSERT ID=230447 Name=tester  Programme=cybersecurity Mark=rgdf
 INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
+INSERT ID=000000 Name=tester koh  Programme=cybersecurity Mark=90
+INSERT ID=010000 Name=tester koh  Programme=cybersecurity Mark=90
+
+
+test 9 
+test function with negative ID (all having issue)
+
+//INSERT ID=-230448 Name=tester koh  Programme=cybersecurity Mark=90
+//UPDATE ID=-2395313 Name=tester ID neg
+//DELETE ID=-2335554
+//QUERY ID=-1242343
+
+
+test 10
+test update function 
+UPDATE ID=2201234 Name=tester update
+UPDATE ID=2201234 Programme=AI
+UPDATE ID=2201234 Mark= 98
+
+
+test 11
+test update fucntion with different data type
+UPDATE ID=2201234 Mark=sef
+UPDATE ID=2304567 Mark=10000000111111111
 
 
 
