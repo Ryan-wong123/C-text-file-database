@@ -134,13 +134,15 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
-    // Check if currentMark is a valid number
     if (currentMark) {
-        char* endptr;
-        newMark = strtof(currentMark, &endptr); // Convert string to float
+        float tempMark;
+        int result = sscanf(currentMark, "%f", &tempMark);  // Convert string to float
 
-        // Check for conversion errors
-        if (endptr == currentMark || *endptr != '\0') {
+        // Check if the conversion was successful
+        if (result == 1) {
+            newMark = tempMark;  // Only update newMark if conversion is successful
+        }
+        else {
             printf("Invalid input for marks. Please enter a valid number.\n");
             return;
         }
@@ -450,23 +452,34 @@ char* GetField(const char* input, const char* key, int maxLength) {
     start += strlen(key);  // Move past the key to the field value
 
     // Look for the next field or the end of the input
-    const char* end = strstr(start, "ID=");
-    if (!end) end = strstr(start, "Name=");
-    if (!end) end = strstr(start, "Programme=");
-    if (!end) end = strstr(start, "Mark=");
-    if (!end) end = start + strlen(start);  // No other fields found, go to the end
+    const char* endID = strstr(start, "ID=");
+    const char* endName = strstr(start, "Name=");
+    const char* endProgramme = strstr(start, "Programme=");
+    const char* endMark = strstr(start, "Mark=");
 
-    // Calculate the length of the field, making sure it doesn't exceed maxLength
+    // Find the nearest field after the current field
+    const char* end = NULL;
+    if (endID && (!end || endID < end)) end = endID;
+    if (endName && (!end || endName < end)) end = endName;
+    if (endProgramme && (!end || endProgramme < end)) end = endProgramme;
+    if (endMark && (!end || endMark < end)) end = endMark;
+
+    // If no other fields are found, go to the end of the input
+    if (!end) end = start + strlen(start);
+
+    // Calculate the length of the field value, ensuring it doesn't exceed maxLength
     int length = end - start;
     if (length >= maxLength) {
         length = maxLength - 1;  // Ensure the value fits within the buffer
     }
 
     // Copy the field value into the static buffer
-    strncpy(desiredFieldOutput, start, length)[length] = '\0';
+    strncpy(desiredFieldOutput, start, length);
+    desiredFieldOutput[length] = '\0';  // Null-terminate the result
 
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
+
 
 int main() {
     //check for memory leaks
