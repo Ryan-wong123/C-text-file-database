@@ -23,12 +23,13 @@ char tableName[TABLE_NAME_LENGTH] = "";
 int currentSize = HASHMAP_LENGTH;  
 int recordCount = 0; 
 
+// Structure for student data and alias to StudentRecords with self referential structure
 typedef struct StudentRecords {
-    int id;
-    char name[NAME_LENGTH];
-    char programme[PROGRAMME_LENGTH];
-    float mark;
-    struct StudentRecords* next;
+    int id; // ID of the student
+    char name[NAME_LENGTH]; // Name of the student
+    char programme[PROGRAMME_LENGTH]; // Programme that the student is in
+    float mark; // Mark of the programme for the student
+    struct StudentRecords* next; // pointer to next node
 } StudentRecords;
 
 typedef struct HashMap {
