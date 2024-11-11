@@ -1,3 +1,4 @@
+
 #define _CRTDBG_MAP_ALLOC // allow debugging to find where is the cause of memory leak
 #define _CRT_SECURE_NO_WARNINGS // suppress unnecassary warnings
 
@@ -9,9 +10,23 @@
 #include <crtdbg.h> // library used to detecting memory leaks
 #include <math.h>
 
-#define FILE_PATH "database.txt" // path name for the txt file
+
 #define USERNAME "CMS" // username to display in the console
 #define GROUP_NAME "P2_3" // group name used to display in the console
+
+
+#define TEST_MODE 1
+#define DEBUG_MODE 0
+
+#if TEST_MODE == 1
+
+#define FILE_PATH "testdb.txt"
+
+#else 
+#define FILE_PATH "database.txt"
+#endif
+
+
 #define TABLE_NAME_LENGTH 15
 #define HASHMAP_LENGTH 1
 #define NAME_LENGTH 30
@@ -498,12 +513,28 @@ char* GetField(const char* input, const char* key, int maxLength) {
 }
 
 
+
+
+
+
 int main() {
+  
+    #if TEST_MODE == 1
+    printf("TESTING MODE ON\n");
+
+    // add test inputs into stdin
+    FILE* input_fp = freopen("testinput.txt", "r", stdin);
+    //FILE* output_fp = freopen("output.txt", "w", stdin);
+
+    #endif
+  
+
     //check for memory leaks
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
     char idBuffer[10] = "";
     int isFileOpened = 0;
+
 
     HashMap* hashmap = malloc(sizeof(HashMap));
 
@@ -637,14 +668,27 @@ int main() {
             break;
         }
         else if (_stricmp(input, "SAVE") == 0) {
+
             if (isFileOpened == 0) {
                 printf("Database file is not opened.\n");
                 continue;
             }
-            saveToFile(FILE_PATH, hashmap);
+
+            #if TEST_MODE == 1
+                saveToFile("testdb2.txt", hashmap);
+                printf("Data has been successfully saved to testdb2.txt.\n");
+
+
+            #else
+                saveToFile(FILE_PATH, hashmap);
+                printf("Data has been successfully saved to %s.\n", FILE_PATH);
+
+            #endif
+
         }
         else {
             printf("Invalid Command. \n");
+
         }
     }
 
@@ -656,9 +700,125 @@ int main() {
             current = current->next;
             free(temp); 
         }
-    }
-    free(hashmap->table);
-    free(hashmap);        
 
-    return 0;
-}
+        free(hashmap->table);
+        free(hashmap);  
+
+        #if TEST_MODE == 1
+
+            fclose(input_fp);
+            //fclose(output_fp);
+
+        #endif
+
+
+        return 0;
+
+    }
+      
+
+
+
+
+
+/*
+
+OPEN TEST CASES
+
+test 1
+open invalid command 
+"openc"
+
+expected 
+"invalid command"
+
+Test 2
+testing of other commands not to operate before open
+insert
+show all
+query
+update
+delete
+save
+
+expected 
+"db not open"
+
+Test 3
+testing of open
+
+open
+
+expected
+"The database file testdb.txt is successfully opened.
+
+Test 4
+testing different uppercase and random command
+ Insert
+sHow all
+Query
+Update
+del ete
+
+INSERT
+SHOW ALL
+QUERY
+UPDATE
+DELETE
+
+
+test 5
+test if data match db file
+
+show all 
+
+test 6
+test insert with record alr in
+insert id=2301234
+INSERT ID=2301234 Name=sam  Programme=cybersecurity  Mark=90
+
+
+test 7
+test insert with no record in 
+
+INSERT ID=2304444 Name=sam  Programme=cybersecurity  Mark=90
+show all
+
+
+test 8
+test insert with different data type
+INSERT ID=230445 Name=ssgfe3!  Programme=cybersecurity  Mark=85
+INSERT ID=230446 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
+INSERT ID=230447 Name=tester  Programme=cybersecurity Mark=rgdf
+INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
+INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
+INSERT ID=000000 Name=tester koh  Programme=cybersecurity Mark=90
+INSERT ID=010000 Name=tester koh  Programme=cybersecurity Mark=90
+
+
+test 9 
+test function with negative ID (all having issue)
+
+//INSERT ID=-230448 Name=tester koh  Programme=cybersecurity Mark=90
+//UPDATE ID=-2395313 Name=tester ID neg
+//DELETE ID=-2335554
+//QUERY ID=-1242343
+
+
+test 10
+test update function 
+UPDATE ID=2201234 Name=tester update
+UPDATE ID=2201234 Programme=AI
+UPDATE ID=2201234 Mark= 98
+
+
+test 11
+test update fucntion with different data type
+UPDATE ID=2201234 Mark=sef
+UPDATE ID=2304567 Mark=10000000111111111
+
+
+
+*/
+
+
