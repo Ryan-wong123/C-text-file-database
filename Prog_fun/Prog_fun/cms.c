@@ -1,435 +1,239 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#define _CRTDBG_MAP_ALLOC // allow debugging to find where is the cause of memory leak
+#define _CRT_SECURE_NO_WARNINGS // suppress unnecassary warnings
 
+#include <stdio.h> // library for input and output
+#include <stdlib.h> // library for memory allocation
+#include <string.h> // library for strcpy, strlen
+#include <ctype.h> // library for islower and isspace
+#include <stdbool.h> //library for boolean
+#include <crtdbg.h> // library used to detecting memory leaks
+#include <math.h>
 
-#define DEBUG_MODE 0
-#define FILE_PATH "database.txt"
-#define USERNAME "CMS"
-#define GROUP_NAME "P1_3"
+#define FILE_PATH "database.txt" // path name for the txt file
+#define USERNAME "CMS" // username to display in the console
+#define GROUP_NAME "P2_3" // group name used to display in the console
 #define TABLE_NAME_LENGTH 15
-#define INITIAL_HASHMAP_SIZE 101 // Initial size, will dynamically grow
-#define STUDENT_NAME_LENGTH 30
+#define HASHMAP_LENGTH 1
+#define NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
+#define GENERAL_LENGTH 70
+#define ID_LENGTH 6
 
 char tableName[TABLE_NAME_LENGTH] = "";
-int currentSize = INITIAL_HASHMAP_SIZE;  // Dynamic size of the hash map
-int recordCount = 0;  // Track the number of records
+int currentSize = HASHMAP_LENGTH;  
+int recordCount = 0; 
 
+// Structure for student data and alias to StudentRecords with self referential structure
 typedef struct StudentRecords {
-    int id;
-    char name[STUDENT_NAME_LENGTH];
-    char programme[PROGRAMME_LENGTH];
-    float mark;
-    struct StudentRecords* next; // Linked list for collision handling
+    int id; // ID of the student
+    char name[NAME_LENGTH]; // Name of the student
+    char programme[PROGRAMME_LENGTH]; // Programme that the student is in
+    float mark; // Mark of the programme for the student
+    struct StudentRecords* next; // pointer to next node
 } StudentRecords;
 
 typedef struct HashMap {
-    StudentRecords** table; // Dynamic array of pointers to StudentRecords
+    StudentRecords** table;
 } HashMap;
 
 unsigned int hash(int id) {
-    return (id * 97) % currentSize; // Use a prime number multiplier for better distribution
+    return (id * 97) % currentSize;
 }
 
-void resizeHashMap(HashMap* oldHashMap);
+void DisplayDeclaration();
 
-StudentRecords* createStudent(int id, const char* name, const char* programme, float mark) {
+void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark);
+void UpdateStudent(HashMap* hashmap, const char* input);
+struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord);
+void DeleteStudent(HashMap* hashmap, int id);
+
+void OpenFile(const char* filename, HashMap* hashmap);
+void ShowAll(HashMap* hashmap);
+void saveToFile(const char* filename, HashMap* hashmap);
+
+void resizeHashMap(HashMap* currentHashmap);
+void TrimTrailingSpaces(char* str);
+int SortbyID(const void* a, const void* b);
+char* GetField(const char* input, const char* key, int maxLength);
+
+void DisplayDeclaration() {
+
+    char declare[1400] = {
+
+    "\t\t\t\t\tDeclaration \n \
+    SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
+    from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
+    solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible\n \
+    by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.\n\n \
+    We hereby declare that:\n \
+    We fully understand and agree to the abovementioned plagiarism policy.\n \
+    We did not copy any code from others or from other places.\n \
+    We did not share our codes with others or upload to any other places for public access and will\n \
+    not do that in the future.\n \
+    We agree that our project will receive Zero mark if there is any plagiarism detected.\n \
+    We agree that we will not disclose any information or material of the group project to others or\n \
+    upload to any other places for public access.\n\n \
+    Declared by: Group 2-3\n \
+    Team members:\n \
+    1. NAVEEN GOPALKRISHNAN \t(2402612)\n \
+    2. LEE ZHI HONG TIMOTHY \t(2400592)\n \
+    3. DEVIN TAN ZHEN WEI \t(2400649)\n \
+    4. TNG ZHENG YANG \t\t(2401113)\n \
+    5. SABIHAH AMIRUDEEN \t(2401670)\n \
+    6. WONG HOI YOUNG, RYAN \t(2401725)\n \
+    Date: (please insert the date when you submit your group project)\n" };
+
+
+    puts(declare);
+
+}
+
+void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
+    
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
     if (newStudent == NULL) {
-        fprintf(stderr, "Memory allocation failed for new student\n");
+        perror("Memory allocation failed for new student\n");
         exit(EXIT_FAILURE);
     }
+    
     newStudent->id = id;
-    strncpy_s(newStudent->name, sizeof(newStudent->name), name, _TRUNCATE);
-    strncpy_s(newStudent->programme, sizeof(newStudent->programme), programme, _TRUNCATE);
+    strncpy(newStudent->name, name, sizeof(newStudent->name) - 1), newStudent->name[sizeof(newStudent->name) - 1] = '\0';
+    strncpy(newStudent->programme, programme, sizeof(newStudent->programme) - 1), newStudent->programme[sizeof(newStudent->programme) - 1] = '\0';
     newStudent->mark = mark;
     newStudent->next = NULL;
-    return newStudent;
-}
 
-void insertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
-    unsigned int index = hash(id);  // Hash function with current size
-    StudentRecords* newStudent = createStudent(id, name, programme, mark);
+    unsigned int index = hash(id);
 
-    // Insert at the head of the linked list (collision handling)
     newStudent->next = hashmap->table[index];
     hashmap->table[index] = newStudent;
-
+    
     recordCount++;
 
-    // If load factor exceeds 50%, resize the hash map
     if (recordCount > (currentSize / 2)) {
         resizeHashMap(hashmap);
     }
 }
 
+void UpdateStudent(HashMap* hashmap, const char* input) {
+    int id = atoi(GetField(input, "ID=", sizeof(input)));
+    if (id == 0) {
+        printf("Please enter valid ID.\n");
+        return;
+    }
+       
 
-StudentRecords* findStudentByID(HashMap* hashmap, int id) {
+    char newName[NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
+    float newMark = -1;
+
+   
+    char* currentName = GetField(input, "Name=", sizeof(newName));
+    if (currentName) {
+        strncpy(newName, currentName, NAME_LENGTH - 1);
+    }
+
+    char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
+    if (currentProgramme) {
+        strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
+    }
+
+    char* currentMark = GetField(input, "Mark=", sizeof(input));
+    if (currentMark) {
+        float tempMark;
+        int result = sscanf(currentMark, "%f", &tempMark);  // Convert string to float
+
+        // Check if the conversion was successful
+        if (result == 1) {
+            newMark = tempMark;  // Only update newMark if conversion is successful
+        }
+        else {
+            printf("Invalid input for marks. Please enter a valid number.\n");
+            return;
+        }
+    }
+
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
+
     while (current != NULL) {
         if (current->id == id) {
-            return current;  // Record found
-        }
-        current = current->next;
-    }
-    return NULL;  // Record not found
-}
-
-
-
-// Function to update a student record by ID
-void updateStudentByID(HashMap* hashmap, int id, const char* newName, const char* newProgramme, float newMark, int nameFlag, int programmeFlag, int markFlag) {
-    unsigned int index = hash(id);
-    StudentRecords* current = hashmap->table[index];
-
-    while (current != NULL) {
-        if (current->id == id) {  // when ID matches with input ID
             
-            if (nameFlag && newName != NULL) { 
-                strncpy(current->name, newName, STUDENT_NAME_LENGTH - 1); // copy content of 'newName' into current. Max characters set to STUDENT_NAME_LENGTH - 1 to prevent buffer overflow
-                current->name[STUDENT_NAME_LENGTH - 1] = '\0'; // set last character to '/0'(null character) to properly null terminate string  
+            if (*newName) {
+                strncpy(current->name, newName, sizeof(current->name) - 1), current->name[sizeof(current->name) - 1] = '\0';
             }
-
-            if (programmeFlag && newProgramme != NULL) {
-                strncpy(current->programme, newProgramme, PROGRAMME_LENGTH - 1);
-                current->programme[PROGRAMME_LENGTH - 1] = '\0'; 
+            if (*newProgramme) {
+                strncpy(current->programme, newProgramme, sizeof(current->programme) - 1), current->programme[sizeof(current->programme) - 1] = '\0';
             }
-
-            if (markFlag) {
+            if (newMark != -1) {
                 current->mark = newMark;
             }
-            // printf("\nThe record with ID=%d is successfully updated.\n", id);
+
+            printf("\nThe record with ID=%d is successfully updated.\n", id);
             return;
         }
         current = current->next;
     }
-    
 
     printf("The record with ID=%d does not exist.\n", id);
 }
 
-void parseAndExecuteUpdate(HashMap* hashmap, const char* input) {
-    int id;
-    char newName[STUDENT_NAME_LENGTH] = "";
-    char newProgramme[PROGRAMME_LENGTH] = "";
-    float newMark = -1;
-    int nameFlag = 0, programmeFlag = 0, markFlag = 0; //flags to indicate which fields should be updated
-
-    // Extract the ID first
-    if (sscanf(input, "UPDATE ID=%d", &id) != 1) {
-        printf("Invalid command format. Expected format: 'UPDATE ID=<id> <Field>=<Value>'\n");
-        return;
-    }
-
-    
-    const char* fieldsStart = strstr(input, "ID="); // Find the start of the fields section after "UPDATE ID=<id>"
-    fieldsStart = strchr(fieldsStart, ' '); // Move past "ID=" to fields
-    if (!fieldsStart) {
-        printf("No fields to update.\n");
-        return;
-    }
-    fieldsStart++; // Moves to the first character after the space
-
-    
-    char remainingFields[256]; // Buffer to hold the rest of the input fields
-    strncpy(remainingFields, fieldsStart, sizeof(remainingFields) - 1); // copy remaining parts of input into buffer. last char set to '/0' to fully null-terminate
-    remainingFields[sizeof(remainingFields) - 1] = '\0';
-    
-    char *valueStart; // Parse each field
-
-    if ((valueStart = strstr(remainingFields, "Name="))) {
-        
-        valueStart += 5; // Move past "Name="
-        char *nextField = strstr(valueStart, " Programme="); //searches for either 'Programme=' or 'Mark=' to know where the 'Name=' value ends
-        if (!nextField) nextField = strstr(valueStart, " Mark=");
-        if (!nextField) nextField = strstr(valueStart, " Programme=");
-        if (nextField) *nextField = '\0'; // Temporarily end the string here if next field is found
-        strncpy(newName, valueStart, STUDENT_NAME_LENGTH - 1); // copy new name value wihtout exceeding the limit 'STUDENT_NAME_LENGTH - 1'
-        newName[STUDENT_NAME_LENGTH - 1] = '\0';
-        nameFlag = 1;
-        if (nextField) *nextField = ' '; // Restore the space
-    }
-
-    if ((valueStart = strstr(remainingFields, "Programme="))) {
-       
-        valueStart += 10; // Move past "Programme="
-        char *nextField = strstr(valueStart, " Name=" );
-        if (!nextField) nextField = strstr(valueStart, " Mark=");
-        if (nextField) *nextField = '\0';
-        strncpy(newProgramme, valueStart, PROGRAMME_LENGTH - 1);
-        newProgramme[PROGRAMME_LENGTH - 1] = '\0';
-        programmeFlag = 1;
-        if (nextField) *nextField = ' ';
-    }
-    
-    if ((valueStart = strstr(remainingFields, "Mark="))) {
-        
-        valueStart += 5; // Move past "Mark="
-        newMark = atof(valueStart); // Convert string to float
-        markFlag = 1;
-    }
-
-    
-    
-
-    
-    updateStudentByID(hashmap, id, newName, newProgramme, newMark, nameFlag, programmeFlag, markFlag); // Call the update function with flags indicating which fields to update
-    printf("The record with ID=%d is successfully updated.\n", id);
-}
-
-
-// Function to find the next prime number larger than a given number
-int nextPrime(int n) {
-    int i, j;
-    for (i = n + 1;; i++) {
-        for (j = 2; j * j <= i; j++) {
-            if (i % j == 0) {
-                break;
-            }
-        }
-        if (j * j > i) {
-            return i;  // Return the next prime number
-        }
-    }
-}
-
-void resizeHashMap(HashMap* oldHashMap) {
-    int newSize = nextPrime(currentSize * 2); // Find the next prime size
-
-    HashMap* newHashMap = malloc(sizeof(HashMap));
-    if (newHashMap == NULL) {
-        fprintf(stderr, "Memory allocation failed during resizing\n");
-        exit(EXIT_FAILURE);
-    }
-    newHashMap->table = malloc(newSize * sizeof(StudentRecords*));
-    if (newHashMap->table == NULL) {
-        fprintf(stderr, "Memory allocation failed for new hash map table\n");
-        exit(EXIT_FAILURE);
-    }
-    memset(newHashMap->table, 0, newSize * sizeof(StudentRecords*));
-
-    // Rehash all records from the old hash map to the new one
-    for (int i = 0; i < currentSize; i++) {
-        StudentRecords* current = oldHashMap->table[i];
-        while (current != NULL) {
-            // Manually calculate new index and reinsert records
-            unsigned int newIndex = current->id % newSize;
-            StudentRecords* nextRecord = current->next; // Save the next record
-
-            // Insert into new hash map
-            current->next = newHashMap->table[newIndex];
-            newHashMap->table[newIndex] = current;
-
-            current = nextRecord; // Move to the next record
-        }
-    }
-
-    free(oldHashMap->table);  // Free the old table memory
-    currentSize = newSize;    // Update global variable with new size
-
-    // Copy the new hash map structure into the old hash map pointer
-    *oldHashMap = *newHashMap;
-    free(newHashMap);  // Free temporary new hash map structure
-}
-
-void clearHashMap(HashMap* hashmap) {
-    for (int i = 0; i < currentSize; i++) {
-        StudentRecords* current = hashmap->table[i];
-        while (current != NULL) {
-            StudentRecords* temp = current;
-            current = current->next;
-            free(temp);
-        }
-        hashmap->table[i] = NULL;
-    }
-    recordCount = 0;
-}
-
-void trimTrailingSpaces(char* str) {
-    // Trim trailing spaces
-    int len = strlen(str);
-    while (len > 0 && isspace((unsigned char)str[len - 1])) {
-        str[len - 1] = '\0';
-        len--;
-    }
-
-    // Trim leading spaces
-    char* start = str;
-    while (*start && isspace((unsigned char)*start)) {
-        start++;
-    }
-
-    // Shift the string back to remove leading spaces
-    if (start != str) {
-        memmove(str, start, strlen(start) + 1);  // +1 to include null terminator
-    }
-}
-
-void OpenFile(const char* filename, HashMap* hashmap) {
-   //d clearHashMap(hashmap); 
-
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return;
-    }
-
-    char line[256];
-    while (fgets(line, sizeof(line), file)) {
-        if (strncmp(line, "Database Name:", 14) == 0 ||
-            strncmp(line, "Authors:", 8) == 0 ||
-            strncmp(line, "ID", 2) == 0) {
-            continue;
-        }
-
-        if (strncmp(line, "Table Name:", 11) == 0) {
-            sscanf_s(line + 12, "%[^\n]", tableName, (unsigned)_countof(tableName));
-            continue;
-        }
-
-        if (isdigit(line[0])) {
-            int id;
-            char name[STUDENT_NAME_LENGTH], programme[PROGRAMME_LENGTH];
-            float mark;
-            int fields = sscanf(line, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
-            if (fields == 4) {// Check if the student with the given ID already exists
-                StudentRecords* existingStudent = findStudentByID(hashmap, id);
-                if (existingStudent != NULL) {
-                    // Update the existing record
-                    strncpy(existingStudent->name, name, STUDENT_NAME_LENGTH - 1);
-                    existingStudent->name[STUDENT_NAME_LENGTH - 1] = '\0';
-                    strncpy(existingStudent->programme, programme, PROGRAMME_LENGTH - 1);
-                    existingStudent->programme[PROGRAMME_LENGTH - 1] = '\0';
-                    existingStudent->mark = mark;
-                } 
-                else {
-                    // Insert a new record if no duplicate exists
-                    insertStudent(hashmap, id, name, programme, mark);
-                }
-
-            }
-            else {
-                fprintf(stderr, "Error parsing line: %s\n", line);
-            }
-        }
-    }
-    printf("%s: The database file \"%s\" is successfully opened.\n", USERNAME, FILE_PATH);
-    fclose(file);
-}
-
-// Comparison function for sorting by ID
-int compareByID(const void* a, const void* b) {
-    StudentRecords* studentA = *(StudentRecords**)a;
-    StudentRecords* studentB = *(StudentRecords**)b;
-    return studentA->id - studentB->id;  // Sort in ascending order of IDs
-}
-
-void ShowAll(HashMap* hashmap) {
-    if (recordCount == 0) {
-        printf("No records to display.\n");
-        return;
-    }
-
-    // Dynamically allocate memory for an array of pointers to StudentRecords
-    StudentRecords** allRecords = malloc(recordCount * sizeof(StudentRecords*));
-    if (allRecords == NULL) {
-        fprintf(stderr, "Memory allocation failed for allRecords.\n");
-        return;
-    }
-
-    int index = 0;
-
-    // Traverse through all buckets in the hash map and collect all records
-    for (int i = 0; i < currentSize; i++) {
-        StudentRecords* current = hashmap->table[i];
-        while (current != NULL) {
-            allRecords[index++] = current;  // Add each student to the array
-            current = current->next;
-        }
-    }
-
-    // Sort the array of records by ID
-    qsort(allRecords, recordCount, sizeof(StudentRecords*), compareByID);
-
-    // Print the records in the desired format
-    printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
-    printf("ID        Name                  Programme                  Mark\n");
-
-    // Print each student in the sorted order
-    for (int i = 0; i < recordCount; i++) {
-        StudentRecords* student = allRecords[i];
-        printf("%-8d  %-20s  %-25s  %.2f\n",
-            student->id, student->name, student->programme, student->mark);
-    }
-
-    // Free the dynamically allocated memory
-    free(allRecords);
-}
-
-
-
-
-struct StudentRecords* QueryRecord(HashMap* hashmap, int id) {
+struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord) {
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
     while (current != NULL) {
         if (current->id == id) {
-            printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
-            printf("ID        Name                  Programme                  Mark\n");
-            printf("%-8d  %-20s  %-25s  %.2f\n",
-                current->id, current->name, current->programme, current->mark);
+
+            if (printrecord == true) {
+                printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
+                printf("ID        Name                  Programme                  Mark\n");
+                printf("%-8d  %-20s  %-25s  %.2f\n",
+                    current->id, current->name, current->programme, current->mark);
+            }
             return current;
         }
         current = current->next;
     }
-
-    printf("%s: The record with ID=%d does not exist.\n",USERNAME, id);
+    if (printrecord == true) {
+        printf("%s: The record with ID=%d does not exist.\n", USERNAME, id);
+    }
     return NULL;
 }
 
-
-void DeleteRecord(HashMap* hashmap, int id) {
+void DeleteStudent(HashMap* hashmap, int id) {
     int id_check_flag = 0;
     char check_delete[3];
 
-    if (DEBUG_MODE == 1) printf("enter delete section\n");
+
     unsigned int index = hash(id);
 
     StudentRecords* current = hashmap->table[index];
     StudentRecords* prev = NULL;
 
-    // loop through bucket if not the same ID
+
     while (current != NULL) {
         if (current->id == id) {
-            if (DEBUG_MODE == 1) printf("ID: %d hash index:%d \n", current->id, index);
             id_check_flag = 1;
             break;
         }
         else {
-            if (DEBUG_MODE == 1) printf(" not ID: %d hash index:%d \n", current->id, index);
             prev = current;
             current = current->next;
         }
     }
 
     if (id_check_flag == 0) {
-        printf("%s: The record with ID=%d does not exist \n",USERNAME, id);
+        printf("%s: The record with ID=%d does not exist \n", USERNAME, id);
         return;
     }
 
     while (1) {
-        printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n",USERNAME, id);
+        printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", USERNAME, id);
 
         printf("%s:", GROUP_NAME);
         check_delete[strcspn(fgets(check_delete, sizeof(check_delete), stdin), "\n")] = 0;
 
         if (_strnicmp(check_delete, "Y", 1) == 0) {
-            if (DEBUG_MODE == 1) printf("The deletion is processing.\n");
 
-            // if current is a head of bucket set ptr to next record
+
             if (prev == NULL) {
                 hashmap->table[index] = current->next;
             }
@@ -438,6 +242,7 @@ void DeleteRecord(HashMap* hashmap, int id) {
             }
             printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
             recordCount--;
+            free(current);
             break;
         }
         else if (_strnicmp(check_delete, "N", 1) == 0) {
@@ -448,15 +253,94 @@ void DeleteRecord(HashMap* hashmap, int id) {
             printf("Invalid Command\n");
         }
     }
-    if (DEBUG_MODE == 1) printf("end delete section\n");
 }
 
+void OpenFile(const char* filename, HashMap* hashmap) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    char fileOutputLine[256];
+    while (fgets(fileOutputLine, sizeof(fileOutputLine), file) != NULL) {
+        if (strncmp(fileOutputLine, "Database Name:", 14) == 0 ||
+            strncmp(fileOutputLine, "Authors:", 8) == 0 ||
+            strncmp(fileOutputLine, "ID", 2) == 0) {
+            continue;
+        }
+
+        if (strncmp(fileOutputLine, "Table Name:", 11) == 0) {
+            sscanf(fileOutputLine + 12, "%[^\n]", tableName);
+            continue;
+        }
+
+        if (isdigit(fileOutputLine[0])) {
+            int id;
+            char name[NAME_LENGTH], programme[PROGRAMME_LENGTH];
+            float mark;
+            int fields = sscanf(fileOutputLine, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
+            if (fields == 4) {
+                StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
+                if (existingStudent != NULL) {
+
+                    snprintf(existingStudent->name, NAME_LENGTH, "%s", name);
+                    snprintf(existingStudent->programme, PROGRAMME_LENGTH, "%s", programme);
+                    existingStudent->mark = mark;
+                }
+                else {
+                    InsertStudent(hashmap, id, name, programme, mark);
+                }
+            }
+            else {
+                fprintf(stderr, "Error parsing fileOutputLine: %s\n", fileOutputLine);
+            }
+        }
+    }
+
+    fclose(file);
+}
+
+void ShowAll(HashMap* hashmap) {
+    if (recordCount == 0) {
+        printf("No records to display.\n");
+        return;
+    }
 
 
+    StudentRecords** allRecords = malloc(recordCount * sizeof(StudentRecords*));
+    if (allRecords == NULL) {
+        fprintf(stderr, "Memory allocation failed for allRecords.\n");
+        return;
+    }
+
+    int index = 0;
 
 
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            allRecords[index++] = current;
+            current = current->next;
+        }
+    }
 
-// Save changes to file
+
+    qsort(allRecords, recordCount, sizeof(StudentRecords*), SortbyID);
+
+    printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
+    printf("ID        Name                  Programme                  Mark\n");
+
+    for (int i = 0; i < recordCount; i++) {
+        StudentRecords* student = allRecords[i];
+        printf("%-8d  %-20s  %-25s  %.2f\n",
+            student->id, student->name, student->programme, student->mark);
+    }
+
+
+    free(allRecords);
+}
+
 void saveToFile(const char* filename, HashMap* hashmap) {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
@@ -464,13 +348,13 @@ void saveToFile(const char* filename, HashMap* hashmap) {
         return;
     }
 
-    // Write header information
+
     fprintf(file, "Database Name: %s\n", USERNAME);
     fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
     fprintf(file, "Table Name: %s\n", tableName);
     fprintf(file, "ID\tName\tProgramme\tMark\n");
 
-    // Iterate through each bucket and write records
+
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
@@ -479,187 +363,269 @@ void saveToFile(const char* filename, HashMap* hashmap) {
         }
     }
 
-    // printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
+    printf("%s: The database file \"%s\" has been successfully updated.\n", USERNAME, FILE_PATH);
     fclose(file);
 }
 
-void DisplayDeclaration() {
-    
-char declare[1400] = {
+void resizeHashMap(HashMap* currentHashmap) {
+    int newSize;
 
-"\t\t\t\t\tDeclaration \n \
-SIT's policy on copying does not allow the students to copy source code as well as assessment solutions\n \
-from another person or other places.It is the students' responsibility to guarantee that their assessment\n \
-solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible\n \
-by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.\n\n \
-We hereby declare that:\n \
-We fully understand and agree to the abovementioned plagiarism policy.\n \
-We did not copy any code from others or from other places.\n \
-We did not share our codes with others or upload to any other places for public access and will\n \
-not do that in the future.\n \
-We agree that our project will receive Zero mark if there is any plagiarism detected.\n \
-We agree that we will not disclose any information or material of the group project to others or\n \
-upload to any other places for public access.\n\n \
-Declared by: Group 2-3\n \
-Team members:\n \
-1. NAVEEN GOPALKRISHNAN \t(2402612)\n \
-2. LEE ZHI HONG TIMOTHY \t(2400592)\n \
-3. DEVIN TAN ZHEN WEI \t\t(2400649)\n \
-4. TNG ZHENG YANG \t\t(2401113)\n \
-5. SABIHAH AMIRUDEEN \t\t(2401670)\n \
-6. WONG HOI YOUNG, RYAN \t(2401725)\n \
-Date: (please insert the date when you submit your group project)\n" };
+    // Find the next prime number greater than currentSize * 2
+    for (newSize = currentSize * 2 + 1; ; newSize += 2) {  // Skip even numbers
+        int isPrime = 1;
+        if (newSize % 2 == 0) continue;  // Skip even numbers
+        for (int j = 3; j * j <= newSize; j += 2) {  // Skip even divisors
+            if (newSize % j == 0) {
+                isPrime = 0;
+                break;
+            }
+        }
+        if (isPrime) break;
+    }
 
-// print declaration    
-puts(declare);
+    // Allocate memory for the new hash map
+    HashMap* newHashMap = malloc(sizeof(HashMap));
+    if (!newHashMap || !(newHashMap->table = calloc(newSize, sizeof(StudentRecords*)))) {
+        fprintf(stderr, "Memory allocation failed during resizing\n");
+        exit(EXIT_FAILURE);
+    }
 
+    // Rehash the old records into the new hash map
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = currentHashmap->table[i];
+        while (current) {
+            StudentRecords* nextRecord = current->next;
+            unsigned int newIndex = current->id % newSize;
 
+            current->next = newHashMap->table[newIndex];
+            newHashMap->table[newIndex] = current;
 
+            current = nextRecord;
+        }
+    }
+
+    // Free the old hash map and update to the new one
+    free(currentHashmap->table);
+    *currentHashmap = *newHashMap;
+    free(newHashMap);
+
+    // Update the current size
+    currentSize = newSize;
+}
+
+void TrimTrailingSpaces(char* str) {
+    // Find the length of the string
+    char* end = str + strlen(str) - 1;
+
+    // Move the end pointer back to the last non-space character
+    while (end >= str && isspace((unsigned char)*end)) {
+        end--;
+    }
+
+    // Set the new null terminator after the last non-space character
+    *(end + 1) = '\0';
+
+    // Find the first non-space character from the start
+    char* start = str;
+    while (*start && isspace((unsigned char)*start)) {
+        start++;
+    }
+
+    // If there are leading spaces, shift the string to remove them
+    if (start != str) {
+        memmove(str, start, strlen(start) + 1);
+    }
+}
+
+int SortbyID(const void* a, const void* b) {
+    StudentRecords* studentA = *(StudentRecords**)a;
+    StudentRecords* studentB = *(StudentRecords**)b;
+    return studentA->id - studentB->id;  
+}
+
+char* GetField(const char* input, const char* key, int maxLength) {
+    static char desiredFieldOutput[GENERAL_LENGTH];  // Static buffer for reuse
+
+    // Find the start of the key in the input string
+    const char* start = strstr(input, key);
+    if (!start) {
+        return NULL;  // Key not found
+    }
+
+    start += strlen(key);  // Move past the key to the field value
+
+    // Look for the next field or the end of the input
+    const char* endID = strstr(start, "ID=");
+    const char* endName = strstr(start, "Name=");
+    const char* endProgramme = strstr(start, "Programme=");
+    const char* endMark = strstr(start, "Mark=");
+
+    // Find the nearest field after the current field
+    const char* end = NULL;
+    if (endID && (!end || endID < end)) end = endID;
+    if (endName && (!end || endName < end)) end = endName;
+    if (endProgramme && (!end || endProgramme < end)) end = endProgramme;
+    if (endMark && (!end || endMark < end)) end = endMark;
+
+    // If no other fields are found, go to the end of the input
+    if (!end) end = start + strlen(start);
+
+    // Calculate the length of the field value, ensuring it doesn't exceed maxLength
+    int length = end - start;
+    if (length >= maxLength) {
+        length = maxLength - 1;  // Ensure the value fits within the buffer
+    }
+
+    // Copy the field value into the static buffer
+    strncpy(desiredFieldOutput, start, length);
+    desiredFieldOutput[length] = '\0';  // Null-terminate the result
+
+    // Special handling for the ID field to check for negative values
+    if (strcmp(key, "ID=") == 0) {
+        int idValue = atoi(desiredFieldOutput);
+        if (idValue < 0) {
+            printf("ID cannot be negative.\n");
+        }
+        else if (idValue == 0) {
+            printf("ID cannot be 0.\n");
+        }
+        else if ((int)log10(abs(idValue)) + 1 > ID_LENGTH) {
+            printf("ID length exceeded 6 digits.\n");
+        }
+    }
+
+    return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
 
-
-
-int open_flag = 0; // to check for db open status
-
 int main() {
+    //check for memory leaks
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+    char idBuffer[10] = "";
+    int isFileOpened = 0;
+
     HashMap* hashmap = malloc(sizeof(HashMap));
+
     if (hashmap == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
 
-    hashmap->table = malloc(currentSize * sizeof(StudentRecords*));
-    if (hashmap->table == NULL) {
+    hashmap->table = calloc(currentSize, sizeof(StudentRecords*));
+    if (!hashmap->table) {
         fprintf(stderr, "Memory allocation failed for table\n");
         exit(EXIT_FAILURE);
     }
-    memset(hashmap->table, 0, currentSize * sizeof(StudentRecords*)); // Initialize the hash map
 
-    // print declaration uncomment when sending
     DisplayDeclaration();
 
     while (1) {
         printf("%s:", GROUP_NAME);
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
-        trimTrailingSpaces(input);
+        TrimTrailingSpaces(input);
+
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert",6) == 0) && isFileOpened == 0) {
+            OpenFile(FILE_PATH, hashmap);
+            isFileOpened = 1;
+        }
 
         if (_stricmp(input, "open") == 0) {
-            if (open_flag == 1) {
+            if (isFileOpened == 1) {
                 printf("Database file is open already.\n");
                 continue;
             }
 
             OpenFile(FILE_PATH, hashmap);
-            open_flag = 1;
+            isFileOpened = 1;
+            printf("%s: The database file \"%s\" is successfully opened.\n", USERNAME, FILE_PATH);
         }
         else if (_stricmp(input, "show all") == 0) {
-            if (open_flag == 0) {
-                printf("Database file not open yet.\n");
-                continue;
-            }
             ShowAll(hashmap);
         }
+        else if (_strnicmp(input, "update", 6) == 0) {
+            char* value = GetField(input, "ID=", sizeof(input));
+            if (value == NULL) {
+                printf("Invalid Command. Usage: UPDATE ID=<id>\n");
+                continue;
+            }
 
-        else if (_strnicmp(input, "UPDATE ID=", 10) == 0) {
-            parseAndExecuteUpdate(hashmap, input); // Process the UPDATE command
-              
+            int id = atoi(value);
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
+                continue;
+            }
 
+            UpdateStudent(hashmap, input);
         }
-       
         else if (_strnicmp(input, "delete", 6) == 0) {
-            if (open_flag == 0) {
-                printf("Database file not open yet.\n");
-                continue;
-            }
-            char* id_ptr;
-            char s_id[10] = {'\0'};
-            int id = 0;
-            int letter_count = 0;
-
-            // Find ID location and place ptr 
-            id_ptr = strstr(input, "ID=");
-
-            // Check command is entered correctly 
-            if (id_ptr == NULL) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
-                continue;
-            }
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
-
-            if (DEBUG_MODE == 1) printf("%d \n", id);
-
-            // Check if ID entered correctly 
-            if (id == 0) {
+            char* value = GetField(input, "ID=",sizeof(input));
+            if (value == NULL) {
                 printf("Invalid Command. Usage: DELETE ID=<id>\n");
                 continue;
             }
 
-            DeleteRecord(hashmap, id);
+            int id = atoi(value);
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
+                continue;
+            }
 
+            DeleteStudent(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
-            char* id_ptr;
-            char s_id[10]={'\0'};
-            int id = 0;
-            int letter_count = 0;
-
-            // Find the ID location and place pointer
-            id_ptr = strstr(input, "ID=");
-            if (id_ptr == NULL) {
+            char* value = GetField(input, "ID=", sizeof(input));
+            if (value == NULL) {
                 printf("Invalid Command. Usage: QUERY ID=<id>\n");
                 continue;
             }
 
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
-
-            if (id == 0) {
-                printf("Invalid Command. Usage: QUERY ID=<id>\n");
+            int id = atoi(value);
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
 
-            QueryRecord(hashmap, id);
+            QueryStudent(hashmap, id ,true);
         }
-        else if (strncmp(input, "INSERT ID=", 10) == 0) {
-            int id;
-            char name[STUDENT_NAME_LENGTH];
+        else if (_strnicmp(input, "insert", 6) == 0) {
+
+            char* value = GetField(input, "ID=", sizeof(input));
+            if (value == NULL) {
+                printf("Invalid Command. Usage: INSERT ID=<id>\n");
+                continue;
+            }
+
+            int id = atoi(value);
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
+                continue;
+            }
+
+            char name[NAME_LENGTH];
             char programme[PROGRAMME_LENGTH];
             float mark;
 
-            // Adjust pointer to skip "INSERT " and move to the actual parameters
-            char* params = input + 7;  // Move past "INSERT "
+     
+            char* params = input + 7; 
 
-            // Ensure all strings are cleared before parsing
+         
             memset(name, 0, sizeof(name));
             memset(programme, 0, sizeof(programme));
 
-            // Parse the input using `sscanf()`, ensuring to capture spaces properly
+        
             int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
 
-            // Remove trailing spaces from name and programme
-            trimTrailingSpaces(name);
-            trimTrailingSpaces(programme);
+   
+            TrimTrailingSpaces(name);
+            TrimTrailingSpaces(programme);
 
             if (fields == 4) {
-                // Check if the student with this ID already exists
-                StudentRecords* existingStudent = findStudentByID(hashmap, id);
+
+                StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
                 if (existingStudent != NULL) {
                     printf("The record with ID=%d already exists.\n", id);
                 }
                 else {
-                    // If student does not exist, insert the new student
-                    insertStudent(hashmap, id, name, programme, mark);
+                    
+                    InsertStudent(hashmap, id, name, programme, mark);
                     printf("%s: A new record with ID=%d is successfully inserted.\n", USERNAME, id);
                 }
             }
@@ -667,69 +633,32 @@ int main() {
                 printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
             }
         }
-
-
-        else if (_strnicmp(input, "delete", 6) == 0) {
-            char* id_ptr;
-
-            char s_id[10];
-            int id = 0;
-            int letter_count = 0;
-
-            // Find ID location and place ptr 
-            id_ptr = strstr(input, "ID=");
-
-            // Check command is entered correctly 
-            if (id_ptr == NULL) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
-                continue;
-            }
-            // Extract ID from input
-            for (int i = 3; id_ptr[i] != '\0' && letter_count < 10; i++) {
-                s_id[i - 3] = id_ptr[i];
-                letter_count++;
-            }
-            id = atoi(s_id);
-
-            if (DEBUG_MODE == 1) printf("%d \n", id);
-
-            // Check if ID entered correctly 
-            if (id == 0) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
-                continue;
-            }
-
-            DeleteRecord(hashmap, id);
-
-        }
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
         else if (_stricmp(input, "SAVE") == 0) {
+            if (isFileOpened == 0) {
+                printf("Database file is not opened.\n");
+                continue;
+            }
             saveToFile(FILE_PATH, hashmap);
-            printf("Data has been successfully saved to %s.\n", FILE_PATH);
         }
         else {
-
             printf("Invalid Command. \n");
-            if (DEBUG_MODE == 1)printf("%s", input);
-
-
         }
-        }
-
-        // Freeing allocated memory
-        for (int i = 0; i < currentSize; i++) {
-            StudentRecords* current = hashmap->table[i];
-            while (current != NULL) {
-                StudentRecords* temp = current;
-                current = current->next;
-                free(temp); // Free each student record
-            }
-        }
-        free(hashmap->table); // Free hash map table
-        free(hashmap);        // Free hash map structure
-
-        return 0;
     }
 
+        
+    for (int i = 0; i < currentSize; i++) {
+        StudentRecords* current = hashmap->table[i];
+        while (current != NULL) {
+            StudentRecords* temp = current;
+            current = current->next;
+            free(temp); 
+        }
+    }
+    free(hashmap->table);
+    free(hashmap);        
+
+    return 0;
+}
