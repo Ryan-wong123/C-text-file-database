@@ -7,6 +7,7 @@
 #include <ctype.h> // library for islower and isspace
 #include <stdbool.h> //library for boolean
 #include <crtdbg.h> // library used to detecting memory leaks
+#include <math.h>
 
 #define FILE_PATH "database.txt" // path name for the txt file
 #define USERNAME "CMS" // username to display in the console
@@ -16,6 +17,7 @@
 #define NAME_LENGTH 30
 #define PROGRAMME_LENGTH 30
 #define GENERAL_LENGTH 70
+#define ID_LENGTH 6
 
 char tableName[TABLE_NAME_LENGTH] = "";
 int currentSize = HASHMAP_LENGTH;  
@@ -486,6 +488,9 @@ char* GetField(const char* input, const char* key, int maxLength) {
         else if (idValue == 0) {
             printf("ID cannot be 0.\n");
         }
+        else if ((int)log10(abs(idValue)) + 1 > ID_LENGTH) {
+            printf("ID length exceeded 6 digits.\n");
+        }
     }
 
     return desiredFieldOutput;  // Return the pointer to the static buffer
@@ -546,8 +551,7 @@ int main() {
             }
 
             int id = atoi(value);
-
-            if (id == 0 || id < 0) {
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
 
@@ -561,8 +565,7 @@ int main() {
             }
 
             int id = atoi(value);
-
-            if (id == 0 || id < 0) {
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
 
@@ -574,9 +577,9 @@ int main() {
                 printf("Invalid Command. Usage: QUERY ID=<id>\n");
                 continue;
             }
-            int id = atoi(value);
 
-            if (id == 0 || id < 0) {
+            int id = atoi(value);
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
 
@@ -591,8 +594,7 @@ int main() {
             }
 
             int id = atoi(value);
-
-            if (id == 0 || id < 0) {
+            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
 
