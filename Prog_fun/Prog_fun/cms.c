@@ -15,7 +15,7 @@
 #define GROUP_NAME "P2_3" // group name used to display in the console
 
 
-#define TEST_MODE 1
+#define TEST_MODE 0
 #define DEBUG_MODE 0
 
 #if TEST_MODE == 1
@@ -224,7 +224,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
     StudentRecords* current = hashmap->table[index];
     StudentRecords* prev = NULL;
 
-    
+    // move through hash table to find ID 
     while (current != NULL) {
         
         if (current->id == id) {
@@ -243,6 +243,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
     }
 
     while (1) {
+        // double confirm deletion of record
         printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", USERNAME, id);
 
         printf("%s:", GROUP_NAME);
@@ -250,18 +251,21 @@ void DeleteStudent(HashMap* hashmap, int id) {
 
         if (_strnicmp(check_delete, "Y", 1) == 0) {
 
-
+            // if record is at head set new table index to current records link
             if (prev == NULL) {
                 hashmap->table[index] = current->next;
             }
+            // else set previous record link to the current record link to ensure no link is lost
             else {
                 prev->next = current->next;
             }
             printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
             recordCount--;
+            // free the memory reserved by current 
             free(current);
             break;
         }
+
         else if (_strnicmp(check_delete, "N", 1) == 0) {
             printf("%s: The deletion is cancelled.\n", USERNAME);
             break;
@@ -593,20 +597,24 @@ int main() {
             UpdateStudent(hashmap, input);
         }
         else if (_strnicmp(input, "delete", 6) == 0) {
+            // use helper function to extract ID 
             char* value = GetField(input, "ID=",sizeof(input));
             if (value == NULL) {
                 printf("Invalid Command. Usage: DELETE ID=<id>\n");
                 continue;
             }
-
+            // change value into int data type
             int id = atoi(value);
+
+            // error handler check id if 0 or less than 0 or over id length 
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
-            printf("%d\n", id);
+            //printf("%d\n", id);
             DeleteStudent(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
+            
             char* value = GetField(input, "ID=", sizeof(input));
             if (value == NULL) {
                 printf("Invalid Command. Usage: QUERY ID=<id>\n");
