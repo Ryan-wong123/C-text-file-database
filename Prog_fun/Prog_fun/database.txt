@@ -7,6 +7,6 @@ ID	Name	Programme	Mark
 2301234	Joshua Chen	Software Engineering	84.00
 2201234	Isaac Teo	Computer Science	63.40
 8849304	Holly	Sales	87.00
-123456	Jerry Junior	Digital Business	89.00
+1234567	Jerry Junior	Digital Business	89.00
 2304367	Sabihah Amirudeen	Cat Lady	76.00
-987654	Liam Ang	AI	34.00
+9876549	Liam Ang	AI	34.00

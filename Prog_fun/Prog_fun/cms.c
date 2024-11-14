@@ -481,7 +481,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
     const char* endName = strstr(start, "Name=");
     const char* endProgramme = strstr(start, "Programme=");
     const char* endMark = strstr(start, "Mark=");
-
+    
     // Find the nearest field after the current field
     const char* end = NULL;
     if (endID && (!end || endID < end)) end = endID;
@@ -518,7 +518,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
             return NULL;
         }
     }
-
+    //printf("%s", * desiredFieldOutput);
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
@@ -568,8 +568,10 @@ int main() {
         TrimTrailingSpaces(input);
 
         if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0) && isFileOpened == 0) {
-            OpenFile(FILE_PATH, hashmap);
-            isFileOpened = 1;
+            //OpenFile(FILE_PATH, hashmap);
+            //isFileOpened = 1;
+            printf("Database file not open yet.\n");
+            continue;
         }
 
         if (_stricmp(input, "open") == 0) {
