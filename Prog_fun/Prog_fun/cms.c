@@ -682,6 +682,22 @@ int main() {
 
             memset(name, 0, sizeof(name));
             memset(programme, 0, sizeof(programme));
+            int count_id = 0, count_name = 0, count_programme = 0, count_mark = 0;
+            char* temp = strdup(input);
+            char* token = strtok(temp, " ");
+            while (token != NULL) {
+                if (strstr(token, "ID=") != NULL) count_id++;
+                else if (strstr(token, "Name=") != NULL) count_name++;
+                else if (strstr(token, "Programme=") != NULL) count_programme++;
+                else if (strstr(token, "Mark=") != NULL) count_mark++;
+                token = strtok(NULL, " ");
+            }
+            free(temp);
+
+            if (count_id > 1 || count_name > 1 || count_programme > 1 || count_mark > 1) {
+                printf("Error: Duplicate parameter detected in the input.\n");
+                continue;
+            }
 
 
             int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
@@ -689,6 +705,30 @@ int main() {
 
             TrimTrailingSpaces(name);
             TrimTrailingSpaces(programme);
+            char* last_space = strrchr(params, ' ');
+            if (last_space != NULL) {
+                float last_value;
+                if (sscanf(last_space + 1, "%f", &last_value) != 1) {
+                    printf("Invalid input. The input must end with a valid float value for the mark.\n");
+                    continue;
+                }
+            }
+            int float_count = 0;
+            char* check_params = strdup(params);
+            token = strtok(check_params, " ");
+            while (token != NULL) {
+                float test_float;
+                if (sscanf(token, "%f", &test_float) == 1) {
+                    float_count++;
+                }
+                token = strtok(NULL, " ");
+            }
+            free(check_params);
+
+            if (float_count > 1) {
+                printf("Error: Multiple float values detected in the input. Only one float is allowed for the mark.\n");
+                continue;
+            }
 
             if (fields == 4) {
 
