@@ -1,30 +1,30 @@
-//openc
-//insert
-//show all
-//query
-//update
-//delete
-//save
-//open
+openc
+insert
+show all
+query
+update
+delete
+save
 open
-// Insert
-// sHow all
-// Query
-// Update
-//del ete
-//INSERT
-//SHOW ALL
-//QUERY
-//UPDATE
-//DELETE
+open
+ Insert
+ sHow all
+ Query
+ Update
+del ete
+INSERT
+SHOW ALL
+QUERY
+UPDATE
+DELETE
 show all 
 insert id=2301234
 INSERT ID=2301234 Name=sam  Programme=cybersecurity  Mark=90
 INSERT ID=2304444 Name=sam  Programme=cybersecurity  Mark=90
 show all
-INSERT ID=230445 Name=ssgfe3!  Programme=cybersecurity  Mark=85
-INSERT ID=230446 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
-INSERT ID=230447 Name=tester  Programme=cybersecurity Mark=rgdf
+INSERT ID=2304450 Name=ssgfe3!  Programme=cybersecurity  Mark=85
+INSERT ID=2304461 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
+INSERT ID=2304478 Name=tester  Programme=cybersecurity Mark=rgdf
 INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=000000 Name=tester koh  Programme=cybersecurity Mark=90

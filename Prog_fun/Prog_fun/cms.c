@@ -15,7 +15,7 @@
 #define GROUP_NAME "P2_3" // group name used to display in the console
 
 
-#define TEST_MODE 1
+#define TEST_MODE 0
 #define DEBUG_MODE 0
 
 #if TEST_MODE == 1
@@ -224,7 +224,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
     StudentRecords* current = hashmap->table[index];
     StudentRecords* prev = NULL;
 
-    
+    // move through hash table to find ID 
     while (current != NULL) {
         
         if (current->id == id) {
@@ -243,6 +243,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
     }
 
     while (1) {
+        // double confirm deletion of record
         printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", USERNAME, id);
 
         printf("%s:", GROUP_NAME);
@@ -250,18 +251,21 @@ void DeleteStudent(HashMap* hashmap, int id) {
 
         if (_strnicmp(check_delete, "Y", 1) == 0) {
 
-
+            // if record is at head set new table index to current records link
             if (prev == NULL) {
                 hashmap->table[index] = current->next;
             }
+            // else set previous record link to the current record link to ensure no link is lost
             else {
                 prev->next = current->next;
             }
             printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
             recordCount--;
+            // free the memory reserved by current 
             free(current);
             break;
         }
+
         else if (_strnicmp(check_delete, "N", 1) == 0) {
             printf("%s: The deletion is cancelled.\n", USERNAME);
             break;
@@ -477,7 +481,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
     const char* endName = strstr(start, "Name=");
     const char* endProgramme = strstr(start, "Programme=");
     const char* endMark = strstr(start, "Mark=");
-
+    
     // Find the nearest field after the current field
     const char* end = NULL;
     if (endID && (!end || endID < end)) end = endID;
@@ -503,15 +507,18 @@ char* GetField(const char* input, const char* key, int maxLength) {
         int idValue = atoi(desiredFieldOutput);
         if (idValue < 0) {
             printf("ID cannot be negative.\n");
+            return NULL;
         }
         else if (idValue == 0) {
             printf("ID cannot be 0.\n");
+            return NULL;
         }
-        else if ((int)log10(abs(idValue)) + 1 > ID_LENGTH) {
-            printf("ID length exceeded 6 digits.\n");
+        else if ((int)log10(abs(idValue)) + 1 != ID_LENGTH) {
+            printf("ID length not 7 digits.\n");
+            return NULL;
         }
     }
-
+    //printf("%s", * desiredFieldOutput);
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
@@ -561,8 +568,10 @@ int main() {
         TrimTrailingSpaces(input);
 
         if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0) && isFileOpened == 0) {
-            OpenFile(FILE_PATH, hashmap);
-            isFileOpened = 1;
+            //OpenFile(FILE_PATH, hashmap);
+            //isFileOpened = 1;
+            printf("Database file not open yet.\n");
+            continue;
         }
 
         if (_stricmp(input, "open") == 0) {
@@ -593,20 +602,27 @@ int main() {
             UpdateStudent(hashmap, input);
         }
         else if (_strnicmp(input, "delete", 6) == 0) {
+            // use helper function to extract ID 
             char* value = GetField(input, "ID=",sizeof(input));
             if (value == NULL) {
                 printf("Invalid Command. Usage: DELETE ID=<id>\n");
                 continue;
             }
-
+            // change value into int data type
             int id = atoi(value);
+
+            // error handler check id if 0 or less than 0 or over id length 
+            /*
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
+                printf("enter");
                 continue;
             }
-            printf("%d\n", id);
+            */
+            //printf("%d\n", id);
             DeleteStudent(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
+            
             char* value = GetField(input, "ID=", sizeof(input));
             if (value == NULL) {
                 printf("Invalid Command. Usage: QUERY ID=<id>\n");
@@ -614,10 +630,11 @@ int main() {
             }
 
             int id = atoi(value);
+            /*
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
-
+            */
             QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
@@ -629,9 +646,11 @@ int main() {
             }
 
             int id = atoi(value);
+            /*
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
+            */
 
             char name[NAME_LENGTH];
             char programme[PROGRAMME_LENGTH];
@@ -791,9 +810,9 @@ show all
 
 test 8
 test insert with different data type
-INSERT ID=230445 Name=ssgfe3!  Programme=cybersecurity  Mark=85
-INSERT ID=230446 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
-INSERT ID=230447 Name=tester  Programme=cybersecurity Mark=rgdf
+INSERT ID=2304450 Name=ssgfe3!  Programme=cybersecurity  Mark=85
+INSERT ID=2304461 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
+INSERT ID=2304478 Name=tester  Programme=cybersecurity Mark=rgdf
 INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=000000 Name=tester koh  Programme=cybersecurity Mark=90
