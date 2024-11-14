@@ -173,6 +173,11 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
+    //printf("%f", currentMark);
+    if (currentMark == NULL) {
+        return;
+    }
+
     if (currentMark) {
         float tempMark;
         int result = sscanf(currentMark, "%f", &tempMark);  // Convert string to float
@@ -541,7 +546,22 @@ char* GetField(const char* input, const char* key, int maxLength) {
             return NULL;
         }
     }
-    //printf("%s", * desiredFieldOutput);
+
+    // check for mark range to be 0 to 100
+    if (strcmp(key, "Mark=") == 0) {
+        float markValue = atof(desiredFieldOutput);
+        if (markValue < 0) {
+            printf("Mark cannot be below 0. Update failed \n");
+            return NULL;
+        }
+        else if (markValue > 100) {
+            printf("Mark cannot be above 100. Update failed \n");
+            return NULL;
+        }
+
+    }
+
+    
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
