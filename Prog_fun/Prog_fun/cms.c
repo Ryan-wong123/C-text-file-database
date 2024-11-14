@@ -507,12 +507,15 @@ char* GetField(const char* input, const char* key, int maxLength) {
         int idValue = atoi(desiredFieldOutput);
         if (idValue < 0) {
             printf("ID cannot be negative.\n");
+            return NULL;
         }
         else if (idValue == 0) {
             printf("ID cannot be 0.\n");
+            return NULL;
         }
-        else if ((int)log10(abs(idValue)) + 1 > ID_LENGTH) {
-            printf("ID length exceeded 6 digits.\n");
+        else if ((int)log10(abs(idValue)) + 1 != ID_LENGTH) {
+            printf("ID length not 7 digits.\n");
+            return NULL;
         }
     }
 
@@ -607,9 +610,12 @@ int main() {
             int id = atoi(value);
 
             // error handler check id if 0 or less than 0 or over id length 
+            /*
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
+                printf("enter");
                 continue;
             }
+            */
             //printf("%d\n", id);
             DeleteStudent(hashmap, id);
         }
@@ -622,10 +628,11 @@ int main() {
             }
 
             int id = atoi(value);
+            /*
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
-
+            */
             QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
@@ -637,9 +644,11 @@ int main() {
             }
 
             int id = atoi(value);
+            /*
             if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
+            */
 
             char name[NAME_LENGTH];
             char programme[PROGRAMME_LENGTH];
@@ -799,9 +808,9 @@ show all
 
 test 8
 test insert with different data type
-INSERT ID=230445 Name=ssgfe3!  Programme=cybersecurity  Mark=85
-INSERT ID=230446 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
-INSERT ID=230447 Name=tester  Programme=cybersecurity Mark=rgdf
+INSERT ID=2304450 Name=ssgfe3!  Programme=cybersecurity  Mark=85
+INSERT ID=2304461 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
+INSERT ID=2304478 Name=tester  Programme=cybersecurity Mark=rgdf
 INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=000000 Name=tester koh  Programme=cybersecurity Mark=90
