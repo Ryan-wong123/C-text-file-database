@@ -173,6 +173,11 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
+    //printf("%f", currentMark);
+    if (currentMark == NULL) {
+        return;
+    }
+
     if (currentMark) {
         float tempMark;
         int result = sscanf(currentMark, "%f", &tempMark);  // Convert string to float
@@ -320,7 +325,9 @@ void OpenFile(const char* filename, HashMap* hashmap) {
             int id;
             char name[NAME_LENGTH], programme[PROGRAMME_LENGTH];
             float mark;
+            
             int fields = sscanf(fileOutputLine, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
+            
             if (fields == 4) {
                 StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
                 if (existingStudent != NULL) {
@@ -394,13 +401,14 @@ void saveToFile(const char* filename, HashMap* hashmap) {
     fprintf(file, "Database Name: %s\n", USERNAME);
     fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
     fprintf(file, "Table Name: %s\n", tableName);
-    fprintf(file, "ID\tName\tProgramme\tMark\n");
+    //fprintf(file, "ID       Name            Programme                Mark\n");
+    fprintf(file, "%-7s\t%-17s\t%-23s\t%-5s\n","ID", "Name", "Programme", "Mark");
 
 
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
-            fprintf(file, "%d\t%s\t%s\t%.2f\n", current->id, current->name, current->programme, current->mark);
+            fprintf(file, "%-7d\t%-17s\t%-23s\t%-3.2f\n", current->id, current->name, current->programme, current->mark);
             current = current->next;
         }
     }
@@ -538,7 +546,22 @@ char* GetField(const char* input, const char* key, int maxLength) {
             return NULL;
         }
     }
-    //printf("%s", * desiredFieldOutput);
+
+    // check for mark range to be 0 to 100
+    if (strcmp(key, "Mark=") == 0) {
+        float markValue = atof(desiredFieldOutput);
+        if (markValue < 0) {
+            printf("Mark cannot be below 0. Update failed \n");
+            return NULL;
+        }
+        else if (markValue > 100) {
+            printf("Mark cannot be above 100. Update failed \n");
+            return NULL;
+        }
+
+    }
+
+    
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
