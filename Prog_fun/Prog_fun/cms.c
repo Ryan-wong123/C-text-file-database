@@ -103,6 +103,16 @@ void DisplayDeclaration() {
 
 }
 
+int isValidAlphabeticString(const char* str) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (!isalpha((unsigned char)str[i]) && !isspace((unsigned char)str[i])) {
+            return 0; // Return 0 if any character is not alphabetic or space
+        }
+    }
+    return 1; // Return 1 if all characters are valid
+}
+
+
 void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
     
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
@@ -144,11 +154,21 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
    
     char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) {
+        if (!isValidAlphabeticString(currentName)) {
+            printf("Error: Name should contain only alphabetic characters and spaces.\n");
+            return;
+        }
         strncpy(newName, currentName, NAME_LENGTH - 1);
     }
 
     char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
     if (currentProgramme) {
+
+        if (!isValidAlphabeticString(currentProgramme)) {
+            printf("Error: Programme should contain only alphabetic characters and spaces.\n");
+            return;
+        }
+        
         strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
     }
 
