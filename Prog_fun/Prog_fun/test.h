@@ -8,7 +8,7 @@
 #include <stdio.h> // library for input and output
 
 #define INPUT_FILE "testinput.txt"//commands to run
-#define OUTPUT_FILE "output2.txt" //load the output of the test
+#define OUTPUT_FILE "output.txt" //load the output of the test
 #define BASE_FILE "testoutput.txt"//expected result
 #define TEST_RESULT "testresult.txt"//where to print the test results
 

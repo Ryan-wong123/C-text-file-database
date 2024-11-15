@@ -16,7 +16,7 @@
 #define GROUP_NAME "P2_3" // group name used to display in the console
 
 
-#define TEST_MODE 1
+#define TEST_MODE 0
 #define DEBUG_MODE 0
 
 #if TEST_MODE == 1
