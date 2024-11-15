@@ -1,1 +1,3 @@
-printf("\nThe record with ID=%d is successfully updated.\n", id);
+if (currentMark == NULL) {
+    //     return;
+    // }

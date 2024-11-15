@@ -174,9 +174,9 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
     //printf("%f", currentMark);
-    if (currentMark == NULL) {
-        return;
-    }
+    // if (currentMark == NULL) {
+    //     return;
+    // }
 
     if (currentMark) {
         float tempMark;
@@ -729,7 +729,7 @@ int main() {
 
             int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
 
-
+            
             TrimTrailingSpaces(name);
             TrimTrailingSpaces(programme);
             char* last_space = strrchr(params, ' ');
