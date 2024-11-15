@@ -174,9 +174,9 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
     //printf("%f", currentMark);
-    // if (currentMark == NULL) {
-    //     return;
-    // }
+     if (currentMark == NULL) {
+         return;
+     }
 
     if (currentMark) {
         float tempMark;

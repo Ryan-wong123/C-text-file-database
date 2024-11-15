@@ -1,4 +1,4 @@
 ﻿  cms.c
-C:\Users\Devin\Desktop\SIT\INF1002-FOP\c project\C-Prog-Fun\Prog_fun\Prog_fun\cms.c(528,22): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-C:\Users\Devin\Desktop\SIT\INF1002-FOP\c project\C-Prog-Fun\Prog_fun\Prog_fun\cms.c(556,27): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Prog_fun.vcxproj -> C:\Users\Devin\Desktop\SIT\INF1002-FOP\c project\C-Prog-Fun\Prog_fun\x64\Debug\Prog_fun.exe
+C:\Users\ryan\Downloads\prog fun\c proj\C-Prog-Fun\Prog_fun\Prog_fun\cms.c(528,22): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\ryan\Downloads\prog fun\c proj\C-Prog-Fun\Prog_fun\Prog_fun\cms.c(556,27): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Prog_fun.vcxproj -> C:\Users\ryan\Downloads\prog fun\c proj\C-Prog-Fun\Prog_fun\x64\Debug\Prog_fun.exe
