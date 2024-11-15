@@ -174,9 +174,9 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
     //printf("%f", currentMark);
-    // if (currentMark == NULL) {
-    //     return;
-    // }
+     if (currentMark == NULL) {
+         return;
+     }
 
     if (currentMark) {
         float tempMark;
@@ -686,6 +686,7 @@ int main() {
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
 
+            // Extract parameters using GetField
             char* value = GetField(input, "ID=", sizeof(input));
             if (value == NULL) {
                 printf("Invalid Command. Usage: INSERT ID=<id>\n");
@@ -693,22 +694,16 @@ int main() {
             }
 
             int id = atoi(value);
-            /*
-            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
-                continue;
-            }
-            */
 
             char name[NAME_LENGTH];
             char programme[PROGRAMME_LENGTH];
             float mark;
 
-
             char* params = input + 7;
-
 
             memset(name, 0, sizeof(name));
             memset(programme, 0, sizeof(programme));
+
             int count_id = 0, count_name = 0, count_programme = 0, count_mark = 0;
             char* temp = strdup(input);
             char* token = strtok(temp, " ");
@@ -726,20 +721,39 @@ int main() {
                 continue;
             }
 
-
+            // Correctly parse the parameters including Mark field
             int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
 
-            
             TrimTrailingSpaces(name);
             TrimTrailingSpaces(programme);
-            char* last_space = strrchr(params, ' ');
-            if (last_space != NULL) {
-                float last_value;
-                if (sscanf(last_space + 1, "%f", &last_value) != 1) {
-                    printf("Invalid input. The input must end with a valid float value for the mark.\n");
+
+            if (fields != 4) {
+                printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
+                continue;
+            }
+
+            // Validate the Mark parameter: Make sure it's a valid float and there's no extra non-numeric content
+            char* mark_pos = strstr(params, "Mark=");
+            if (mark_pos != NULL) {
+                char* mark_end = mark_pos + 5;  // Skip "Mark="
+                char temp_mark[50];
+                sscanf(mark_end, "%49s", temp_mark); // Capture the value after "Mark="
+
+                // Check if the mark contains non-numeric characters (invalid case)
+                if (strspn(temp_mark, "0123456789.") != strlen(temp_mark)) {
+                    printf("Invalid input. The 'Mark' parameter must be a valid float value.\n");
+                    continue;
+                }
+
+                // Ensure there is only one float value for Mark
+                char* extra_floats = strchr(mark_end, ' ');
+                if (extra_floats != NULL) {
+                    printf("Invalid input. The 'Mark' parameter must not contain additional float values.\n");
                     continue;
                 }
             }
+
+            // Check if there are multiple float values in the entire parameters
             int float_count = 0;
             char* check_params = strdup(params);
             token = strtok(check_params, " ");
@@ -757,22 +771,21 @@ int main() {
                 continue;
             }
 
-            if (fields == 4) {
-
-                StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
-                if (existingStudent != NULL) {
-                    printf("The record with ID=%d already exists.\n", id);
-                }
-                else {
-
-                    InsertStudent(hashmap, id, name, programme, mark);
-                    printf("%s: A new record with ID=%d is successfully inserted.\n", USERNAME, id);
-                }
+            // Proceed to insert the record if everything is valid
+            StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
+            if (existingStudent != NULL) {
+                printf("The record with ID=%d already exists.\n", id);
             }
             else {
-                printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
+                InsertStudent(hashmap, id, name, programme, mark);
+                printf("%s: A new record with ID=%d is successfully inserted.\n", USERNAME, id);
             }
         }
+
+
+
+
+
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
