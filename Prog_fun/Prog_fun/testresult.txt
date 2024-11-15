@@ -1,0 +1,8 @@
+For command number:3 the following error was found:
+Expected:P2_3:Database file not open yet.
+Got:P2_3:Da file not open yet.
+
+For command number:4 the following error was found:
+Expected:P2_3:Database file not open yet.
+Got:P2_3:uwu
+

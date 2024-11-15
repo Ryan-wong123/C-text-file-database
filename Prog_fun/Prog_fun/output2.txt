@@ -1,7 +1,7 @@
 P2_3:Invalid Command. 
 P2_3:Database file not open yet.
-P2_3:Database file not open yet.
-P2_3:Database file not open yet.
+P2_3:Da file not open yet.
+P2_3:uwu
 P2_3:Database file not open yet.
 P2_3:Database file not open yet.
 P2_3:Database file is not opened.
@@ -81,7 +81,6 @@ P2_3:
 The record with ID=2201234 is successfully updated.
 P2_3:Invalid input for marks. Please enter a valid number.
 P2_3:Mark cannot be above 100. Update failed 
-
 The record with ID=2304567 is successfully updated.
 P2_3:CMS: Here are all the records found in the table "StudentRecords".
 ID        Name                  Programme                  Mark
