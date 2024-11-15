@@ -614,9 +614,7 @@ int main() {
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         TrimTrailingSpaces(input);
 
-        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0) && isFileOpened == 0) {
-            //OpenFile(FILE_PATH, hashmap);
-            //isFileOpened = 1;
+        if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0 || _strnicmp(input, "save", 4) == 0) && isFileOpened == 0) {
             printf("Database file not open yet.\n");
             continue;
         }
@@ -658,14 +656,6 @@ int main() {
             // change value into int data type
             int id = atoi(value);
 
-            // error handler check id if 0 or less than 0 or over id length 
-            /*
-            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
-                printf("enter");
-                continue;
-            }
-            */
-            //printf("%d\n", id);
             DeleteStudent(hashmap, id);
         }
         else if (_strnicmp(input, "query", 5) == 0) {
@@ -677,11 +667,7 @@ int main() {
             }
 
             int id = atoi(value);
-            /*
-            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
-                continue;
-            }
-            */
+         
             QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
@@ -782,19 +768,10 @@ int main() {
             }
         }
 
-
-
-
-
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
         else if (_stricmp(input, "SAVE") == 0) {
-
-            if (isFileOpened == 0) {
-                printf("Database file is not opened.\n");
-                continue;
-            }
         
             #if TEST_MODE == 1
             saveToFile("testdb2.txt", hashmap);
