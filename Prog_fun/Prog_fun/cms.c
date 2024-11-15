@@ -151,12 +151,12 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     char newName[NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
     float newMark = -1;
 
-   
+    int isInputValid = 1;
     char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) {
         if (!isValidAlphabeticString(currentName)) {
             printf("Error: Name should contain only alphabetic characters and spaces.\n");
-            return;
+            isInputValid = 0;
         }
         strncpy(newName, currentName, NAME_LENGTH - 1);
     }
@@ -166,7 +166,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
         if (!isValidAlphabeticString(currentProgramme)) {
             printf("Error: Programme should contain only alphabetic characters and spaces.\n");
-            return;
+            isInputValid = 0;
         }
         
         strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
@@ -188,8 +188,12 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
         }
         else {
             printf("Invalid input for marks. Please enter a valid number.\n");
-            return;
+            isInputValid = 0;
         }
+    }
+
+    if (isInputValid == 0) {
+        return;
     }
 
     unsigned int index = hash(id);
@@ -778,7 +782,7 @@ int main() {
                 printf("Database file is not opened.\n");
                 continue;
             }
-
+        
             #if TEST_MODE == 1
             saveToFile("testdb2.txt", hashmap);
             printf("Data has been successfully saved to testdb2.txt.\n");
