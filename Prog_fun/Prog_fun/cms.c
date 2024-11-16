@@ -151,9 +151,41 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     char newName[NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
     float newMark = -1;
 
+    int nameCount = 0, programmeCount = 0, markCount = 0;
+
+    // Check for duplicate fields
+    char* tempInput = strdup(input); // Duplicate input to tokenize without modifying the original
+    char* token = strtok(tempInput, " ");
+    while (token != NULL) {
+        if (strstr(token, "Name=")) nameCount++;
+        else if (strstr(token, "Programme=")) programmeCount++;
+        else if (strstr(token, "Mark=")) markCount++;
+        token = strtok(NULL, " ");
+    }
+    free(tempInput);
+
+    if (nameCount > 1) {
+        printf("Error: Duplicate 'Name' field in the command.\n");
+        return;
+    }
+    if (programmeCount > 1) {
+        printf("Error: Duplicate 'Programme' field in the command.\n");
+        return;
+    }
+    if (markCount > 1) {
+        printf("Error: Duplicate 'Mark' field in the command.\n");
+        return;
+    }
+
+
     int isInputValid = 1;
+    int checkField = 0;
+    
+
     char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) {
+        checkField = 1;
+        
         if (!isValidAlphabeticString(currentName)) {
             printf("Error: Name should contain only alphabetic characters and spaces.\n");
             isInputValid = 0;
@@ -163,7 +195,8 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
     char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
     if (currentProgramme) {
-
+        checkField = 1;
+        
         if (!isValidAlphabeticString(currentProgramme)) {
             printf("Error: Programme should contain only alphabetic characters and spaces.\n");
             isInputValid = 0;
@@ -173,12 +206,14 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     char* currentMark = GetField(input, "Mark=", sizeof(input));
-    //printf("%f", currentMark);
-     if (currentMark == NULL) {
-         return;
-     }
+    // //printf("%f", currentMark);
+    //  if (currentMark == NULL) {
+    //      return;
+    //  }
 
     if (currentMark) {
+        checkField = 1;
+        int countMark=0;
         float tempMark;
         int result = sscanf(currentMark, "%f", &tempMark);  // Convert string to float
 
@@ -190,6 +225,10 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
             printf("Invalid input for marks. Please enter a valid number.\n");
             isInputValid = 0;
         }
+    }
+    if (!checkField) {
+        printf("Error: No fields (Name, Programme, or Mark) provided for update.\n");
+        return;
     }
 
     if (isInputValid == 0) {
