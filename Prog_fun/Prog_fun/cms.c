@@ -603,6 +603,37 @@ char* GetField(const char* input, const char* key, int maxLength) {
         }
 
     }
+    // check mark for Invalid characters
+    if (strcmp(key, "Mark=") == 0) {
+        const char* markStr = desiredFieldOutput; // Use the string representation for validation
+        int dotCount = 0; // Count the number of dots in the string
+        int isNumeric = 1; // Flag to check if the string is numeric
+
+        // Check if the input contains only digits, at most one dot, and optionally a leading '-'
+        for (int i = 0; markStr[i] != '\0'; i++) {
+            if (markStr[i] == '.') {
+                dotCount++;
+                if (dotCount > 1) { // More than one dot is invalid
+                    isNumeric = 0;
+                    break;
+                }
+            } else if (markStr[i] == '-') {
+                if (i != 0) { // '-' is only valid at the beginning
+                    isNumeric = 0;
+                    break;
+                }
+            } else if (!isdigit((unsigned char)markStr[i])) { // Non-numeric character
+                isNumeric = 0;
+                break;
+            }
+        }
+
+    
+        if (!isNumeric) {
+            printf("Mark contains invalid characters.Update failed.\n");
+            return NULL;
+        }
+    }
 
     
     return desiredFieldOutput;  // Return the pointer to the static buffer
