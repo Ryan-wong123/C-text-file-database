@@ -70,6 +70,7 @@ void resizeHashMap(HashMap* currentHashmap);
 void TrimTrailingSpaces(char* str);
 int SortbyID(const void* a, const void* b);
 char* GetField(const char* input, const char* key, int maxLength);
+bool HasDuplicateFields(const char* input);
 
 void DisplayDeclaration() {
 
@@ -111,7 +112,6 @@ int isValidAlphabeticString(const char* str) {
     }
     return 1; // Return 1 if all characters are valid
 }
-
 
 void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
     
@@ -590,28 +590,54 @@ char* GetField(const char* input, const char* key, int maxLength) {
         }
     }
 
-    // check for mark range to be 0 to 100
+    // Special handling for the Mark field
     if (strcmp(key, "Mark=") == 0) {
-        float markValue = atof(desiredFieldOutput);
-        if (markValue < 0) {
-            printf("Mark cannot be below 0. Update failed \n");
-            return NULL;
-        }
-        else if (markValue > 100) {
-            printf("Mark cannot be above 100. Update failed \n");
-            return NULL;
+        char* temp_mark = desiredFieldOutput;
+        int dot_count = 0;
+
+        // Validate numeric content and dot placement
+        for (size_t i = 0; i < strlen(temp_mark); i++) {
+            if (temp_mark[i] == '.') {
+                dot_count++;
+                if (dot_count > 1 || i == 0 || i == strlen(temp_mark) - 1) {
+                    printf("Error: Invalid Mark format. Ensure it is a valid float value.\n");
+                    return NULL;
+                }
+            }
+            else if (!isdigit((unsigned char)temp_mark[i])) {
+                printf("Error: Mark must contain only numeric characters or a single decimal point.\n");
+                return NULL;
+            }
         }
 
+        // Convert to float and validate range
+        float markValue = atof(temp_mark);
+        if (markValue < 0 || markValue > 100) {
+            printf("Error: Mark must be between 0 and 100.\n");
+            return NULL;
+        }
     }
 
     
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
+bool HasDuplicateFields(const char* input) {
+    int count_id = 0, count_name = 0, count_programme = 0, count_mark = 0;
+    char* temp = strdup(input);
+    char* token = strtok(temp, " ");
 
+    while (token) {
+        if (strstr(token, "ID=")) count_id++;
+        else if (strstr(token, "Name=")) count_name++;
+        else if (strstr(token, "Programme=")) count_programme++;
+        else if (strstr(token, "Mark=")) count_mark++;
+        token = strtok(NULL, " ");
+}
+    free(temp);
 
-
-
+    return count_id > 1 || count_name > 1 || count_programme > 1 || count_mark > 1;
+}
 
 int main() {
 
@@ -710,95 +736,53 @@ int main() {
             QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
+            char* params = input + 7;
+            int id = 0;
+            char name[NAME_LENGTH] = { 0 };
+            char programme[PROGRAMME_LENGTH] = { 0 };
+            float mark = 0;
 
-            // Extract parameters using GetField
+            // Validate and extract ID
             char* value = GetField(input, "ID=", sizeof(input));
-            if (value == NULL) {
+            if (!value || (id = atoi(value)) <= 0) {
                 printf("Invalid Command. Usage: INSERT ID=<id>\n");
                 continue;
             }
 
-            int id = atoi(value);
-
-            char name[NAME_LENGTH];
-            char programme[PROGRAMME_LENGTH];
-            float mark;
-
-            char* params = input + 7;
-
-            memset(name, 0, sizeof(name));
-            memset(programme, 0, sizeof(programme));
-
-            int count_id = 0, count_name = 0, count_programme = 0, count_mark = 0;
-            char* temp = strdup(input);
-            char* token = strtok(temp, " ");
-            while (token != NULL) {
-                if (strstr(token, "ID=") != NULL) count_id++;
-                else if (strstr(token, "Name=") != NULL) count_name++;
-                else if (strstr(token, "Programme=") != NULL) count_programme++;
-                else if (strstr(token, "Mark=") != NULL) count_mark++;
-                token = strtok(NULL, " ");
-            }
-            free(temp);
-
-            if (count_id > 1 || count_name > 1 || count_programme > 1 || count_mark > 1) {
+            // Check for duplicate parameters
+            if (HasDuplicateFields(input)) {
                 printf("Error: Duplicate parameter detected in the input.\n");
                 continue;
             }
 
-            // Correctly parse the parameters including Mark field
-            int fields = sscanf(params, "ID=%d Name=%29[^P] Programme=%29[^M] Mark=%f", &id, name, programme, &mark);
-
+            // Extract Name
+            char* nameField = GetField(input, "Name=", sizeof(name));
+            if (!nameField) {
+                printf("Error: Name field is required.\n");
+                continue;
+            }
+            strncpy(name, nameField, NAME_LENGTH - 1);
             TrimTrailingSpaces(name);
+
+            // Extract Programme
+            char* programmeField = GetField(input, "Programme=", sizeof(programme));
+            if (!programmeField) {
+                printf("Error: Programme field is required.\n");
+                continue;
+            }
+            strncpy(programme, programmeField, PROGRAMME_LENGTH - 1);
             TrimTrailingSpaces(programme);
 
-            if (fields != 4) {
-                printf("Invalid input. Please provide fields in the format: INSERT ID=ID Name=Name Programme=Programme Mark=Mark.\n");
+            // Extract and validate Mark
+            char* markField = GetField(input, "Mark=", sizeof(input));
+            if (!markField) {
+                printf("Error: Invalid or missing Mark field.\n");
                 continue;
             }
+            mark = atof(markField); // Convert Mark field to float
 
-            // Validate the Mark parameter: Make sure it's a valid float and there's no extra non-numeric content
-            char* mark_pos = strstr(params, "Mark=");
-            if (mark_pos != NULL) {
-                char* mark_end = mark_pos + 5;  // Skip "Mark="
-                char temp_mark[50];
-                sscanf(mark_end, "%49s", temp_mark); // Capture the value after "Mark="
-
-                // Check if the mark contains non-numeric characters (invalid case)
-                if (strspn(temp_mark, "0123456789.") != strlen(temp_mark)) {
-                    printf("Invalid input. The 'Mark' parameter must be a valid float value.\n");
-                    continue;
-                }
-
-                // Ensure there is only one float value for Mark
-                char* extra_floats = strchr(mark_end, ' ');
-                if (extra_floats != NULL) {
-                    printf("Invalid input. The 'Mark' parameter must not contain additional float values.\n");
-                    continue;
-                }
-            }
-
-            // Check if there are multiple float values in the entire parameters
-            int float_count = 0;
-            char* check_params = strdup(params);
-            token = strtok(check_params, " ");
-            while (token != NULL) {
-                float test_float;
-                if (sscanf(token, "%f", &test_float) == 1) {
-                    float_count++;
-                }
-                token = strtok(NULL, " ");
-            }
-            free(check_params);
-
-            if (float_count > 1) {
-                printf("Error: Multiple float values detected in the input. Only one float is allowed for the mark.\n");
-                continue;
-            }
-
-            // Proceed to insert the record if everything is valid
-            StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
-            if (existingStudent != NULL) {
+            // Insert record into the hash map
+            if (QueryStudent(hashmap, id, false)) {
                 printf("The record with ID=%d already exists.\n", id);
             }
             else {
@@ -855,11 +839,6 @@ int main() {
     }
 }
       
-
-
-
-
-
 /*
 
 OPEN TEST CASES
