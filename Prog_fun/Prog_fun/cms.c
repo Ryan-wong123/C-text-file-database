@@ -141,156 +141,64 @@ void InsertStudent(HashMap* hashmap, int id, const char* name, const char* progr
 }
 
 void UpdateStudent(HashMap* hashmap, const char* input) {
-    int id = atoi(GetField(input, "ID=", sizeof(input)));
-    if (id == 0) {
-        printf("Please enter valid ID.\n");
+    // Extract and validate ID
+    char* idField = GetField(input, "ID=", sizeof(input));
+    if (!idField) {
+        printf("Please enter a valid ID.\n");
         return;
     }
-       
+    int id = atoi(idField);
 
-    char newName[NAME_LENGTH] = "", newProgramme[PROGRAMME_LENGTH] = "";
+    // Initialize fields
+    char newName[NAME_LENGTH] = { 0 };
+    char newProgramme[PROGRAMME_LENGTH] = { 0 };
     float newMark = -1;
-
-    int nameCount = 0, programmeCount = 0, markCount = 0;
-
-    // Check for duplicate fields
-    char* tempInput = strdup(input); // Duplicate input to tokenize without modifying the original
-    char* token = strtok(tempInput, " ");
-    while (token != NULL) {
-        if (strstr(token, "Name=")) nameCount++;
-        else if (strstr(token, "Programme=")) programmeCount++;
-        else if (strstr(token, "Mark=")) markCount++;
-        token = strtok(NULL, " ");
-    }
-    free(tempInput);
-
-    if (nameCount > 1) {
-        printf("Error: Duplicate 'Name' field in the command.\n");
-        return;
-    }
-    if (programmeCount > 1) {
-        printf("Error: Duplicate 'Programme' field in the command.\n");
-        return;
-    }
-    if (markCount > 1) {
-        printf("Error: Duplicate 'Mark' field in the command.\n");
-        return;
-    }
-
-
-    int isInputValid = 1;
     int checkField = 0;
-    
 
+    // Extract and validate Name
     char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) {
         checkField = 1;
-        
-        // Check if the value is empty or contains only spaces
-        if (strlen(currentName) == 0 || strspn(currentName, " ") == strlen(currentName)) {
-            printf("Error: Name field must not be empty.\n");
-            isInputValid = 0;
-        } else if (!isValidAlphabeticString(currentName)) {
+        if (!isValidAlphabeticString(currentName)) {
             printf("Error: Name should contain only alphabetic characters and spaces.\n");
-            isInputValid = 0;
+            return;
         }
-
         strncpy(newName, currentName, NAME_LENGTH - 1);
     }
 
+    // Extract and validate Programme
     char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
     if (currentProgramme) {
         checkField = 1;
-        
-        // Check if the value is empty or contains only spaces
-        if (strlen(currentProgramme) == 0 || strspn(currentProgramme, " ") == strlen(currentProgramme)) {
-            printf("Error: Programme field must not be empty.\n");
-            isInputValid = 0;
-        } else if (!isValidAlphabeticString(currentProgramme)) {
+        if (!isValidAlphabeticString(currentProgramme)) {
             printf("Error: Programme should contain only alphabetic characters and spaces.\n");
-            isInputValid = 0;
+            return;
         }
-
         strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
     }
 
+    // Extract and validate Mark
     char* currentMark = GetField(input, "Mark=", sizeof(input));
-    // //printf("%f", currentMark);
-    // if (!currentMark) {
-    //     isInputValid = 0;
-    // }
-
-    if (currentMark){
+    if (currentMark) {
         checkField = 1;
-        int countMark=0;
-        int isNumeric = 0;
-        int countDot = 0;
-        
-
-        char tempMark[50];
-        sscanf(currentMark, "%49s", tempMark);
-
-        // Check if the mark contains only numeric characters, '.' and optionally '-'
-        if (strspn(tempMark, "0123456789.-") != strlen(tempMark)) {
-            printf("Invalid input. The 'Mark' field must be a valid numeric value.\n");
-            isInputValid = 0;
-        }else {
-        // Ensure there is at most one decimal point and no multiple numeric values
-        int dotCount = 0;
-        int isNumeric = 1;
-
-        for (int i = 0; tempMark[i] != '\0'; i++) {
-            if (tempMark[i] == '.') {
-                dotCount++;
-                if (dotCount > 1) {
-                    isNumeric = 0;
-                    break;
-                }
-            } else if (tempMark[i] == '-') {
-                if (i != 0) { // '-' should only appear at the beginning
-                    isNumeric = 0;
-                    break;
-                }
-            } else if (!isdigit((unsigned char)tempMark[i])) {
-                isNumeric = 0;
-                break;
-            }
-        }
-
-
-
-        if (!isNumeric) {
-            printf("Invalid input. The 'Mark' field contains invalid characters.\n");
-            isInputValid = 0;
-        } else {
-            // Convert the string to a float and check range
-            float tempMarkValue;
-            if (sscanf(tempMark, "%f", &tempMarkValue) != 1 || tempMarkValue < 0 || tempMarkValue > 100) {
-                printf("Invalid input. The 'Mark' field must be a value between 0 and 100.\n");
-                isInputValid = 0;
-            } else {
-                newMark = tempMarkValue; // Update the mark only if valid
-            }
+        newMark = atof(currentMark);
+        if (newMark < 0 || newMark > 100) {
+            printf("Error: Mark must be between 0 and 100.\n");
+            return;
         }
     }
-    }
 
+    // Ensure at least one field is provided
     if (!checkField) {
-        printf("Error: No fields (Name, Programme or Mark) provided to update.\n");
         return;
     }
 
-    if (!isInputValid) {
-        printf("Update failed due to invalid input.\n");
-        return;
-    }
-
+    // Update the student record
     unsigned int index = hash(id);
     StudentRecords* current = hashmap->table[index];
 
     while (current != NULL) {
         if (current->id == id) {
-            
             if (*newName) {
                 strncpy(current->name, newName, sizeof(current->name) - 1);
                 current->name[sizeof(current->name) - 1] = '\0';
@@ -303,7 +211,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
                 current->mark = newMark;
             }
 
-            printf("The record with ID=%d is successfully updated.\n", id);
+            printf("\nThe record with ID=%d is successfully updated.\n", id);
             return;
         }
         current = current->next;
@@ -827,7 +735,15 @@ int main() {
             ShowAll(hashmap);
         }
         else if (_strnicmp(input, "update", 6) == 0) {
+            if (HasDuplicateFields(input)) {
+                printf("Error: Duplicate parameter detected in the input.\n");
+                continue;
+            }
+
             char* value = GetField(input, "ID=", sizeof(input));
+            // Check for duplicate parameters
+           
+
             if (value == NULL) {
                 printf("Invalid Command. Usage: UPDATE ID=<id>\n");
                 continue;
@@ -865,6 +781,11 @@ int main() {
             QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
+            // Check for duplicate parameters
+            if (HasDuplicateFields(input)) {
+                printf("Error: Duplicate parameter detected in the input.\n");
+                continue;
+            }
             char* params = input + 7;
             int id = 0;
             char name[NAME_LENGTH] = { 0 };
@@ -875,12 +796,6 @@ int main() {
             char* value = GetField(input, "ID=", sizeof(input));
             if (!value || (id = atoi(value)) <= 0) {
                 printf("Invalid Command. Usage: INSERT ID=<id>\n");
-                continue;
-            }
-
-            // Check for duplicate parameters
-            if (HasDuplicateFields(input)) {
-                printf("Error: Duplicate parameter detected in the input.\n");
                 continue;
             }
 
