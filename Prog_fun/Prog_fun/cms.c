@@ -144,7 +144,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     // Extract and validate ID
     char* idField = GetField(input, "ID=", sizeof(input));
     if (!idField) {
-        printf("Please enter a valid ID.\n");
+        printf("%s: Please enter a valid ID.\n", USERNAME);
         return;
     }
     int id = atoi(idField);
@@ -160,7 +160,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     if (currentName) {
         checkField = 1;
         if (!isValidAlphabeticString(currentName)) {
-            printf("Error: Name should contain only alphabetic characters and spaces.\n");
+            printf("%s: Name should contain only alphabetic characters and spaces.\n", USERNAME);
             return;
         }
         strncpy(newName, currentName, NAME_LENGTH - 1);
@@ -171,7 +171,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     if (currentProgramme) {
         checkField = 1;
         if (!isValidAlphabeticString(currentProgramme)) {
-            printf("Error: Programme should contain only alphabetic characters and spaces.\n");
+            printf("%s: Programme should contain only alphabetic characters and spaces.\n", USERNAME);
             return;
         }
         strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
@@ -183,7 +183,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
         checkField = 1;
         newMark = atof(currentMark);
         if (newMark < 0 || newMark > 100) {
-            printf("Error: Mark must be between 0 and 100.\n");
+            printf("%s: Mark must be between 0 and 100.\n", USERNAME);
             return;
         }
     }
@@ -211,13 +211,13 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
                 current->mark = newMark;
             }
 
-            printf("\nThe record with ID=%d is successfully updated.\n", id);
+            printf("%s: The record with ID=%d is successfully updated.\n",USERNAME, id);
             return;
         }
         current = current->next;
     }
 
-    printf("The record with ID=%d does not exist.\n", id);
+    printf("%s: The record with ID=%d does not exist.\n",USERNAME, id);
 }
 
 struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord) {
@@ -299,7 +299,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
             break;
         }
         else {
-            printf("Invalid Command\n");
+            printf("%s: Invalid Command\n", USERNAME);
         }
     }
 }
@@ -344,7 +344,7 @@ void OpenFile(const char* filename, HashMap* hashmap) {
                 }
             }
             else {
-                fprintf(stderr, "Error parsing fileOutputLine: %s\n", fileOutputLine);
+                fprintf(stderr, "%s: Error parsing fileOutputLine: %s\n",USERNAME, fileOutputLine);
             }
         }
     }
@@ -354,14 +354,14 @@ void OpenFile(const char* filename, HashMap* hashmap) {
 
 void ShowAll(HashMap* hashmap) {
     if (recordCount == 0) {
-        printf("No records to display.\n");
+        printf("%s: No records to display.\n", USERNAME);
         return;
     }
 
 
     StudentRecords** allRecords = malloc(recordCount * sizeof(StudentRecords*));
     if (allRecords == NULL) {
-        fprintf(stderr, "Memory allocation failed for allRecords.\n");
+        fprintf(stderr, "%s: Memory allocation failed for allRecords.\n", USERNAME);
         return;
     }
 
@@ -439,7 +439,7 @@ void resizeHashMap(HashMap* currentHashmap) {
     // Allocate memory for the new hash map
     HashMap* newHashMap = malloc(sizeof(HashMap));
     if (!newHashMap || !(newHashMap->table = calloc(newSize, sizeof(StudentRecords*)))) {
-        fprintf(stderr, "Memory allocation failed during resizing\n");
+        fprintf(stderr, "%s: Memory allocation failed during resizing\n", USERNAME);
         exit(EXIT_FAILURE);
     }
 
@@ -537,94 +537,18 @@ char* GetField(const char* input, const char* key, int maxLength) {
     if (strcmp(key, "ID=") == 0) {
         int idValue = atoi(desiredFieldOutput);
         if (idValue < 0) {
-            printf("ID cannot be negative.\n");
+            printf("%s: ID cannot be negative.\n", USERNAME);
             return NULL;
         }
         else if (idValue == 0) {
-            printf("ID cannot be 0.\n");
+            printf("%s: ID cannot be 0.\n", USERNAME);
             return NULL;
         }
         else if ((int)log10(abs(idValue)) + 1 != ID_LENGTH) {
-            printf("ID length not 7 digits.\n");
+            printf("%s: ID length not 7 digits.\n", USERNAME);
             return NULL;
         }
     }
-
-
-//     if (strcmp(key, "Mark=") == 0) {
-//     const char* markStr = desiredFieldOutput; // Use the string representation for validation
-//     int dotCount = 0; // Count the number of dots in the string
-//     int isNumeric = 1; // Flag to check if the string is numeric
-
-//     // Check if the input contains only digits, at most one dot, and optionally a leading '-'
-//     for (int i = 0; markStr[i] != '\0'; i++) {
-//         if (markStr[i] == '.') {
-//             dotCount++;
-//             if (dotCount > 1) { // More than one dot is invalid
-//                 isNumeric = 0;
-//                 break;
-//             }
-//         } else if (markStr[i] == '-') {
-//             if (i != 0) { // '-' is only valid at the beginning
-//                 isNumeric = 0;
-//                 break;
-//             }
-//         } else if (!isdigit((unsigned char)markStr[i])) { // Non-numeric character
-//             isNumeric = 0;
-//             break;
-//         }
-//     }
-//     if (!isNumeric) {
-//         printf("Mark contains invalid characters. Update failed.\n");
-//         return NULL;
-//     }
-// }
-
-
-    // // check for mark range to be 0 to 100
-    // if (strcmp(key, "Mark=") == 0) {
-    //     float markValue = atof(desiredFieldOutput);
-    //     if (markValue < 0) {
-    //         printf("Mark cannot be below 0. Update failed \n");
-    //         return NULL;
-            
-    //     }
-    //     else if (markValue > 100) {
-    //         printf("Mark cannot be above 100. Update failed \n");
-    //         return NULL;
-    //     }
-    // }
-
-    // }
-    // // check mark for Invalid characters
-    // if (strcmp(key, "Mark=") == 0) {
-    //     const char* markStr = desiredFieldOutput; // Use the string representation for validation
-    //     int dotCount = 0; // Count the number of dots in the string
-    //     int isNumeric = 1; // Flag to check if the string is numeric
-
-    //     // Check if the input contains only digits, at most one dot, and optionally a leading '-'
-    //     for (int i = 0; markStr[i] != '\0'; i++) {
-    //         if (markStr[i] == '.') {
-    //             dotCount++;
-    //             if (dotCount > 1) { // More than one dot is invalid
-    //                 isNumeric = 0;
-    //                 break;
-    //             }
-    //         } else if (markStr[i] == '-') {
-    //             if (i != 0) { // '-' is only valid at the beginning
-    //                 isNumeric = 0;
-    //                 break;
-    //             }
-    //         } else if (!isdigit((unsigned char)markStr[i])) { // Non-numeric character
-    //             isNumeric = 0;
-    //             break;
-    //         }
-    //     }
-    //     if (!isNumeric) {
-    //         printf("Mark contains invalid characters.Update failed.\n");
-    //         return NULL;
-    //     }
-    // }
 
     // Special handling for the Mark field
     if (strcmp(key, "Mark=") == 0) {
@@ -636,12 +560,12 @@ char* GetField(const char* input, const char* key, int maxLength) {
             if (temp_mark[i] == '.') {
                 dot_count++;
                 if (dot_count > 1 || i == 0 || i == strlen(temp_mark) - 1) {
-                    printf("Error: Invalid Mark format. Ensure it is a valid float value.\n");
+                    printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
                     return NULL;
                 }
             }
             else if (!isdigit((unsigned char)temp_mark[i])) {
-                printf("Error: Mark must contain only numeric characters or a single decimal point.\n");
+                printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
                 return NULL;
             }
         }
@@ -649,13 +573,11 @@ char* GetField(const char* input, const char* key, int maxLength) {
         // Convert to float and validate range
         float markValue = atof(temp_mark);
         if (markValue < 0 || markValue > 100) {
-            printf("Error: Mark must be between 0 and 100.\n");
+            printf("%s: Mark must be between 0 and 100.\n", USERNAME);
             return NULL;
         }
     }
 
-
-    
     return desiredFieldOutput;  // Return the pointer to the static buffer
 }
 
@@ -698,13 +620,13 @@ int main() {
     HashMap* hashmap = malloc(sizeof(HashMap));
 
     if (hashmap == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
+        fprintf(stderr, "%s: Memory allocation failed\n", USERNAME);
         exit(EXIT_FAILURE);
     }
 
     hashmap->table = calloc(currentSize, sizeof(StudentRecords*));
     if (!hashmap->table) {
-        fprintf(stderr, "Memory allocation failed for table\n");
+        fprintf(stderr, "%s: Memory allocation failed for table\n", USERNAME);
         exit(EXIT_FAILURE);
     }
 
@@ -715,15 +637,19 @@ int main() {
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
         TrimTrailingSpaces(input);
-
+        // Check for duplicate parameters
+        if (HasDuplicateFields(input)) {
+            printf("%s: Duplicate parameter detected in the input.\n", USERNAME);
+            continue;
+        }
         if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0 || _strnicmp(input, "save", 4) == 0) && isFileOpened == 0) {
-            printf("Database file not open yet.\n");
+            printf("%s: Database file not open yet.\n", USERNAME);
             continue;
         }
 
         if (_stricmp(input, "open") == 0) {
             if (isFileOpened == 1) {
-                printf("Database file is open already.\n");
+                printf("%s: Database file is open already.\n", USERNAME);
                 continue;
             }
 
@@ -735,17 +661,12 @@ int main() {
             ShowAll(hashmap);
         }
         else if (_strnicmp(input, "update", 6) == 0) {
-            if (HasDuplicateFields(input)) {
-                printf("Error: Duplicate parameter detected in the input.\n");
-                continue;
-            }
-
             char* value = GetField(input, "ID=", sizeof(input));
             // Check for duplicate parameters
            
 
             if (value == NULL) {
-                printf("Invalid Command. Usage: UPDATE ID=<id>\n");
+                printf("%s: Invalid Command. Usage: UPDATE ID=<id>\n", USERNAME);
                 continue;
             }
 
@@ -760,7 +681,7 @@ int main() {
             // use helper function to extract ID 
             char* value = GetField(input, "ID=",sizeof(input));
             if (value == NULL) {
-                printf("Invalid Command. Usage: DELETE ID=<id>\n");
+                printf("%s: Invalid Command. Usage: DELETE ID=<id>\n", USERNAME);
                 continue;
             }
             // change value into int data type
@@ -772,7 +693,7 @@ int main() {
             
             char* value = GetField(input, "ID=", sizeof(input));
             if (value == NULL) {
-                printf("Invalid Command. Usage: QUERY ID=<id>\n");
+                printf("%s: Invalid Command. Usage: QUERY ID=<id>\n", USERNAME);
                 continue;
             }
 
@@ -781,11 +702,7 @@ int main() {
             QueryStudent(hashmap, id, true);
         }
         else if (_strnicmp(input, "insert", 6) == 0) {
-            // Check for duplicate parameters
-            if (HasDuplicateFields(input)) {
-                printf("Error: Duplicate parameter detected in the input.\n");
-                continue;
-            }
+           
             char* params = input + 7;
             int id = 0;
             char name[NAME_LENGTH] = { 0 };
@@ -795,14 +712,14 @@ int main() {
             // Validate and extract ID
             char* value = GetField(input, "ID=", sizeof(input));
             if (!value || (id = atoi(value)) <= 0) {
-                printf("Invalid Command. Usage: INSERT ID=<id>\n");
+                printf("%s: Invalid Command. Usage: INSERT ID=<id>\n", USERNAME);
                 continue;
             }
 
             // Extract Name
             char* nameField = GetField(input, "Name=", sizeof(name));
             if (!nameField) {
-                printf("Error: Name field is required.\n");
+                printf("%s: Name field is required.\n", USERNAME);
                 continue;
             }
             strncpy(name, nameField, NAME_LENGTH - 1);
@@ -811,7 +728,7 @@ int main() {
             // Extract Programme
             char* programmeField = GetField(input, "Programme=", sizeof(programme));
             if (!programmeField) {
-                printf("Error: Programme field is required.\n");
+                printf("%s: Programme field is required.\n", USERNAME);
                 continue;
             }
             strncpy(programme, programmeField, PROGRAMME_LENGTH - 1);
@@ -820,14 +737,14 @@ int main() {
             // Extract and validate Mark
             char* markField = GetField(input, "Mark=", sizeof(input));
             if (!markField) {
-                printf("Error: Invalid or missing Mark field.\n");
+                printf("%s: Invalid or missing Mark field.\n", USERNAME);
                 continue;
             }
             mark = atof(markField); // Convert Mark field to float
 
             // Insert record into the hash map
             if (QueryStudent(hashmap, id, false)) {
-                printf("The record with ID=%d already exists.\n", id);
+                printf("%s: The record with ID=%d already exists.\n",USERNAME, id);
             }
             else {
                 InsertStudent(hashmap, id, name, programme, mark);
@@ -847,17 +764,16 @@ int main() {
 
             #else
             saveToFile(FILE_PATH, hashmap);
-            printf("Data has been successfully saved to %s.\n", FILE_PATH);
+            printf("%s: Data has been successfully saved to %s.\n",USERNAME, FILE_PATH);
 
             #endif
 
         }
         else {
-            printf("Invalid Command. \n");
+            printf("%s: Invalid Command. \n", USERNAME);
 
         }
     }
-
 
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
@@ -876,10 +792,7 @@ int main() {
         //fclose(output_fp);
 
 #endif
-
-
         return 0;
-
     }
 }
       
