@@ -154,11 +154,12 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     char newProgramme[PROGRAMME_LENGTH] = { 0 };
     float newMark = -1;
     int checkField = 0;
+    int isInputValid = 1;
 
     // Extract and validate Name
     char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) {
-        checkField = 1;
+        checkField++;
         if (!isValidAlphabeticString(currentName)) {
             printf("%s: Name should contain only alphabetic characters and spaces.\n", USERNAME);
             return;
@@ -169,7 +170,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     // Extract and validate Programme
     char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
     if (currentProgramme) {
-        checkField = 1;
+        checkField++;
         if (!isValidAlphabeticString(currentProgramme)) {
             printf("%s: Programme should contain only alphabetic characters and spaces.\n", USERNAME);
             return;
@@ -181,15 +182,69 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     char* currentMark = GetField(input, "Mark=", sizeof(input));
     if (currentMark) {
         checkField = 1;
-        newMark = atof(currentMark);
-        if (newMark < 0 || newMark > 100) {
-            printf("%s: Mark must be between 0 and 100.\n", USERNAME);
-            return;
+        int countMark = 0;
+        int isNumeric = 0;
+        int countDot = 0;
+
+
+        char tempMark[50];
+        sscanf(currentMark, "%49s", tempMark);
+
+        // Check if the mark contains only numeric characters, '.' and optionally '-'
+        if (strspn(tempMark, "0123456789.-") != strlen(tempMark)) {
+            printf("Invalid input. The 'Mark' field must be a valid numeric value.\n");
+            isInputValid = 0;
+        }
+        else {
+            // Ensure there is at most one decimal point and no multiple numeric values
+            int dotCount = 0;
+            int isNumeric = 1;
+
+            for (int i = 0; tempMark[i] != '\0'; i++) {
+                if (tempMark[i] == '.') {
+                    dotCount++;
+                    if (dotCount > 1) {
+                        isNumeric = 0;
+                        break;
+                    }
+                }
+                else if (tempMark[i] == '-') {
+                    if (i != 0) { // '-' should only appear at the beginning
+                        isNumeric = 0;
+                        break;
+                    }
+                }
+                else if (!isdigit((unsigned char)tempMark[i])) {
+                    isNumeric = 0;
+                    break;
+                }
+            }
+
+
+
+            if (!isNumeric) {
+                printf("Invalid input. The 'Mark' field contains invalid characters.\n");
+                isInputValid = 0;
+            }
+            else {
+                // Convert the string to a float and check range
+                float tempMarkValue;
+                if (sscanf(tempMark, "%f", &tempMarkValue) != 1 || tempMarkValue < 0 || tempMarkValue > 100) {
+                    printf("Invalid input. The 'Mark' field must be a value between 0 and 100.\n");
+                    isInputValid = 0;
+                }
+                else {
+                    newMark = tempMarkValue; // Update the mark only if valid
+                }
+            }
         }
     }
 
-    // Ensure at least one field is provided
     if (!checkField) {
+        printf("Error: No fields (Name, Programme or Mark) provided to update.\n");
+        return;
+    }
+    if (!isInputValid) {
         return;
     }
 
@@ -552,30 +607,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
 
     // Special handling for the Mark field
     if (strcmp(key, "Mark=") == 0) {
-        char* temp_mark = desiredFieldOutput;
-        int dot_count = 0;
-
-        // Validate numeric content and dot placement
-        for (size_t i = 0; i < strlen(temp_mark); i++) {
-            if (temp_mark[i] == '.') {
-                dot_count++;
-                if (dot_count > 1 || i == 0 || i == strlen(temp_mark) - 1) {
-                    printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
-                    return NULL;
-                }
-            }
-            else if (!isdigit((unsigned char)temp_mark[i])) {
-                printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
-                return NULL;
-            }
-        }
-
-        // Convert to float and validate range
-        float markValue = atof(temp_mark);
-        if (markValue < 0 || markValue > 100) {
-            printf("%s: Mark must be between 0 and 100.\n", USERNAME);
-            return NULL;
-        }
+       
     }
 
     return desiredFieldOutput;  // Return the pointer to the static buffer
@@ -662,16 +694,8 @@ int main() {
         }
         else if (_strnicmp(input, "update", 6) == 0) {
             char* value = GetField(input, "ID=", sizeof(input));
-            // Check for duplicate parameters
-           
-
             if (value == NULL) {
                 printf("%s: Invalid Command. Usage: UPDATE ID=<id>\n", USERNAME);
-                continue;
-            }
-
-            int id = atoi(value);
-            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
                 continue;
             }
 
@@ -740,7 +764,35 @@ int main() {
                 printf("%s: Invalid or missing Mark field.\n", USERNAME);
                 continue;
             }
-            mark = atof(markField); // Convert Mark field to float
+            // Validate numeric content and dot placement
+            int dot_count = 0;
+            for (size_t i = 0; i < strlen(markField); i++) {
+                if (markField[i] == '.') {
+                    dot_count++;
+                    // Ensure that there is only one dot and it's not at the start or end
+                    if (dot_count > 1 || i == 0 || i == strlen(markField) - 1) {
+                        printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
+                        continue;
+                    }
+                }
+                // Ensure all characters are digits or a single dot
+                else if (!isdigit((unsigned char)markField[i])) {
+                    printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
+                    continue;
+                }
+            }
+
+            // Convert the string to a float and validate range
+            float markValue = atof(markField);
+            if (markValue < 0 || markValue > 100) {
+                printf("%s: Mark must be between 0 and 100.\n", USERNAME);
+                continue;
+            }
+
+            // Proceed with the markValue
+            mark = markValue;
+
+        
 
             // Insert record into the hash map
             if (QueryStudent(hashmap, id, false)) {
