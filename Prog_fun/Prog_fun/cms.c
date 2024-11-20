@@ -663,18 +663,10 @@ int main() {
         }
         else if (_strnicmp(input, "update", 6) == 0) {
             char* value = GetField(input, "ID=", sizeof(input));
-            // Check for duplicate parameters
-           
-
             if (value == NULL) {
                 printf("%s: Invalid Command. Usage: UPDATE ID=<id>\n", USERNAME);
                 continue;
             }
-
-            //int id = atoi(value);
-            //if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
-            //    continue;
-            //}
 
             UpdateStudent(hashmap, input);
         }
