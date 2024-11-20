@@ -671,10 +671,10 @@ int main() {
                 continue;
             }
 
-            int id = atoi(value);
-            if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
-                continue;
-            }
+            //int id = atoi(value);
+            //if (id == 0 || id < 0 || (int)log10(abs(id)) + 1 > ID_LENGTH) {
+            //    continue;
+            //}
 
             UpdateStudent(hashmap, input);
         }
