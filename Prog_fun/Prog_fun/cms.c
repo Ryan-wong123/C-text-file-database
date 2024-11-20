@@ -181,16 +181,33 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     char* currentMark = GetField(input, "Mark=", sizeof(input));
     if (currentMark) {
         checkField++;
-        newMark = atof(currentMark);
-        if (newMark < 0 || newMark > 100) {
+        char* temp_mark = currentMark;
+        int dot_count = 0;
+
+        // Validate numeric content and dot placement
+        for (size_t i = 0; i < strlen(temp_mark); i++) {
+            if (temp_mark[i] == '.') {
+                dot_count++;
+                if (dot_count > 1 || i == 0 || i == strlen(temp_mark) - 1) {
+                    printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
+                    return NULL;
+                }
+            }
+            else if (!isdigit((unsigned char)temp_mark[i])) {
+                printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
+                return NULL;
+            }
+        }
+
+        // Convert to float and validate range
+        float markValue = atof(temp_mark);
+        if (markValue < 0 || markValue > 100) {
             printf("%s: Mark must be between 0 and 100.\n", USERNAME);
-            return;
+            return NULL;
         }
     }
-
-    // Ensure at least one field is provided
-    if (checkField ==0) {
-        printf("%s: Please enter update field.\n", USERNAME, id);
+    if (!checkField) {
+        printf("Error: No fields (Name, Programme or Mark) provided to update.\n");
         return;
     }
 
@@ -553,30 +570,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
 
     // Special handling for the Mark field
     if (strcmp(key, "Mark=") == 0) {
-        char* temp_mark = desiredFieldOutput;
-        int dot_count = 0;
-
-        // Validate numeric content and dot placement
-        for (size_t i = 0; i < strlen(temp_mark); i++) {
-            if (temp_mark[i] == '.') {
-                dot_count++;
-                if (dot_count > 1 || i == 0 || i == strlen(temp_mark) - 1) {
-                    printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
-                    return NULL;
-                }
-            }
-            else if (!isdigit((unsigned char)temp_mark[i])) {
-                printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
-                return NULL;
-            }
-        }
-
-        // Convert to float and validate range
-        float markValue = atof(temp_mark);
-        if (markValue < 0 || markValue > 100) {
-            printf("%s: Mark must be between 0 and 100.\n", USERNAME);
-            return NULL;
-        }
+       
     }
 
     return desiredFieldOutput;  // Return the pointer to the static buffer
@@ -733,7 +727,35 @@ int main() {
                 printf("%s: Invalid or missing Mark field.\n", USERNAME);
                 continue;
             }
-            mark = atof(markField); // Convert Mark field to float
+            // Validate numeric content and dot placement
+            int dot_count = 0;
+            for (size_t i = 0; i < strlen(markField); i++) {
+                if (markField[i] == '.') {
+                    dot_count++;
+                    // Ensure that there is only one dot and it's not at the start or end
+                    if (dot_count > 1 || i == 0 || i == strlen(markField) - 1) {
+                        printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
+                        continue;
+                    }
+                }
+                // Ensure all characters are digits or a single dot
+                else if (!isdigit((unsigned char)markField[i])) {
+                    printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
+                    continue;
+                }
+            }
+
+            // Convert the string to a float and validate range
+            float markValue = atof(markField);
+            if (markValue < 0 || markValue > 100) {
+                printf("%s: Mark must be between 0 and 100.\n", USERNAME);
+                continue;
+            }
+
+            // Proceed with the markValue
+            mark = markValue;
+
+        
 
             // Insert record into the hash map
             if (QueryStudent(hashmap, id, false)) {
