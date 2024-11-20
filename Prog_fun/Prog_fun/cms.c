@@ -192,7 +192,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
         // Check if the mark contains only numeric characters, '.' and optionally '-'
         if (strspn(tempMark, "0123456789.-") != strlen(tempMark)) {
-            printf("Invalid input. The 'Mark' field must be a valid numeric value.\n");
+            printf("%s: Invalid input. The 'Mark' field must be a valid numeric value.\n", USERNAME);
             isInputValid = 0;
         }
         else {
@@ -223,14 +223,14 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
 
 
             if (!isNumeric) {
-                printf("Invalid input. The 'Mark' field contains invalid characters.\n");
+                printf("%s: Invalid input. The 'Mark' field contains invalid characters.\n", USERNAME);
                 isInputValid = 0;
             }
             else {
                 // Convert the string to a float and check range
                 float tempMarkValue;
                 if (sscanf(tempMark, "%f", &tempMarkValue) != 1 || tempMarkValue < 0 || tempMarkValue > 100) {
-                    printf("Invalid input. The 'Mark' field must be a value between 0 and 100.\n");
+                    printf("%s: Invalid input. The 'Mark' field must be a value between 0 and 100.\n", USERNAME);
                     isInputValid = 0;
                 }
                 else {
@@ -241,7 +241,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     if (!checkField) {
-        printf("Error: No fields (Name, Programme or Mark) provided to update.\n");
+        printf("%s: No fields (Name, Programme or Mark) provided to update.\n", USERNAME);
         return;
     }
     if (!isInputValid) {
@@ -645,7 +645,6 @@ int main() {
 //check for memory leaks
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-    char idBuffer[10] = "";
     int isFileOpened = 0;
 
 
