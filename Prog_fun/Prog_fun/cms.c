@@ -158,7 +158,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     // Extract and validate Name
     char* currentName = GetField(input, "Name=", sizeof(newName));
     if (currentName) {
-        checkField = 1;
+        checkField++;
         if (!isValidAlphabeticString(currentName)) {
             printf("%s: Name should contain only alphabetic characters and spaces.\n", USERNAME);
             return;
@@ -169,7 +169,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     // Extract and validate Programme
     char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
     if (currentProgramme) {
-        checkField = 1;
+        checkField++;
         if (!isValidAlphabeticString(currentProgramme)) {
             printf("%s: Programme should contain only alphabetic characters and spaces.\n", USERNAME);
             return;
@@ -180,7 +180,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     // Extract and validate Mark
     char* currentMark = GetField(input, "Mark=", sizeof(input));
     if (currentMark) {
-        checkField = 1;
+        checkField++;
         newMark = atof(currentMark);
         if (newMark < 0 || newMark > 100) {
             printf("%s: Mark must be between 0 and 100.\n", USERNAME);
@@ -189,7 +189,8 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
 
     // Ensure at least one field is provided
-    if (!checkField) {
+    if (checkField ==0) {
+        printf("%s: Please enter update field.\n", USERNAME, id);
         return;
     }
 
