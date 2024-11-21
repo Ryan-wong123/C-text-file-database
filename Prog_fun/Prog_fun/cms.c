@@ -1,18 +1,18 @@
 
-#define _CRTDBG_MAP_ALLOC // allow debugging to find where is the cause of memory leak
-#define _CRT_SECURE_NO_WARNINGS // suppress unnecassary warnings
+#define _CRTDBG_MAP_ALLOC // Allow debugging to find where is the cause of memory leak
+#define _CRT_SECURE_NO_WARNINGS // Suppress unnecassary warnings
 
-#include <stdio.h> // library for input and output
-#include <stdlib.h> // library for memory allocation
-#include <string.h> // library for strcpy, strlen
-#include <ctype.h> // library for islower and isspace
-#include <stdbool.h> //library for boolean
-#include <crtdbg.h> // library used to detecting memory leaks
+#include <stdio.h> // Library for input and output
+#include <stdlib.h> // Library for memory allocation
+#include <string.h> // Library for strcpy, strlen
+#include <ctype.h> // Library for islower and isspace
+#include <stdbool.h> // Library for boolean
+#include <crtdbg.h> // Library used to detecting memory leaks
 #include <math.h>
 
 
-#define USERNAME "CMS" // username to display in the console
-#define GROUP_NAME "P2_3" // group name used to display in the console
+#define USERNAME "CMS" // Username to display in the console
+#define GROUP_NAME "P2_3" // Group name used to display in the console
 
 
 #define TEST_MODE 0
@@ -23,20 +23,19 @@
 #define FILE_PATH "testdb.txt"
 
 #else 
-#define FILE_PATH "P2_3-CMS.txt"
+#define FILE_PATH "P2_3-CMS.txt" // File path for the db
 #endif
 
+#define TABLE_NAME_LENGTH 15 // Length of table name
+#define HASHMAP_LENGTH 103 // Hashmap size
+#define NAME_LENGTH 30 // Name size for structure
+#define PROGRAMME_LENGTH 30 // Programme size for structure
+#define GENERAL_LENGTH 70 // General string size for input 
+#define ID_LENGTH 7 // Size of ID input
 
-#define TABLE_NAME_LENGTH 15
-#define HASHMAP_LENGTH 103
-#define NAME_LENGTH 30
-#define PROGRAMME_LENGTH 30
-#define GENERAL_LENGTH 70
-#define ID_LENGTH 7
-
-char tableName[TABLE_NAME_LENGTH] = "";
-int currentSize = HASHMAP_LENGTH;  
-int recordCount = 0; 
+char tableName[TABLE_NAME_LENGTH] = ""; // Initialise the table name as empty string on start
+int currentSize = HASHMAP_LENGTH;  // Set the current size of the hashmap size
+int recordCount = 0; // Initialise the count of student records
 
 // Structure for student data and alias to StudentRecords with self referential structure
 typedef struct StudentRecords {
@@ -44,28 +43,29 @@ typedef struct StudentRecords {
     char name[NAME_LENGTH]; // Name of the student
     char programme[PROGRAMME_LENGTH]; // Programme that the student is in
     float mark; // Mark of the programme for the student
-    struct StudentRecords* next; // pointer to next node
+    struct StudentRecords* next; // pointer to next node used for LL in the event of hash collision
 } StudentRecords;
 
+// Store the pointers to the student records as an array
 typedef struct HashMap {
     StudentRecords** table;
 } HashMap;
 
+// Hashing function for the generating hash index based on the id 
 unsigned int hash(int id) {
+    // The use of 97 which is a prime number ensures a more evenly distribution
     return (id * 97) % currentSize;
 }
 
+// Function prototype
 void DisplayDeclaration();
-
 void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark);
 void UpdateStudent(HashMap* hashmap, const char* input);
 struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord);
 void DeleteStudent(HashMap* hashmap, int id);
-
 void OpenFile(const char* filename, HashMap* hashmap);
 void ShowAll(HashMap* hashmap);
 void saveToFile(const char* filename, HashMap* hashmap);
-
 void resizeHashMap(HashMap* currentHashmap);
 int isValidAlphabeticString(const char* str);
 void TrimTrailingSpaces(char* str);
@@ -73,6 +73,7 @@ int SortbyID(const void* a, const void* b);
 char* GetField(const char* input, const char* key, int maxLength);
 bool HasDuplicateFields(const char* input);
 
+// Function for AI declaration
 void DisplayDeclaration() {
 
     char declare[1400] = {
@@ -100,33 +101,46 @@ void DisplayDeclaration() {
     6. WONG HOI YOUNG, RYAN \t(2401725)\n \
     Date: (please insert the date when you submit your group project)\n" };
 
-
     puts(declare);
-
 }
 
+// Function to insert new record of student data
 void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
     
+    // Allocate memory dynamically for the new student record
     StudentRecords* newStudent = malloc(sizeof(StudentRecords));
+
+    // Stop the insertion operation if memory allocation failed
     if (newStudent == NULL) {
-        perror("Memory allocation failed for new student\n");
+        perror("CMS: Memory allocation failed for new student\n");
         exit(EXIT_FAILURE);
     }
     
+    // Assign ID for the new student
     newStudent->id = id;
+    // Assign the name for the student
     strncpy(newStudent->name, name, sizeof(newStudent->name) - 1), newStudent->name[sizeof(newStudent->name) - 1] = '\0';
+    // Assign the programme for the student
     strncpy(newStudent->programme, programme, sizeof(newStudent->programme) - 1), newStudent->programme[sizeof(newStudent->programme) - 1] = '\0';
+    // Assign the mark for the student
     newStudent->mark = mark;
+    // Set the pointer to the next node as null since its the only record in the bucket currently
     newStudent->next = NULL;
 
-    unsigned int index = hash(id);
+    // Generate the hash index to be used in the hashmap based on the ID
+    unsigned int hashIndex = hash(id);
+    // Insert the student record into the hash table by chaining 
+    newStudent->next = hashmap->table[hashIndex];
+    // Point the new student record as the head of the LL
+    hashmap->table[hashIndex] = newStudent;
     
-
-    newStudent->next = hashmap->table[index];
-    hashmap->table[index] = newStudent;
-    
+    // Increase the current count of student records
     recordCount++;
 
+    /*
+    Handle the resizing of hashmap incase the current student record count exceeed the half the size of the current hashmap
+    This is done to reduce the number of collisions
+    */
     if (recordCount > (currentSize / 2)) {
         resizeHashMap(hashmap);
     }
@@ -141,7 +155,7 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     }
     int id = atoi(idField);
 
-    // Initialize fields
+    // Initialise fields
     char newName[NAME_LENGTH] = { 0 };
     char newProgramme[PROGRAMME_LENGTH] = { 0 };
     float newMark = -1;
