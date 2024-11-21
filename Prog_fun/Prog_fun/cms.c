@@ -445,21 +445,22 @@ void ShowAll(HashMap* hashmap) {
     free(allStudentRecords);
 }
 
+// Function to save updated student records to file
 void saveToFile(const char* filename, HashMap* hashmap) {
+    // Open the file in write mode
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
         perror("Error opening file for writing");
         return;
     }
 
-
+    // Write all header lines
     fprintf(file, "Database Name: %s\n", USERNAME);
     fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
     fprintf(file, "Table Name: %s\n", tableName);
-    //fprintf(file, "ID       Name            Programme                Mark\n");
     fprintf(file, "%-7s\t%-30s\t%-23s\t%-5s\n","ID", "Name", "Programme", "Mark");
 
-
+    // Write all student records
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
@@ -835,7 +836,6 @@ int main() {
 
             #else
             saveToFile(FILE_PATH, hashmap);
-            printf("%s: Data has been successfully saved to %s.\n",USERNAME, FILE_PATH);
 
             #endif
 
