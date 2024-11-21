@@ -529,6 +529,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
 
     // Copy the field value into the static buffer
     strncpy(desiredFieldOutput, start, length);
+    TrimTrailingSpaces(desiredFieldOutput);
     desiredFieldOutput[length] = '\0';  // Null-terminate the result
 
     // Special handling for the ID field to check for negative values
@@ -632,12 +633,15 @@ int main() {
         printf("%s:", GROUP_NAME);
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
+
         TrimTrailingSpaces(input);
+
         // Check for duplicate parameters
         if (HasDuplicateFields(input)) {
             printf("%s: Duplicate parameter detected in the input.\n", USERNAME);
             continue;
         }
+
         if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0 || _strnicmp(input, "save", 4) == 0) && isFileOpened == 0) {
             printf("%s: Database file not open yet.\n", USERNAME);
             continue;
@@ -711,8 +715,7 @@ int main() {
                 continue;
             }
             strncpy(name, nameField, NAME_LENGTH - 1);
-            TrimTrailingSpaces(name);
-
+      
             // Extract Programme
             char* programmeField = GetField(input, "Programme=", sizeof(programme));
             if (!programmeField) {
@@ -720,7 +723,7 @@ int main() {
                 continue;
             }
             strncpy(programme, programmeField, PROGRAMME_LENGTH - 1);
-            TrimTrailingSpaces(programme);
+     
 
             // Extract and validate Mark
             char* currentMark = GetField(input, "Mark=", sizeof(input));
@@ -732,8 +735,6 @@ int main() {
 
                     // Convert the string to a float and validate range
                     float markValue = atof(currentMark);
-
-
                     // Proceed with the markValue
                     mark = markValue;
                 }
