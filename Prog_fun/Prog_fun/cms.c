@@ -67,6 +67,7 @@ void ShowAll(HashMap* hashmap);
 void saveToFile(const char* filename, HashMap* hashmap);
 
 void resizeHashMap(HashMap* currentHashmap);
+int isValidAlphabeticString(const char* str);
 void TrimTrailingSpaces(char* str);
 int SortbyID(const void* a, const void* b);
 char* GetField(const char* input, const char* key, int maxLength);
@@ -102,15 +103,6 @@ void DisplayDeclaration() {
 
     puts(declare);
 
-}
-
-int isValidAlphabeticString(const char* str) {
-    for (int i = 0; str[i] != '\0'; i++) {
-        if (!isalpha((unsigned char)str[i]) && !isspace((unsigned char)str[i])) {
-            return 0; // Return 0 if any character is not alphabetic or space
-        }
-    }
-    return 1; // Return 1 if all characters are valid
 }
 
 void InsertStudent(HashMap* hashmap, int id, const char* name, const char* programme, float mark) {
@@ -467,6 +459,15 @@ void resizeHashMap(HashMap* currentHashmap) {
 
     // Update the current size
     currentSize = newSize;
+}
+
+int isValidAlphabeticString(const char* str) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (!isalpha((unsigned char)str[i]) && !isspace((unsigned char)str[i])) {
+            return 0; // Return 0 if any character is not alphabetic or space
+        }
+    }
+    return 1; // Return 1 if all characters are valid
 }
 
 void TrimTrailingSpaces(char* str) {
