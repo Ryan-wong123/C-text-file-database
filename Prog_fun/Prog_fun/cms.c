@@ -71,7 +71,7 @@ int isStringValid(const char* input);
 void RemoveTrailingSpaces(char* str);
 int SortbyID(const void* a, const void* b);
 char* GetField(const char* input, const char* key, int maxLength);
-bool HasDuplicateFields(const char* input);
+bool IsFieldDuplicate(const char* input);
 
 // Function for AI declaration
 void DisplayDeclaration() {
@@ -655,21 +655,41 @@ char* GetField(const char* input, const char* key, int maxLength) {
     return desiredFieldOutput;
 }
 
-bool HasDuplicateFields(const char* input) {
-    int count_id = 0, count_name = 0, count_programme = 0, count_mark = 0;
-    char* temp = strdup(input);
-    char* token = strtok(temp, " ");
+// Function to check if there is any duplicate fields in the input
+bool IsFieldDuplicate(const char* input) {
+    
+    // Set all field count to 0
+    int idCount = 0;
+    int nameCount = 0;
+    int programmeCount = 0;
+    int markCount = 0;
 
+    // Tokenize the field
+    char* tempField = strdup(input);
+    char* token = strtok(tempField, " ");
+
+    // Update the count of the Field
     while (token) {
-        if (strstr(token, "ID=")) count_id++;
-        else if (strstr(token, "Name=")) count_name++;
-        else if (strstr(token, "Programme=")) count_programme++;
-        else if (strstr(token, "Mark=")) count_mark++;
+        if (strstr(token, "ID=")) {
+            idCount++;
+        }
+        else if (strstr(token, "Name=")) {
+            nameCount++;
+        }
+        else if (strstr(token, "Programme=")) {
+            programmeCount++;
+        }
+        else if (strstr(token, "Mark=")) {
+            markCount++;
+        }
         token = strtok(NULL, " ");
-}
-    free(temp);
+    }
 
-    return count_id > 1 || count_name > 1 || count_programme > 1 || count_mark > 1;
+    // Free the memory 
+    free(tempField);
+
+    // Return true if any of the fields have more than 1 count
+    return idCount > 1 || nameCount > 1 || programmeCount > 1 || markCount > 1;
 }
 
 int main() {
@@ -713,7 +733,7 @@ int main() {
         RemoveTrailingSpaces(input);
 
         // Check for duplicate parameters
-        if (HasDuplicateFields(input)) {
+        if (IsFieldDuplicate(input)) {
             printf("%s: Duplicate parameter detected in the input.\n", USERNAME);
             continue;
         }
