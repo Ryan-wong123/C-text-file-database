@@ -184,6 +184,11 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
         if (strcmp(currentMark, "ERROR") == 0) {
             return;
         }
+        // Convert the string to a float and validate range
+        float markValue = atof(currentMark);
+        // Proceed with the markValue
+        newMark = markValue;
+        checkField++;
     }
 
     if (!checkField) {
@@ -553,7 +558,10 @@ char* GetField(const char* input, const char* key, int maxLength) {
     if (strcmp(key, "Mark=") == 0) {
         char* temp_mark = desiredFieldOutput;
         int dot_count = 0;
-
+        if (temp_mark[0] == '\0') {
+            printf("%s: Please key in marks.\n", USERNAME);
+            return "ERROR";
+        }
         // Validate numeric content and dot placement
         for (size_t i = 0; i < strlen(temp_mark); i++) {
             if (temp_mark[i] == '.') {
