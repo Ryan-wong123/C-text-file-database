@@ -251,22 +251,31 @@ void UpdateStudent(HashMap* hashmap, const char* input) {
     printf("%s: The record with ID=%d does not exist.\n",USERNAME, id);
 }
 
+// Function to search to student record
 struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord) {
-    unsigned int index = hash(id);
-    StudentRecords* current = hashmap->table[index];
-    while (current != NULL) {
-        if (current->id == id) {
 
+    // Generate the hash index for that specific ID and get the current node 
+    unsigned int hashIndex = hash(id);
+    StudentRecords* currentStudentRecord = hashmap->table[hashIndex];
+
+    // Loop through the LL to find the specific ID of that student record
+    while (currentStudentRecord != NULL) {
+        if (currentStudentRecord->id == id) {
+
+            // Print the specific student record
             if (printrecord == true) {
                 printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
                 printf("ID        Name                  Programme                  Mark\n");
-                printf("%-8d  %-20s  %-25s  %.2f\n",
-                    current->id, current->name, current->programme, current->mark);
+                printf("%-8d  %-20s  %-25s  %.2f\n",currentStudentRecord->id, currentStudentRecord->name, currentStudentRecord->programme, currentStudentRecord->mark);
             }
-            return current;
+            
+            return currentStudentRecord;
         }
-        current = current->next;
+        // set the next node to check if current ID does not match that of the desired student record 
+        currentStudentRecord = currentStudentRecord->next;
     }
+   
+    // Return error message to show that there exist no such ID
     if (printrecord == true) {
         printf("%s: The record with ID=%d does not exist.\n", USERNAME, id);
     }
