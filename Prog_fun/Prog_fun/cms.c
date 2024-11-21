@@ -34,7 +34,7 @@
 #define ID_LENGTH 7 // Size of ID input
 
 char tableName[TABLE_NAME_LENGTH] = ""; // Initialise the table name as empty string on start
-int currentSize = HASHMAP_LENGTH;  // Set the current size of the hashmap size
+int currentHashmapSize = HASHMAP_LENGTH;  // Set the current size of the hashmap size
 int recordCount = 0; // Initialise the count of student records
 
 // Structure for student data and alias to StudentRecords with self referential structure
@@ -54,7 +54,7 @@ typedef struct HashMap {
 // Hashing function for the generating hash index based on the id 
 unsigned int hash(int id) {
     // The use of 97 which is a prime number ensures a more evenly distribution
-    return (id * 97) % currentSize;
+    return (id * 97) % currentHashmapSize;
 }
 
 // Function prototype
@@ -141,7 +141,7 @@ void InsertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     Handle the resizing of hashmap incase the current student record count exceeed the half the size of the current hashmap
     This is done to reduce the number of collisions
     */
-    if (recordCount > (currentSize / 2)) {
+    if (recordCount > (currentHashmapSize / 2)) {
         resizeHashMap(hashmap);
     }
 }
@@ -419,7 +419,7 @@ void ShowAll(HashMap* hashmap) {
     int recordsIndex = 0;
 
     // get all student records
-    for (int i = 0; i < currentSize; i++) {
+    for (int i = 0; i < currentHashmapSize; i++) {
         StudentRecords* current = hashmap->table[i];
         
         while (current != NULL) {
@@ -461,7 +461,7 @@ void saveToFile(const char* filename, HashMap* hashmap) {
     fprintf(file, "%-7s\t%-30s\t%-23s\t%-5s\n","ID", "Name", "Programme", "Mark");
 
     // Write all student records
-    for (int i = 0; i < currentSize; i++) {
+    for (int i = 0; i < currentHashmapSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
             fprintf(file, "%-7d\t%-30s\t%-23s\t%-3.2f\n", current->id, current->name, current->programme, current->mark);
@@ -473,35 +473,40 @@ void saveToFile(const char* filename, HashMap* hashmap) {
     fclose(file);
 }
 
+// Function to resize the hashmap to avoid hash collision
 void resizeHashMap(HashMap* currentHashmap) {
-    int newSize;
 
-    // Find the next prime number greater than currentSize * 2
-    for (newSize = currentSize * 2 + 1; ; newSize += 2) {  // Skip even numbers
+    // Get the next prime number greater than double the current size
+    unsigned int newHashmapSize = currentHashmapSize * 2 + 1;
+    while (1) {
         int isPrime = 1;
-        if (newSize % 2 == 0) continue;  // Skip even numbers
-        for (int j = 3; j * j <= newSize; j += 2) {  // Skip even divisors
-            if (newSize % j == 0) {
+        // check using odd numbers
+        for (int j = 3; j * j <= newHashmapSize; j += 2) {
+            if (newHashmapSize % j == 0) {
                 isPrime = 0;
                 break;
             }
         }
-        if (isPrime) break;
+        // Skip numbers lesser than 2
+        if (isPrime && newHashmapSize > 2) {
+            break;
+        }
+        newHashmapSize += 2;
     }
 
     // Allocate memory for the new hash map
     HashMap* newHashMap = malloc(sizeof(HashMap));
-    if (!newHashMap || !(newHashMap->table = calloc(newSize, sizeof(StudentRecords*)))) {
+    if (!newHashMap || !(newHashMap->table = calloc(newHashmapSize, sizeof(StudentRecords*)))) {
         fprintf(stderr, "%s: Memory allocation failed during resizing\n", USERNAME);
         exit(EXIT_FAILURE);
     }
 
-    // Rehash the old records into the new hash map
-    for (int i = 0; i < currentSize; i++) {
+    // Generate new hash index for each student record and then insert them back into the hashmap
+    for (int i = 0; i < currentHashmapSize; i++) {
         StudentRecords* current = currentHashmap->table[i];
         while (current) {
             StudentRecords* nextRecord = current->next;
-            unsigned int newIndex = current->id % newSize;
+            unsigned int newIndex = current->id % newHashmapSize;
 
             current->next = newHashMap->table[newIndex];
             newHashMap->table[newIndex] = current;
@@ -510,13 +515,13 @@ void resizeHashMap(HashMap* currentHashmap) {
         }
     }
 
-    // Free the old hash map and update to the new one
+    // Free memory of hashmaps
     free(currentHashmap->table);
     *currentHashmap = *newHashMap;
     free(newHashMap);
 
-    // Update the current size
-    currentSize = newSize;
+    // Update new current size of hashmap
+    currentHashmapSize = newHashmapSize;
 }
 
 // Function to check if the string only contains letters
@@ -694,7 +699,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    hashmap->table = calloc(currentSize, sizeof(StudentRecords*));
+    hashmap->table = calloc(currentHashmapSize, sizeof(StudentRecords*));
     if (!hashmap->table) {
         fprintf(stderr, "%s: Memory allocation failed for table\n", USERNAME);
         exit(EXIT_FAILURE);
@@ -846,7 +851,7 @@ int main() {
         }
     }
 
-    for (int i = 0; i < currentSize; i++) {
+    for (int i = 0; i < currentHashmapSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
             StudentRecords* temp = current;
