@@ -67,7 +67,7 @@ void OpenFile(const char* filename, HashMap* hashmap);
 void ShowAll(HashMap* hashmap);
 void saveToFile(const char* filename, HashMap* hashmap);
 void resizeHashMap(HashMap* currentHashmap);
-int isValidAlphabeticString(const char* str);
+int isStringValid(const char* input);
 void TrimTrailingSpaces(char* str);
 int SortbyID(const void* a, const void* b);
 char* GetField(const char* input, const char* key, int maxLength);
@@ -146,86 +146,108 @@ void InsertStudent(HashMap* hashmap, int id, const char* name, const char* progr
     }
 }
 
+// Function to update student data
 void UpdateStudent(HashMap* hashmap, const char* input) {
-    // Extract and validate ID
-    char* idField = GetField(input, "ID=", sizeof(input));
-    if (!idField) {
+
+    char newName[NAME_LENGTH] = { 0 }; // Declare new name 
+    char newProgramme[PROGRAMME_LENGTH] = { 0 }; // Declare new Programme
+    float newMark = -1; // Set new mark as -1 as default to ensure marks do not get updated unneccasarily
+    int updateFieldCount = 0; // Declare count for checking how many fields are being updated
+
+    // Get the ID input
+    char* idInput = GetField(input, "ID=", sizeof(input));
+
+    // If the id is null then return error message
+    if (!idInput) {
         printf("%s: Please enter a valid ID.\n", USERNAME);
         return;
     }
-    int id = atoi(idField);
 
-    // Initialise fields
-    char newName[NAME_LENGTH] = { 0 };
-    char newProgramme[PROGRAMME_LENGTH] = { 0 };
-    float newMark = -1;
-    int checkField = 0;
-    int isInputValid = 1;
+    // Convert ID into integer 
+    int id = atoi(idInput);
 
-    // Extract and validate Name
-    char* currentName = GetField(input, "Name=", sizeof(newName));
-    if (currentName) {
-        checkField++;
-        if (!isValidAlphabeticString(currentName)) {
-            printf("%s: Name should contain only alphabetic characters and spaces.\n", USERNAME);
+    // Get the name input
+    char* nameInput = GetField(input, "Name=", sizeof(newName));
+
+    // Check if the current name is not null 
+    if (nameInput) {
+        // Update the updateFieldCount since this field is being updated
+        updateFieldCount++;
+        // Check if the input string only containts letters or spacing
+        if (!isStringValid(nameInput)) {
+            printf("%s: Name should only contain letters and spaces.\n", USERNAME);
             return;
         }
-        strncpy(newName, currentName, NAME_LENGTH - 1);
+        // Copy the name input into the new name string
+        strncpy(newName, nameInput, NAME_LENGTH - 1);
     }
 
-    // Extract and validate Programme
-    char* currentProgramme = GetField(input, "Programme=", sizeof(newProgramme));
-    if (currentProgramme) {
-        checkField++;
-        if (!isValidAlphabeticString(currentProgramme)) {
-            printf("%s: Programme should contain only alphabetic characters and spaces.\n", USERNAME);
+    // Get the Programme input
+    char* programmeInput = GetField(input, "Programme=", sizeof(newProgramme));
+    // Check if the programme input is not null
+    if (programmeInput) {
+        // Update the updateFieldCount since this field is being updated
+        updateFieldCount++;
+        // Check if the input string only containts letters or spacing
+        if (!isStringValid(programmeInput)) {
+            printf("%s: Programme should only contain letters and spaces.\n", USERNAME);
             return;
         }
-        strncpy(newProgramme, currentProgramme, PROGRAMME_LENGTH - 1);
+        // Copy the programme input into the new name string
+        strncpy(newProgramme, programmeInput, PROGRAMME_LENGTH - 1);
     }
 
     // Extract and validate Mark
-    char* currentMark = GetField(input, "Mark=", sizeof(input));
-    if (currentMark) {
-        if (strcmp(currentMark, "ERROR") == 0) {
+    char* markInput = GetField(input, "Mark=", sizeof(input));
+    // Check if the mark input is not null
+    if (markInput) {
+        // Update the updateFieldCount since this field is being updated
+        updateFieldCount++;
+        // Check if there is no error in getting the marks
+        if (strcmp(markInput, "ERROR") == 0) {
             return;
         }
-        // Convert the string to a float and validate range
-        float markValue = atof(currentMark);
-        // Proceed with the markValue
-        newMark = markValue;
-        checkField++;
+        // Convert the mark string to a float 
+        newMark = atof(markInput);
     }
-
-    if (!checkField) {
-        printf("%s: No fields (Name, Programme or Mark) provided to update.\n", USERNAME);
+    
+    // Check if there is no field currently being input to update
+    if (!updateFieldCount) {
+        printf("%s: Please enter desired field to update\n", USERNAME);
         return;
     }
 
-    // Update the student record
-    unsigned int index = hash(id);
-    StudentRecords* current = hashmap->table[index];
+    // Generate the hash index for that specific ID and get the current node 
+    unsigned int hashIndex = hash(id);
+    StudentRecords* currentStudentRecord = hashmap->table[hashIndex];
 
-    while (current != NULL) {
-        if (current->id == id) {
+    // Loop through the LL to find the specific ID of that student record
+    while (currentStudentRecord != NULL) {
+        if (currentStudentRecord->id == id) {
+
+            // Update the specific fields if there is input for that field
             if (*newName) {
-                strncpy(current->name, newName, sizeof(current->name) - 1);
-                current->name[sizeof(current->name) - 1] = '\0';
+                strncpy(currentStudentRecord->name, newName, sizeof(currentStudentRecord->name) - 1);
+                currentStudentRecord->name[sizeof(currentStudentRecord->name) - 1] = '\0';
             }
             if (*newProgramme) {
-                strncpy(current->programme, newProgramme, sizeof(current->programme) - 1);
-                current->programme[sizeof(current->programme) - 1] = '\0';
+                strncpy(currentStudentRecord->programme, newProgramme, sizeof(currentStudentRecord->programme) - 1);
+                currentStudentRecord->programme[sizeof(currentStudentRecord->programme) - 1] = '\0';
             }
             if (newMark != -1) {
-                current->mark = newMark;
+                currentStudentRecord->mark = newMark;
             }
 
+            // Student record is updated
             printf("%s: The record with ID=%d is successfully updated.\n",USERNAME, id);
             return;
         }
-        current = current->next;
+        
+        // set the next node to check if current ID does not match that of the desired student record 
+        currentStudentRecord = currentStudentRecord->next;
     }
 
+    // Return error message to show that there exist no such ID
     printf("%s: The record with ID=%d does not exist.\n",USERNAME, id);
 }
 
@@ -475,13 +497,19 @@ void resizeHashMap(HashMap* currentHashmap) {
     currentSize = newSize;
 }
 
-int isValidAlphabeticString(const char* str) {
-    for (int i = 0; str[i] != '\0'; i++) {
-        if (!isalpha((unsigned char)str[i]) && !isspace((unsigned char)str[i])) {
-            return 0; // Return 0 if any character is not alphabetic or space
+// Function to check if the string only contains letters
+int isStringValid(const char* input) {
+
+    // Loop through each letter in the string 
+    for (int i = 0; input[i] != '\0'; i++) {
+        // Check if is is not a letter and not a space
+        if (!isalpha((unsigned char)input[i]) && !isspace((unsigned char)input[i])) {
+            // Return 0 to show that this string is not valid input
+            return 0; 
         }
     }
-    return 1; // Return 1 if all characters are valid
+    // Return 1 to show this string is valid
+    return 1;
 }
 
 void TrimTrailingSpaces(char* str) {
