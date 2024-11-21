@@ -558,9 +558,11 @@ void RemoveTrailingSpaces(char* str) {
     }
 }
 
-int SortbyID(const void* a, const void* b) {
-    StudentRecords* studentA = *(StudentRecords**)a;
-    StudentRecords* studentB = *(StudentRecords**)b;
+// Function to sort the students based on their ID
+int SortbyID(const void* studenta, const void* studentb) {
+    // Dereference the student and return the difference in ID
+    StudentRecords* studentA = *(StudentRecords**)studenta;
+    StudentRecords* studentB = *(StudentRecords**)studentb;
     return studentA->id - studentB->id;  
 }
 
