@@ -282,66 +282,64 @@ struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord) 
     return NULL;
 }
 
+// Function to delete student record
 void DeleteStudent(HashMap* hashmap, int id) {
-    int id_check_flag = 0;
-    char check_delete[3];
 
+    // Generate the hash index for that specific ID and get the current node 
+    unsigned int hashIndex = hash(id);
+    StudentRecords* currentStudentRecord = hashmap->table[hashIndex];
+    StudentRecords* previousStudentRecord = NULL;
 
-    unsigned int index = hash(id);
-    
-    StudentRecords* current = hashmap->table[index];
-    StudentRecords* prev = NULL;
+    // Loop through the LL to find the specific ID of that student record
+    while (currentStudentRecord != NULL) {
+        if (currentStudentRecord->id == id) {
+            while (1) {
+                // Buffer to hold the delete input 
+                char deleteInput[3];
+                // double confirm deletion of record
+                printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", USERNAME, id);
+                printf("%s:", GROUP_NAME);
 
-    // move through hash table to find ID 
-    while (current != NULL) {
-        
-        if (current->id == id) {
-            id_check_flag = 1;
-            break;
-        }
-        else {
-            prev = current;
-            current = current->next;
-        }
-    }
+                // Get the delete input value
+                deleteInput[strcspn(fgets(deleteInput, sizeof(deleteInput), stdin), "\n")] = 0;
+                
+                // Check if want to delete
+                if (_strnicmp(deleteInput, "Y", 1) == 0) {
 
-    if (id_check_flag == 0) {
-        printf("%s: The record with ID=%d does not exist \n", USERNAME, id);
-        return;
-    }
+                    // If record is at head set new table index to current records link
+                    if (previousStudentRecord == NULL) {
+                        hashmap->table[hashIndex] = currentStudentRecord->next;
+                    }
+                    // Else set previous record link to the current record link to ensure no link is lost
+                    else {
+                        previousStudentRecord->next = currentStudentRecord->next;
+                    }
 
-    while (1) {
-        // double confirm deletion of record
-        printf("%s: Are you sure you want to delete record with ID=%d? Type \"Y\" to Confirm or type \"N\" to cancel\n", USERNAME, id);
+                    // show that the student record has been deleted and decrease the current student record count
+                    printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
+                    recordCount--;
 
-        printf("%s:", GROUP_NAME);
-        check_delete[strcspn(fgets(check_delete, sizeof(check_delete), stdin), "\n")] = 0;
-
-        if (_strnicmp(check_delete, "Y", 1) == 0) {
-
-            // if record is at head set new table index to current records link
-            if (prev == NULL) {
-                hashmap->table[index] = current->next;
+                    // Free the memory of the deleted student record to prevent memory leak
+                    free(currentStudentRecord);
+                    return;
+                }
+                
+                // Check if dont want to delete
+                else if (_strnicmp(deleteInput, "N", 1) == 0) {
+                    printf("%s: The deletion is cancelled.\n", USERNAME);
+                    return;
+                }
+                else {
+                    printf("%s: Invalid Command\n", USERNAME);
+                }
             }
-            // else set previous record link to the current record link to ensure no link is lost
-            else {
-                prev->next = current->next;
-            }
-            printf("%s: The record with ID=%d is successfully deleted.\n", USERNAME, id);
-            recordCount--;
-            // free the memory reserved by current 
-            free(current);
-            break;
         }
-
-        else if (_strnicmp(check_delete, "N", 1) == 0) {
-            printf("%s: The deletion is cancelled.\n", USERNAME);
-            break;
-        }
-        else {
-            printf("%s: Invalid Command\n", USERNAME);
-        }
+        // set the next node to check if current ID does not match that of the desired student record 
+        previousStudentRecord = currentStudentRecord;
+        currentStudentRecord = currentStudentRecord->next;
     }
+    // Return error message to show that there exist no such ID
+    printf("%s: The record with ID=%d does not exist.\n", USERNAME, id);
 }
 
 void OpenFile(const char* filename, HashMap* hashmap) {
