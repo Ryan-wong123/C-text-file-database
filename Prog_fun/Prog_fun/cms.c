@@ -398,45 +398,51 @@ void OpenFile(const char* filename, HashMap* hashmap) {
     fclose(file);
 }
 
+// Function to show all student records
 void ShowAll(HashMap* hashmap) {
+    // Check if there is no student records
     if (recordCount == 0) {
-        printf("%s: No records to display.\n", USERNAME);
+        printf("%s: No student records to display.\n", USERNAME);
         return;
     }
 
+    // Allocate memory for the student records
+    StudentRecords** allStudentRecords = malloc(recordCount * sizeof(StudentRecords*));
 
-    StudentRecords** allRecords = malloc(recordCount * sizeof(StudentRecords*));
-    if (allRecords == NULL) {
-        fprintf(stderr, "%s: Memory allocation failed for allRecords.\n", USERNAME);
+    // Return error message if memory allocation failed
+    if (allStudentRecords == NULL) {
+        fprintf(stderr, "%s: Memory allocation failed for allStudentRecords.\n", USERNAME);
         return;
     }
 
-    int index = 0;
+    // Student record index
+    int recordsIndex = 0;
 
-
+    // get all student records
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
         
         while (current != NULL) {
-            allRecords[index++] = current;
+            allStudentRecords[recordsIndex++] = current;
             current = current->next;
         }
     }
 
-
-    qsort(allRecords, recordCount, sizeof(StudentRecords*), SortbyID);
-
+    // Sort students by ID in ascending order
+    qsort(allStudentRecords, recordCount, sizeof(StudentRecords*), SortbyID);
+    
+    // Print all the studetn records
     printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
     printf("ID        Name                  Programme                  Mark\n");
 
     for (int i = 0; i < recordCount; i++) {
-        StudentRecords* student = allRecords[i];
+        StudentRecords* student = allStudentRecords[i];
         printf("%-8d  %-20s  %-25s  %.2f\n",
             student->id, student->name, student->programme, student->mark);
     }
 
-
-    free(allRecords);
+    // Free the memory of all the student records
+    free(allStudentRecords);
 }
 
 void saveToFile(const char* filename, HashMap* hashmap) {
