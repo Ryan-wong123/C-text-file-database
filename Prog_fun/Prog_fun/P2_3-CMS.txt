@@ -6,7 +6,7 @@ ID     	Name             	Programme              	Mark
 2304367	Sabihah Amirudeen	Cat Lady               	76.00
 9876549	Liam Ang         	AI                     	34.00
 2304567	Jason jJ         	Enginerring            	90.00
-1234567	Jerry Junior     	Digital Business       	89.00
+1234567	dfs              	Digital Business       	89.00
 2301234	Joshua Chen      	Software Engineering   	84.00
 8849304	Holly            	Sales                  	87.00
 2201234	Isaac Teo        	Computer Science       	63.40
