@@ -342,33 +342,41 @@ void DeleteStudent(HashMap* hashmap, int id) {
     printf("%s: The record with ID=%d does not exist.\n", USERNAME, id);
 }
 
+// Function to open file
 void OpenFile(const char* filename, HashMap* hashmap) {
+
+    // open the file and return error message if file not detected
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
         return;
     }
+    // Buffer for output text
+    char outputText[256];
 
-    char fileOutputLine[256];
-    while (fgets(fileOutputLine, sizeof(fileOutputLine), file) != NULL) {
-        if (strncmp(fileOutputLine, "Database Name:", 14) == 0 ||
-            strncmp(fileOutputLine, "Authors:", 8) == 0 ||
-            strncmp(fileOutputLine, "ID", 2) == 0) {
+    while (fgets(outputText, sizeof(outputText), file) != NULL) {
+        // Skip header lines
+        if (strncmp(outputText, "Database Name:", 14) == 0 || strncmp(outputText, "Authors:", 8) == 0 || strncmp(outputText, "ID", 2) == 0) {
             continue;
         }
 
-        if (strncmp(fileOutputLine, "Table Name:", 11) == 0) {
-            sscanf(fileOutputLine + 12, "%[^\n]", tableName);
+        // Extract the table name
+        if (strncmp(outputText, "Table Name:", 11) == 0) {
+            sscanf(outputText + 12, "%[^\n]", tableName);
             continue;
         }
 
-        if (isdigit(fileOutputLine[0])) {
-            int id;
-            char name[NAME_LENGTH], programme[PROGRAMME_LENGTH];
-            float mark;
+        if (isdigit(outputText[0])) {
+
+            int id; // Initilise id field
+            char name[NAME_LENGTH]; // Initialise name field
+            char programme[PROGRAMME_LENGTH]; // Initialise programme field
+            float mark; // Initialise Mark field
+
+            // Get field values
+            int fields = sscanf(outputText, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
             
-            int fields = sscanf(fileOutputLine, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
-            
+            // Check if all the fields are available then populate the hashmap
             if (fields == 4) {
                 StudentRecords* existingStudent = QueryStudent(hashmap, id, false);
                 if (existingStudent != NULL) {
@@ -382,7 +390,7 @@ void OpenFile(const char* filename, HashMap* hashmap) {
                 }
             }
             else {
-                fprintf(stderr, "%s: Error parsing fileOutputLine: %s\n",USERNAME, fileOutputLine);
+                fprintf(stderr, "%s: Error parsing outputText: %s\n",USERNAME, outputText);
             }
         }
     }
