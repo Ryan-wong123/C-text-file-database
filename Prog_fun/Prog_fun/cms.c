@@ -704,12 +704,13 @@ int main() {
 #endif
 
 
-//check for memory leaks
+    //check for memory leaks
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+    // Set this to file not opened yet
     int isFileOpened = 0;
 
-
+    // Allocate memory for the hashmap
     HashMap* hashmap = malloc(sizeof(HashMap));
 
     if (hashmap == NULL) {
@@ -723,39 +724,48 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    //DisplayDeclaration();
+    // Display the AI declaration
+    DisplayDeclaration();
 
     while (1) {
         printf("%s:", GROUP_NAME);
+
+        // Get the input from the user and remove any trailing spaces
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
-
         RemoveTrailingSpaces(input);
 
-        // Check for duplicate parameters
+        // Return error message if there is duplicate fields
         if (IsFieldDuplicate(input)) {
             printf("%s: Duplicate parameter detected in the input.\n", USERNAME);
             continue;
         }
 
+        // Check if any of the other commands are entered before opening file then show error message
         if ((_strnicmp(input, "show all", 8) == 0 || _strnicmp(input, "update", 6) == 0 || _strnicmp(input, "delete", 6) == 0 || _strnicmp(input, "query", 5) == 0 || _strnicmp(input, "insert", 6) == 0 || _strnicmp(input, "save", 4) == 0) && isFileOpened == 0) {
             printf("%s: Database file not open yet.\n", USERNAME);
             continue;
         }
 
+        // Open the file
         if (_stricmp(input, "open") == 0) {
+            
+            // Return error message saying file has already been opened
             if (isFileOpened == 1) {
                 printf("%s: Database file is open already.\n", USERNAME);
                 continue;
             }
 
+            // Else open the file and set the flag to file has been opened
             OpenFile(FILE_PATH, hashmap);
             isFileOpened = 1;
             printf("%s: The database file \"%s\" is successfully opened.\n", USERNAME, FILE_PATH);
         }
+        // Show all student records
         else if (_stricmp(input, "show all") == 0) {
             ShowAll(hashmap);
         }
+        // Update Student records
         else if (_strnicmp(input, "update", 6) == 0) {
             char* value = GetField(input, "ID=", sizeof(input));
             if (value == NULL) {
@@ -765,6 +775,7 @@ int main() {
 
             UpdateStudent(hashmap, input);
         }
+        // Delete student records
         else if (_strnicmp(input, "delete", 6) == 0) {
             // use helper function to extract ID 
             char* value = GetField(input, "ID=",sizeof(input));
@@ -772,11 +783,12 @@ int main() {
                 printf("%s: Invalid Command. Usage: DELETE ID=<id>\n", USERNAME);
                 continue;
             }
-            // change value into int data type
+            // Convert ID into integer
             int id = atoi(value);
 
             DeleteStudent(hashmap, id);
         }
+        // Query the student records
         else if (_strnicmp(input, "query", 5) == 0) {
             
             char* value = GetField(input, "ID=", sizeof(input));
@@ -784,11 +796,12 @@ int main() {
                 printf("%s: Invalid Command. Usage: QUERY ID=<id>\n", USERNAME);
                 continue;
             }
-
+            // Convert ID into integer
             int id = atoi(value);
          
             QueryStudent(hashmap, id, true);
         }
+        // Insert new student record
         else if (_strnicmp(input, "insert", 6) == 0) {
            
             char* params = input + 7;
@@ -847,9 +860,11 @@ int main() {
             }
         }
 
+        // Exit the program
         else if (_stricmp(input, "exit") == 0) {
             break;
         }
+        // Save update student records
         else if (_stricmp(input, "SAVE") == 0) {
         
             #if TEST_MODE == 1
@@ -869,6 +884,8 @@ int main() {
         }
     }
 
+
+    // Free all memory
     for (int i = 0; i < currentHashmapSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
