@@ -566,45 +566,46 @@ int SortbyID(const void* studenta, const void* studentb) {
     return studentA->id - studentB->id;  
 }
 
+// Function to extract each value from individual field
 char* GetField(const char* input, const char* key, int maxLength) {
-    static char desiredFieldOutput[GENERAL_LENGTH];  // Static buffer for reuse
+    // Buffer to store the extracted field value
+    static char desiredFieldOutput[GENERAL_LENGTH];
 
-    // Find the start of the key in the input string
+    // Find for the first occurence of the key
     const char* start = strstr(input, key);
     if (!start) {
-        return NULL;  // Key not found
+        return NULL;
     }
 
-    start += strlen(key);  // Move past the key to the field value
+    // Point to the value of the key
+    start += strlen(key);
 
-    // Look for the next field or the end of the input
+    // Find for the other fields
     const char* endID = strstr(start, "ID=");
     const char* endName = strstr(start, "Name=");
     const char* endProgramme = strstr(start, "Programme=");
     const char* endMark = strstr(start, "Mark=");
     
-    // Find the nearest field after the current field
+    // Get the end of that specific field
     const char* end = NULL;
     if (endID && (!end || endID < end)) end = endID;
     if (endName && (!end || endName < end)) end = endName;
     if (endProgramme && (!end || endProgramme < end)) end = endProgramme;
     if (endMark && (!end || endMark < end)) end = endMark;
 
-    // If no other fields are found, go to the end of the input
+    // Go to end of string if no fields are found
     if (!end) end = start + strlen(start);
 
-    // Calculate the length of the field value, ensuring it doesn't exceed maxLength
+    // Extract the value from the field
     int length = end - start;
     if (length >= maxLength) {
-        length = maxLength - 1;  // Ensure the value fits within the buffer
+        length = maxLength - 1; 
     }
-
-    // Copy the field value into the static buffer
     strncpy(desiredFieldOutput, start, length);
     RemoveTrailingSpaces(desiredFieldOutput);
-    desiredFieldOutput[length] = '\0';  // Null-terminate the result
+    desiredFieldOutput[length] = '\0';
 
-    // Special handling for the ID field to check for negative values
+    // Check for ID number validation
     if (strcmp(key, "ID=") == 0) {
         int idValue = atoi(desiredFieldOutput);
         if (idValue < 0) {
@@ -621,37 +622,37 @@ char* GetField(const char* input, const char* key, int maxLength) {
         }
     }
 
-    // Special handling for the Mark field
+    // Check for mark number validation
     if (strcmp(key, "Mark=") == 0) {
-        char* temp_mark = desiredFieldOutput;
+        char* tempMark = desiredFieldOutput;
         int dot_count = 0;
-        if (temp_mark[0] == '\0') {
+        if (tempMark[0] == '\0') {
             printf("%s: Please key in marks.\n", USERNAME);
             return "ERROR";
         }
-        // Validate numeric content and dot placement
-        for (size_t i = 0; i < strlen(temp_mark); i++) {
-            if (temp_mark[i] == '.') {
+        // Ensure there are no double ".." in the marks and if its a valid float
+        for (size_t i = 0; i < strlen(tempMark); i++) {
+            if (tempMark[i] == '.') {
                 dot_count++;
-                if (dot_count > 1 || i == 0 || i == strlen(temp_mark) - 1) {
+                if (dot_count > 1 || i == 0 || i == strlen(tempMark) - 1) {
                     printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
                     return "ERROR";
                 }
             }
-            else if (!isdigit((unsigned char)temp_mark[i])) {
+            else if (!isdigit((unsigned char)tempMark[i])) {
                 printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
                 return "ERROR";
             }
         }
 
-        // Convert to float and validate range
-        float markValue = atof(temp_mark);
+        // Check for the mark range
+        float markValue = atof(tempMark);
         if (markValue < 0 || markValue > 100) {
             printf("%s: Mark must be between 0 and 100.\n", USERNAME);
             return "ERROR";
         }
     }
-    return desiredFieldOutput;  // Return the pointer to the static buffer
+    return desiredFieldOutput;
 }
 
 bool HasDuplicateFields(const char* input) {
