@@ -68,7 +68,7 @@ void ShowAll(HashMap* hashmap);
 void saveToFile(const char* filename, HashMap* hashmap);
 void resizeHashMap(HashMap* currentHashmap);
 int isStringValid(const char* input);
-void TrimTrailingSpaces(char* str);
+void RemoveTrailingSpaces(char* str);
 int SortbyID(const void* a, const void* b);
 char* GetField(const char* input, const char* key, int maxLength);
 bool HasDuplicateFields(const char* input);
@@ -539,27 +539,22 @@ int isStringValid(const char* input) {
     return 1;
 }
 
-void TrimTrailingSpaces(char* str) {
-    // Find the length of the string
-    char* end = str + strlen(str) - 1;
-
-    // Move the end pointer back to the last non-space character
-    while (end >= str && isspace((unsigned char)*end)) {
-        end--;
+// Function to remove the Trailing spaces on each end 
+void RemoveTrailingSpaces(char* str) {
+    // Remove trailing spaces
+    char* endOfString = str + strlen(str) - 1;
+    while (endOfString >= str && isspace((unsigned char)*endOfString)) {
+        endOfString--;
     }
+    *(endOfString + 1) = '\0';
 
-    // Set the new null terminator after the last non-space character
-    *(end + 1) = '\0';
-
-    // Find the first non-space character from the start
-    char* start = str;
-    while (*start && isspace((unsigned char)*start)) {
-        start++;
+    // Remove Leading spaces
+    char* startOfString = str;
+    while (*startOfString && isspace((unsigned char)*startOfString)) {
+        startOfString++;
     }
-
-    // If there are leading spaces, shift the string to remove them
-    if (start != str) {
-        memmove(str, start, strlen(start) + 1);
+    if (startOfString != str) {
+        memmove(str, startOfString, strlen(startOfString) + 1);
     }
 }
 
@@ -604,7 +599,7 @@ char* GetField(const char* input, const char* key, int maxLength) {
 
     // Copy the field value into the static buffer
     strncpy(desiredFieldOutput, start, length);
-    TrimTrailingSpaces(desiredFieldOutput);
+    RemoveTrailingSpaces(desiredFieldOutput);
     desiredFieldOutput[length] = '\0';  // Null-terminate the result
 
     // Special handling for the ID field to check for negative values
@@ -712,7 +707,7 @@ int main() {
         char input[256];
         input[strcspn(fgets(input, sizeof(input), stdin), "\n")] = 0;
 
-        TrimTrailingSpaces(input);
+        RemoveTrailingSpaces(input);
 
         // Check for duplicate parameters
         if (HasDuplicateFields(input)) {
