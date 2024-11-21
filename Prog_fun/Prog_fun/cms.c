@@ -723,40 +723,22 @@ int main() {
             TrimTrailingSpaces(programme);
 
             // Extract and validate Mark
-            char* markField = GetField(input, "Mark=", sizeof(input));
-            if (!markField) {
-                printf("%s: Invalid or missing Mark field.\n", USERNAME);
-                continue;
-            }
-            // Validate numeric content and dot placement
-            int dot_count = 0;
-            for (size_t i = 0; i < strlen(markField); i++) {
-                if (markField[i] == '.') {
-                    dot_count++;
-                    // Ensure that there is only one dot and it's not at the start or end
-                    if (dot_count > 1 || i == 0 || i == strlen(markField) - 1) {
-                        printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
-                        continue;
-                    }
-                }
-                // Ensure all characters are digits or a single dot
-                else if (!isdigit((unsigned char)markField[i])) {
-                    printf("%s: Mark must contain only numeric characters or a single decimal point.\n", USERNAME);
+            char* currentMark = GetField(input, "Mark=", sizeof(input));
+            if (currentMark) {
+                if (strcmp(currentMark, "ERROR") == 0) {
                     continue;
                 }
+                else {
+
+                    // Convert the string to a float and validate range
+                    float markValue = atof(currentMark);
+
+
+                    // Proceed with the markValue
+                    mark = markValue;
+                }
             }
 
-            // Convert the string to a float and validate range
-            float markValue = atof(markField);
-            if (markValue < 0 || markValue > 100) {
-                printf("%s: Mark must be between 0 and 100.\n", USERNAME);
-                continue;
-            }
-
-            // Proceed with the markValue
-            mark = markValue;
-
-        
 
             // Insert record into the hash map
             if (QueryStudent(hashmap, id, false)) {
