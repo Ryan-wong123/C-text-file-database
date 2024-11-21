@@ -23,7 +23,7 @@
 #define FILE_PATH "testdb.txt"
 
 #else 
-#define FILE_PATH "database.txt"
+#define FILE_PATH "P2_3-CMS.txt"
 #endif
 
 
@@ -400,13 +400,13 @@ void saveToFile(const char* filename, HashMap* hashmap) {
     fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
     fprintf(file, "Table Name: %s\n", tableName);
     //fprintf(file, "ID       Name            Programme                Mark\n");
-    fprintf(file, "%-7s\t%-17s\t%-23s\t%-5s\n","ID", "Name", "Programme", "Mark");
+    fprintf(file, "%-7s\t%-30s\t%-23s\t%-5s\n","ID", "Name", "Programme", "Mark");
 
 
     for (int i = 0; i < currentSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
-            fprintf(file, "%-7d\t%-17s\t%-23s\t%-3.2f\n", current->id, current->name, current->programme, current->mark);
+            fprintf(file, "%-7d\t%-30s\t%-23s\t%-3.2f\n", current->id, current->name, current->programme, current->mark);
             current = current->next;
         }
     }
