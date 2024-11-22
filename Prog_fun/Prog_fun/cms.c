@@ -605,6 +605,21 @@ char* GetField(const char* input, const char* key, int maxLength) {
     RemoveTrailingSpaces(desiredFieldOutput);
     desiredFieldOutput[length] = '\0';
 
+    if (strcmp(key, "Name=") == 0) {
+        // If the extracted field value is empty
+        if (strlen(desiredFieldOutput) == 0) {
+            printf("%s: Name field cannot be empty.\n", USERNAME);
+            return NULL;
+        }
+    }
+    if (strcmp(key, "Programme=") == 0) {
+        // If the extracted field value is empty
+        if (strlen(desiredFieldOutput) == 0) {
+            printf("%s: Programme field cannot be empty.\n", USERNAME);
+            return NULL;
+        }
+    }
+
     // Check for ID number validation
     if (strcmp(key, "ID=") == 0) {
         int idValue = atoi(desiredFieldOutput);
@@ -620,10 +635,17 @@ char* GetField(const char* input, const char* key, int maxLength) {
             printf("%s: ID length not 7 digits.\n", USERNAME);
             return NULL;
         }
+
     }
 
     // Check for mark number validation
     if (strcmp(key, "Mark=") == 0) {
+        // If the extracted field value is empty
+        if (strlen(desiredFieldOutput) == 0) {
+            printf("%s: Mark field cannot be empty.\n", USERNAME);
+            return "ERROR";
+        }
+
         char* tempMark = desiredFieldOutput;
         int dot_count = 0;
         if (tempMark[0] == '\0') {
