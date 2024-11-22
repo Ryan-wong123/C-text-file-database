@@ -583,29 +583,41 @@ char* GetField(const char* input, const char* key, int maxLength) {
     start += strlen(key);
 
     //Find for the other fields
-    const char* endID = strstr(start, "ID=");
-    const char* endName = strstr(start, "Name=");
-    const char* endProgramme = strstr(start, "Programme=");
-    const char* endMark = strstr(start, "Mark=");
+    const char* endOfID = strstr(start, "ID=");
+    const char* endOfName = strstr(start, "Name=");
+    const char* endOfProgramme = strstr(start, "Programme=");
+    const char* endOfMark = strstr(start, "Mark=");
     
     //Get the end of that specific field
-    const char* end = NULL;
-    if (endID && (!end || endID < end)) end = endID;
-    if (endName && (!end || endName < end)) end = endName;
-    if (endProgramme && (!end || endProgramme < end)) end = endProgramme;
-    if (endMark && (!end || endMark < end)) end = endMark;
+    const char* endOfString = NULL;
+    if (endOfID && (!endOfString || endOfID < endOfString)) {
+        endOfString = endOfID;
+    }
+    if (endOfName && (!endOfString || endOfName < endOfString)) {
+        endOfString = endOfName;
+    }
+    if (endOfProgramme && (!endOfString || endOfProgramme < endOfString)) {
+        endOfString = endOfProgramme;
+    }
+    if (endOfMark && (!endOfString || endOfMark < endOfString)) {
+        endOfString = endOfMark;
+    }
 
     //Go to end of string if no fields are found
-    if (!end) end = start + strlen(start);
+    if (!endOfString) {
+        endOfString = input + strlen(input);
+    }
 
     //Extract the value from the field
-    int length = end - start;
+    int length = endOfString - start;
     if (length >= maxLength) {
         length = maxLength - 1; 
     }
     strncpy(desiredFieldOutput, start, length);
-    RemoveTrailingSpaces(desiredFieldOutput);
+    
     desiredFieldOutput[length] = '\0';
+
+    RemoveTrailingSpaces(desiredFieldOutput);
 
     if (strcmp(key, "Name=") == 0) {
         //If the extracted field value is empty
