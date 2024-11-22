@@ -531,10 +531,14 @@ int isStringValid(const char* input) {
 
     //Loop through each letter in the string 
     for (int i = 0; input[i] != '\0'; i++) {
-        //Check if is is not a letter and not a space
-        if (!isalpha((unsigned char)input[i]) && !isspace((unsigned char)input[i])) {
-            //Return 0 to show that this string is not valid input
-            return 0; 
+        // Check if it is neither a letter, space, tab
+        if (!isalpha((unsigned char)input[i]) && !isspace((unsigned char)input[i]) && input[i] != '\t') {
+            // Return 0 to show that this string is not valid input
+            return 0;
+        }
+        // Explicitly disallow tabs
+        if (input[i] == '\t') {
+            return 0;
         }
     }
     //Return 1 to show this string is valid
@@ -854,13 +858,27 @@ int main() {
             }
             //Extract and validate Name parameter
             char* nameParam = GetField(input, "Name=", sizeof(name));
+            if (nameParam) {
+                if (!isStringValid(nameParam)) {
+                    printf("%s: Name should only contain letters and spaces.\n", USERNAME);
+                    continue;
+                }
+            }
             if (!nameParam) {
                 printf("%s: Name field is required.\n", USERNAME);
                 continue;
             }
             strncpy(name, nameParam, NAME_LENGTH - 1);
+
             //Extract and validate Programme parameter
             char* programmeParam = GetField(input, "Programme=", sizeof(programme));
+            if (programmeParam) {
+                if (!isStringValid(programmeParam)) {
+                    printf("%s: Programme should only contain letters and spaces.\n", USERNAME);
+                    continue;
+                }
+            }
+           
             if (!programmeParam) {
                 printf("%s: Programme field is required.\n", USERNAME);
                 continue;
