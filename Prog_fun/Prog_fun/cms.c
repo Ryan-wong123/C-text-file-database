@@ -265,8 +265,8 @@ struct StudentRecords* QueryStudent(HashMap* hashmap, int id, bool printrecord) 
             //Print the specific student record
             if (printrecord == true) {
                 printf("%s: The record with ID=%d is found in the data table.\n", USERNAME, id);
-                printf("ID        Name                  Programme                  Mark\n");
-                printf("%-8d  %-20s  %-25s  %.2f\n",currentStudentRecord->id, currentStudentRecord->name, currentStudentRecord->programme, currentStudentRecord->mark);
+                printf("%-8s  %-30s  %-30s  %-5s\n", "ID", "Name", "Programme", "Mark");
+                printf("%-8d  %-30s  %-30s  %.2f\n",currentStudentRecord->id, currentStudentRecord->name, currentStudentRecord->programme, currentStudentRecord->mark);
             }
             
             return currentStudentRecord;
@@ -435,11 +435,11 @@ void ShowAll(HashMap* hashmap) {
     
     //Print all the studetn records
     printf("%s: Here are all the records found in the table \"%s\".\n", USERNAME, tableName);
-    printf("ID        Name                  Programme                  Mark\n");
+    printf("%-8s  %-30s  %-30s  %-5s\n","ID", "Name", "Programme", "Mark");
 
     for (int i = 0; i < recordCount; i++) {
         StudentRecords* student = allStudentRecords[i];
-        printf("%-8d  %-20s  %-25s  %.2f\n",
+        printf("%-8d  %-30s  %-30s  %.2f\n",
             student->id, student->name, student->programme, student->mark);
     }
 
