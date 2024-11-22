@@ -374,7 +374,9 @@ void OpenFile(const char* filename, HashMap* hashmap) {
             float mark; //Initialise Mark field
 
             //Get field values
-            int fields = sscanf(outputText, "%d\t%[^\t]\t%[^\t]\t%f", &id, name, programme, &mark);
+            int fields = sscanf(outputText, "%d\t%29[^\t]\t%29[^\t]\t%f", &id, name, programme, &mark);
+            RemoveTrailingSpaces(name);
+            RemoveTrailingSpaces(programme);
             
             //Check if all the fields are available then populate the hashmap
             if (fields == 4) {
@@ -458,13 +460,13 @@ void saveToFile(const char* filename, HashMap* hashmap) {
     fprintf(file, "Database Name: %s\n", USERNAME);
     fprintf(file, "Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen\n\n");
     fprintf(file, "Table Name: %s\n", tableName);
-    fprintf(file, "%-7s\t%-30s\t%-23s\t%-5s\n","ID", "Name", "Programme", "Mark");
+    fprintf(file, "%-7s\t%-30s\t%-30s\t%-5s\n","ID", "Name", "Programme", "Mark");
 
     //Write all student records
     for (int i = 0; i < currentHashmapSize; i++) {
         StudentRecords* current = hashmap->table[i];
         while (current != NULL) {
-            fprintf(file, "%-7d\t%-30s\t%-23s\t%-3.2f\n", current->id, current->name, current->programme, current->mark);
+            fprintf(file, "%-7d\t%-30s\t%-30s\t%-3.2f\n", current->id, current->name, current->programme, current->mark);
             current = current->next;
         }
     }
