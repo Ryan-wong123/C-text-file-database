@@ -640,6 +640,14 @@ char* GetField(const char* input, const char* key, int maxLength) {
 
     //Check for ID number validation
     if (strcmp(key, "ID=") == 0) {
+        //Allow ID to contain only numbers
+        for (int i = 0; desiredFieldOutput[i] != '\0'; i++) {
+            if (!isdigit((unsigned char)desiredFieldOutput[i])) {
+                printf("%s: ID must contain only numbers.\n", USERNAME);
+                return NULL;
+            }
+        }
+
         int idValue = atoi(desiredFieldOutput);
         if (idValue < 0) {
             printf("%s: ID cannot be negative.\n", USERNAME);
@@ -664,8 +672,9 @@ char* GetField(const char* input, const char* key, int maxLength) {
             return "ERROR";
         }
 
+        int numOfFullStop = 0;
         char* tempMark = desiredFieldOutput;
-        int dot_count = 0;
+      
         if (tempMark[0] == '\0') {
             printf("%s: Please key in marks.\n", USERNAME);
             return "ERROR";
@@ -673,8 +682,8 @@ char* GetField(const char* input, const char* key, int maxLength) {
         //Ensure there are no double ".." in the marks and if its a valid float
         for (size_t i = 0; i < strlen(tempMark); i++) {
             if (tempMark[i] == '.') {
-                dot_count++;
-                if (dot_count > 1 || i == 0 || i == strlen(tempMark) - 1) {
+                numOfFullStop++;
+                if (numOfFullStop > 1 || i == 0 || i == strlen(tempMark) - 1) {
                     printf("%s: Invalid Mark format. Ensure it is a valid float value.\n", USERNAME);
                     return "ERROR";
                 }
