@@ -858,6 +858,7 @@ int main() {
             char name[NAME_LENGTH] = { 0 };
             char programme[PROGRAMME_LENGTH] = { 0 };
             float mark = 0;
+            int fieldCount = 0;
 
             //Extract and validate ID parameter
             char* idParam = GetField(input, "ID=", sizeof(input));
@@ -865,6 +866,7 @@ int main() {
                 printf("%s: Invalid Command. Usage: INSERT ID=<id>\n", USERNAME);
                 continue;
             }
+            fieldCount++;
             //Extract and validate Name parameter
             char* nameParam = GetField(input, "Name=", sizeof(name));
             if (nameParam) {
@@ -877,6 +879,7 @@ int main() {
                 printf("%s: Name field is required.\n", USERNAME);
                 continue;
             }
+            fieldCount++;
             strncpy(name, nameParam, NAME_LENGTH - 1);
 
             //Extract and validate Programme parameter
@@ -892,6 +895,7 @@ int main() {
                 printf("%s: Programme field is required.\n", USERNAME);
                 continue;
             }
+            fieldCount++;
             strncpy(programme, programmeParam, PROGRAMME_LENGTH - 1);
             //Extract and validate Mark parameter
             char* markParam = GetField(input, "Mark=", sizeof(input));
@@ -900,10 +904,17 @@ int main() {
                     continue;
                 }
                 else {
+                    fieldCount++;
                     //Convert the Mark parameter from string to float and call the function to validate it
                     float markValue = atof(markParam);
                     mark = markValue;
                 }
+            }
+
+            //Ensure all fields are available for input
+            if (fieldCount != 4) {
+                printf("%s: Please enter ID, Name, Programme and Mark fields.\n", USERNAME);
+                continue;
             }
 
             //Check if student record already exists in database using ID parameter
