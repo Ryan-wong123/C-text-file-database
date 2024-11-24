@@ -1,3 +1,4 @@
+---------------- MAIN TEST -----------------------------------
 openc
 insert
 show all
@@ -17,13 +18,12 @@ SHOW ALL
 QUERY
 UPDATE
 DELETE
-show all 
+-------------------- INSERT TEST ------------------------------
 insert id=2301234
 INSERT ID=2301234 Name=sam  Programme=cybersecurity  Mark=90
 INSERT ID=2304444 Name=sam  Programme=cybersecurity  Mark=90
 show all
 INSERT ID=2304450 Name=ssgfe3!  Programme=cybersecurity  Mark=85
-INSERT ID=2304461 Name=tester  Programme=cybersecurity aeoifeoifeofofe  Mark=90
 INSERT ID=2304478 Name=tester  Programme=cybersecurity Mark=rgdf
 INSERT ID=230448 Name=tester koh  Programme=cybersecurity Mark=90
 INSERT ID=230448a Name=tester koh  Programme=cybersecurity Mark=90
@@ -33,11 +33,28 @@ INSERT ID=-230448 Name=tester koh  Programme=cybersecurity Mark=90
 UPDATE ID=-2395313 Name=tester ID neg
 DELETE ID=-2335554
 QUERY ID=-1242343
-UPDATE ID=2201234 Name=tester update
-UPDATE ID=2201234 Programme=AI
-UPDATE ID=2201234 Mark= 98
-UPDATE ID=2301234 Mark=sef
+------------------------ UPDATE TEST -------------------------------
+UPDATE ID=2304567 Name=tester update
+UPDATE ID=2304567 Programme=AI
+UPDATE ID=2304567 Mark= 98
+UPDATE ID=2304567 Mark=sef
 UPDATE ID=2304567 Mark=10000000111111111
 show all
+UPDATE ID=2301234 Mark=9 Name=sam hello
+UPDATE ID=2301234 Mark=9 Programme=AI
+UPDATE ID=2400649 Programme=AI Name=devin test
+UPDATE ID=2400649 Name=de	vi	n2 Programme=AI
+UPDATE ID=2400649 Name=devin2 Programme=A	I
+------------------------ QUERY TEST -------------------------------
+QUERY ID=1242343
+QUERY ID=9876549
+QUERY ID=9876549a
+QUERY ID= 9876549
+QUERY ID=0987654
+QUERY ID=0000000
+------------------------ DELETE TEST -------------------------------
+INSERT ID=3500356 Name=delete tester  Programme=cybersecurity  Mark=90
+INSERT ID=3500357 Name=delete testerv  Programme=cybersecurity  Mark=90
+INSERT ID=3500352 Name=deletev testerv  Programme=cybersecurity  Mark=60
 save
 exit

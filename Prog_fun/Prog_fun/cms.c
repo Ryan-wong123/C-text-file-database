@@ -303,7 +303,11 @@ void DeleteStudent(HashMap* hashmap, int id) {
 
                 //Get the delete input value
                 deleteInput[strcspn(fgets(deleteInput, sizeof(deleteInput), stdin), "\n")] = 0;
-                
+
+                // clear stdin extra char if any
+                int clear;
+                while ((clear = getchar()) != '\n' && clear != EOF);
+
                 //Check if want to delete
                 if (_strnicmp(deleteInput, "Y", 1) == 0) {
 
