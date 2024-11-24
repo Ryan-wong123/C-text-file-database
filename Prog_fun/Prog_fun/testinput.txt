@@ -45,6 +45,10 @@ UPDATE ID=2301234 Mark=9 Programme=AI
 UPDATE ID=2400649 Programme=AI Name=devin test
 UPDATE ID=2400649 Name=de	vi	n2 Programme=AI
 UPDATE ID=2400649 Name=devin2 Programme=A	I
+UPDATE ID=9876549 Name=\0 Programme=A
+UPDATE ID=9876549 Name=\n Programme=A
+UPDATE ID=9876549 Name='\0' Programme=A
+UPDATE ID=9876549 Name=re Programme="\n"
 ------------------------ QUERY TEST -------------------------------
 QUERY ID=1242343
 QUERY ID=9876549

@@ -73,6 +73,10 @@ P2_3:CMS: The record with ID=2301234 is successfully updated.
 P2_3:CMS: The record with ID=2400649 is successfully updated.
 P2_3:CMS: Name should only contain letters and spaces.
 P2_3:CMS: Name should only contain letters and spaces.
+P2_3:CMS: Name should only contain letters and spaces.
+P2_3:CMS: Name should only contain letters and spaces.
+P2_3:CMS: Name should only contain letters and spaces.
+P2_3:CMS: Programme should only contain letters and spaces.
 --------------------------- QUERY TEST ---------------------------------------
 P2_3:CMS: The record with ID=1242343 does not exist.
 P2_3:CMS: The record with ID=9876549 is found in the data table.
