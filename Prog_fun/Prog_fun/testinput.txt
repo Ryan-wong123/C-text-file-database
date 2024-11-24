@@ -56,5 +56,19 @@ QUERY ID=0000000
 INSERT ID=3500356 Name=delete tester  Programme=cybersecurity  Mark=90
 INSERT ID=3500357 Name=delete testerv  Programme=cybersecurity  Mark=90
 INSERT ID=3500352 Name=deletev testerv  Programme=cybersecurity  Mark=60
+DELETE ID=3500356
+Y
+DELETE ID=3500357
+N
+DELETE ID=3500352
+er
+adfsef
+qAEF
+N
+DELETE ID=3500357
+rgagr
+y
+DELETE ID=3500352
+y
 save
 exit

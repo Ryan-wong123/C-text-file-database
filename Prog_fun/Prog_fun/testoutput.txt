@@ -91,5 +91,22 @@ CMS: Invalid Command. Usage: QUERY ID=<id>
 P2_3:CMS: A new record with ID=3500356 is successfully inserted.
 P2_3:CMS: A new record with ID=3500357 is successfully inserted.
 P2_3:CMS: A new record with ID=3500352 is successfully inserted.
+P2_3:CMS: Are you sure you want to delete record with ID=3500356? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: The record with ID=3500356 is successfully deleted.
+P2_3:CMS: Are you sure you want to delete record with ID=3500357? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: The deletion is cancelled.
+P2_3:CMS: Are you sure you want to delete record with ID=3500352? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: Invalid Command
+CMS: Are you sure you want to delete record with ID=3500352? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: Invalid Command
+CMS: Are you sure you want to delete record with ID=3500352? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: Invalid Command
+CMS: Are you sure you want to delete record with ID=3500352? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: The deletion is cancelled.
+P2_3:CMS: Are you sure you want to delete record with ID=3500357? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: Invalid Command
+CMS: Are you sure you want to delete record with ID=3500357? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: The record with ID=3500357 is successfully deleted.
+P2_3:CMS: Are you sure you want to delete record with ID=3500352? Type "Y" to Confirm or type "N" to cancel
+P2_3:CMS: The record with ID=3500352 is successfully deleted.
 P2_3:CMS: The database file "testdb.txt" has been successfully updated.
-P2_3:

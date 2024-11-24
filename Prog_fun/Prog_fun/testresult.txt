@@ -18,6 +18,3 @@ For command number:55 the following error was found:
 Expected:--------------------------- DELTE TEST ---------------------------------------
 Got:P2_3:CMS: Invalid Command. 
 
-For command number:59 the following error was found:
-Expected:P2_3:Got:Data has been successfully saved to testdb2.txt.
-
