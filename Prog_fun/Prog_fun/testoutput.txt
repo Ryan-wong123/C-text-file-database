@@ -1,4 +1,4 @@
---------------------------- MAIN TEST ---------------------------------------
+---------------------------|MAIN TEST|---------------------------------------
 P2_3:CMS: Invalid Command. 
 P2_3:CMS: Database file not open yet.
 P2_3:CMS: Database file not open yet.
@@ -26,7 +26,7 @@ ID        Name                            Programme                       Mark
 P2_3:CMS: Invalid Command. Usage: QUERY ID=<id>
 P2_3:CMS: Invalid Command. Usage: UPDATE ID=<id>
 P2_3:CMS: Invalid Command. Usage: DELETE ID=<id>
---------------------------- INSERT TEST ---------------------------------------
+---------------------------|INSERT TEST|---------------------------------------
 P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
 P2_3:CMS: A new record with ID=2301234 is successfully inserted.
 P2_3:CMS: A new record with ID=2304444 is successfully inserted.
@@ -55,7 +55,7 @@ P2_3:CMS: ID must contain only numbers.
 CMS: Invalid Command. Usage: DELETE ID=<id>
 P2_3:CMS: ID must contain only numbers.
 CMS: Invalid Command. Usage: QUERY ID=<id>
---------------------------- UPDATE TEST ---------------------------------------
+---------------------------|UPDATE TEST|---------------------------------------
 P2_3:CMS: The record with ID=2304567 is successfully updated.
 P2_3:CMS: The record with ID=2304567 is successfully updated.
 P2_3:CMS: The record with ID=2304567 is successfully updated.
@@ -77,7 +77,7 @@ P2_3:CMS: Name should only contain letters and spaces.
 P2_3:CMS: Name should only contain letters and spaces.
 P2_3:CMS: Name should only contain letters and spaces.
 P2_3:CMS: Programme should only contain letters and spaces.
---------------------------- QUERY TEST ---------------------------------------
+---------------------------|QUERY TEST|---------------------------------------
 P2_3:CMS: The record with ID=1242343 does not exist.
 P2_3:CMS: The record with ID=9876549 is found in the data table.
 ID        Name                            Programme                       Mark 
@@ -91,7 +91,7 @@ P2_3:CMS: ID length not 7 digits.
 CMS: Invalid Command. Usage: QUERY ID=<id>
 P2_3:CMS: ID cannot be 0.
 CMS: Invalid Command. Usage: QUERY ID=<id>
---------------------------- DELTE TEST ---------------------------------------
+---------------------------|DELTE TEST|---------------------------------------
 P2_3:CMS: A new record with ID=3500356 is successfully inserted.
 P2_3:CMS: A new record with ID=3500357 is successfully inserted.
 P2_3:CMS: A new record with ID=3500352 is successfully inserted.

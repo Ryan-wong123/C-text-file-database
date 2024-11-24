@@ -1,20 +1,5 @@
-For command number:1 the following error was found:
-Expected:--------------------------- MAIN TEST ---------------------------------------
-Got:P2_3:CMS: Invalid Command. 
-
-For command number:21 the following error was found:
-Expected:--------------------------- INSERT TEST ---------------------------------------
-Got:P2_3:CMS: Invalid Command. 
-
-For command number:36 the following error was found:
-Expected:--------------------------- UPDATE TEST ---------------------------------------
-Got:P2_3:CMS: Invalid Command. 
-
-For command number:48 the following error was found:
-Expected:--------------------------- QUERY TEST ---------------------------------------
-Got:P2_3:CMS: Invalid Command. 
-
-For command number:55 the following error was found:
-Expected:--------------------------- DELTE TEST ---------------------------------------
-Got:P2_3:CMS: Invalid Command. 
-
+MAIN TEST
+INSERT TEST
+UPDATE TEST
+QUERY TEST
+DELTE TEST

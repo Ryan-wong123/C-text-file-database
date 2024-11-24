@@ -18,7 +18,7 @@ SHOW ALL
 QUERY
 UPDATE
 DELETE
--------------------- INSERT TEST ------------------------------
+--------------------|INSERT TEST|------------------------------
 insert id=2301234
 INSERT ID=2301234 Name=sam  Programme=cybersecurity  Mark=90
 INSERT ID=2304444 Name=sam  Programme=cybersecurity  Mark=90
@@ -33,7 +33,7 @@ INSERT ID=-230448 Name=tester koh  Programme=cybersecurity Mark=90
 UPDATE ID=-2395313 Name=tester ID neg
 DELETE ID=-2335554
 QUERY ID=-1242343
------------------------- UPDATE TEST -------------------------------
+------------------------|UPDATE TEST|-------------------------------
 UPDATE ID=2304567 Name=tester update
 UPDATE ID=2304567 Programme=AI
 UPDATE ID=2304567 Mark= 98
@@ -49,14 +49,14 @@ UPDATE ID=9876549 Name=\0 Programme=A
 UPDATE ID=9876549 Name=\n Programme=A
 UPDATE ID=9876549 Name='\0' Programme=A
 UPDATE ID=9876549 Name=re Programme="\n"
------------------------- QUERY TEST -------------------------------
+------------------------|QUERY TEST|-------------------------------
 QUERY ID=1242343
 QUERY ID=9876549
 QUERY ID=9876549a
 QUERY ID= 9876549
 QUERY ID=0987654
 QUERY ID=0000000
------------------------- DELETE TEST -------------------------------
+------------------------|DELETE TEST|-------------------------------
 INSERT ID=3500356 Name=delete tester  Programme=cybersecurity  Mark=90
 INSERT ID=3500357 Name=delete testerv  Programme=cybersecurity  Mark=90
 INSERT ID=3500352 Name=deletev testerv  Programme=cybersecurity  Mark=60
