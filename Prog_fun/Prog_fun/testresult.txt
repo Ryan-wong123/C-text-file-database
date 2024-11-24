@@ -1,8 +1,371 @@
-For command number:3 the following error was found:
+For command number:0 the following error was found:
+Expected:P2_3:Invalid Command. 
+Got:					Declaration 
+
+For command number:0 the following error was found:
 Expected:P2_3:Database file not open yet.
-Got:P2_3:Da file not open yet.
+Got:     SIT's policy on copying does not allow the students to copy source code as well as assessment solutions
+
+For command number:0 the following error was found:
+Expected:P2_3:Database file not open yet.
+Got:     from another person or other places.It is the students' responsibility to guarantee that their assessment
+
+For command number:0 the following error was found:
+Expected:P2_3:Database file not open yet.
+Got:     solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible
+
+For command number:0 the following error was found:
+Expected:P2_3:Database file not open yet.
+Got:     by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.
+
+For command number:0 the following error was found:
+Expected:P2_3:Database file not open yet.
+Got:
+
+For command number:0 the following error was found:
+Expected:P2_3:Database file is not opened.
+Got:     We hereby declare that:
+
+For command number:0 the following error was found:
+Expected:P2_3:CMS: The database file "testdb.txt" is successfully opened.
+Got:     We fully understand and agree to the abovementioned plagiarism policy.
+
+For command number:0 the following error was found:
+Expected:P2_3:Database file is open already.
+Got:     We did not copy any code from others or from other places.
+
+For command number:0 the following error was found:
+Expected:P2_3:Invalid Command. Usage: INSERT ID=<id>
+Got:     We did not share our codes with others or upload to any other places for public access and will
+
+For command number:0 the following error was found:
+Expected:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+Got:     not do that in the future.
+
+For command number:0 the following error was found:
+Expected:ID        Name                  Programme                  Mark
+Got:     We agree that our project will receive Zero mark if there is any plagiarism detected.
+
+For command number:0 the following error was found:
+Expected:123456    Jerry Junior          Digital Business           89.00
+Got:     We agree that we will not disclose any information or material of the group project to others or
+
+For command number:0 the following error was found:
+Expected:987654    Liam Ang              AI                         34.00
+Got:     upload to any other places for public access.
+
+For command number:0 the following error was found:
+Expected:2201234   Isaac Teo             Computer Science           63.40
+Got:
+
+For command number:0 the following error was found:
+Expected:2301234   Joshua Chen           Software Engineering       84.00
+Got:     Declared by: Group 2-3
+
+For command number:0 the following error was found:
+Expected:2304367   Sabihah Amirudeen     Cat Lady                   76.00
+Got:     Team members:
+
+For command number:0 the following error was found:
+Expected:2304567   Jason jJ              Enginerring                90.00
+Got:     1. NAVEEN GOPALKRISHNAN 	(2402612)
+
+For command number:0 the following error was found:
+Expected:8849304   Holly                 Sales                      87.00
+Got:     2. LEE ZHI HONG TIMOTHY 	(2400592)
+
+For command number:0 the following error was found:
+Expected:P2_3:Invalid Command. Usage: QUERY ID=<id>
+Got:     3. DEVIN TAN ZHEN WEI 	(2400649)
+
+For command number:0 the following error was found:
+Expected:P2_3:Invalid Command. Usage: UPDATE ID=<id>
+Got:     4. TNG ZHENG YANG 		(2401113)
+
+For command number:0 the following error was found:
+Expected:P2_3:Invalid Command. 
+Got:     5. SABIHAH AMIRUDEEN 	(2401670)
+
+For command number:0 the following error was found:
+Expected:P2_3:Invalid Command. Usage: INSERT ID=<id>
+Got:     6. WONG HOI YOUNG, RYAN 	(2401725)
+
+For command number:0 the following error was found:
+Expected:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+Got:     Date: (please insert the date when you submit your group project)
+
+For command number:0 the following error was found:
+Expected:ID        Name                  Programme                  Mark
+Got:
+
+For command number:1 the following error was found:
+Expected:123456    Jerry Junior          Digital Business           89.00
+Got:P2_3:CMS: Invalid Command. 
+
+For command number:2 the following error was found:
+Expected:987654    Liam Ang              AI                         34.00
+Got:P2_3:CMS: Database file not open yet.
+
+For command number:3 the following error was found:
+Expected:2201234   Isaac Teo             Computer Science           63.40
+Got:P2_3:CMS: Database file not open yet.
 
 For command number:4 the following error was found:
-Expected:P2_3:Database file not open yet.
-Got:P2_3:uwu
+Expected:2301234   Joshua Chen           Software Engineering       84.00
+Got:P2_3:CMS: Database file not open yet.
+
+For command number:5 the following error was found:
+Expected:2304367   Sabihah Amirudeen     Cat Lady                   76.00
+Got:P2_3:CMS: Database file not open yet.
+
+For command number:6 the following error was found:
+Expected:2304567   Jason jJ              Enginerring                90.00
+Got:P2_3:CMS: Database file not open yet.
+
+For command number:7 the following error was found:
+Expected:8849304   Holly                 Sales                      87.00
+Got:P2_3:CMS: Database file not open yet.
+
+For command number:8 the following error was found:
+Expected:P2_3:Invalid Command. Usage: QUERY ID=<id>
+Got:P2_3:CMS: The database file "testdb.txt" is successfully opened.
+
+For command number:9 the following error was found:
+Expected:P2_3:Invalid Command. Usage: UPDATE ID=<id>
+Got:P2_3:CMS: Database file is open already.
+
+For command number:10 the following error was found:
+Expected:P2_3:Invalid Command. Usage: DELETE ID=<id>
+Got:P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:11 the following error was found:
+Expected:ID        Name                  Programme                  Mark
+Got:ID        Name                            Programme                       Mark 
+
+For command number:11 the following error was found:
+Expected:123456    Jerry Junior          Digital Business           89.00
+Got:123456    Jerry Junior                    Digital Business                89.00
+
+For command number:11 the following error was found:
+Expected:987654    Liam Ang              AI                         34.00
+Got:987654    Liam Ang                        AI                              34.00
+
+For command number:11 the following error was found:
+Expected:2201234   Isaac Teo             Computer Science           63.40
+Got:2201234   Isaac Teo                       Computer Science                63.40
+
+For command number:11 the following error was found:
+Expected:2301234   Joshua Chen           Software Engineering       84.00
+Got:2301234   Joshua Chen                     Software Engineering            84.00
+
+For command number:11 the following error was found:
+Expected:2304367   Sabihah Amirudeen     Cat Lady                   76.00
+Got:2304367   Sabihah Amirudeen               Cat Lady                        76.00
+
+For command number:11 the following error was found:
+Expected:2304567   Jason jJ              Enginerring                90.00
+Got:2304567   Jason jJ                        Enginerring                     90.00
+
+For command number:11 the following error was found:
+Expected:8849304   Holly                 Sales                      87.00
+Got:8849304   Holly                           Sales                           87.00
+
+For command number:12 the following error was found:
+Expected:P2_3:Invalid Command. Usage: INSERT ID=<id>
+Got:P2_3:CMS: Invalid Command. Usage: QUERY ID=<id>
+
+For command number:13 the following error was found:
+Expected:P2_3:Invalid input. The input must end with a valid float value for the mark.
+Got:P2_3:CMS: Invalid Command. Usage: UPDATE ID=<id>
+
+For command number:14 the following error was found:
+Expected:P2_3:Invalid input. The input must end with a valid float value for the mark.
+Got:P2_3:CMS: Invalid Command. 
+
+For command number:15 the following error was found:
+Expected:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+Got:P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:16 the following error was found:
+Expected:ID        Name                  Programme                  Mark
+Got:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+
+For command number:16 the following error was found:
+Expected:123456    Jerry Junior          Digital Business           89.00
+Got:ID        Name                            Programme                       Mark 
+
+For command number:16 the following error was found:
+Expected:987654    Liam Ang              AI                         34.00
+Got:123456    Jerry Junior                    Digital Business                89.00
+
+For command number:16 the following error was found:
+Expected:2201234   Isaac Teo             Computer Science           63.40
+Got:987654    Liam Ang                        AI                              34.00
+
+For command number:16 the following error was found:
+Expected:2301234   Joshua Chen           Software Engineering       84.00
+Got:2201234   Isaac Teo                       Computer Science                63.40
+
+For command number:16 the following error was found:
+Expected:2304367   Sabihah Amirudeen     Cat Lady                   76.00
+Got:2301234   Joshua Chen                     Software Engineering            84.00
+
+For command number:16 the following error was found:
+Expected:2304567   Jason jJ              Enginerring                90.00
+Got:2304367   Sabihah Amirudeen               Cat Lady                        76.00
+
+For command number:16 the following error was found:
+Expected:8849304   Holly                 Sales                      87.00
+Got:2304567   Jason jJ                        Enginerring                     90.00
+
+For command number:16 the following error was found:
+Expected:P2_3:Invalid input. The input must end with a valid float value for the mark.
+Got:8849304   Holly                           Sales                           87.00
+
+For command number:17 the following error was found:
+Expected:P2_3:Invalid input. The input must end with a valid float value for the mark.
+Got:P2_3:CMS: Invalid Command. Usage: QUERY ID=<id>
+
+For command number:18 the following error was found:
+Expected:P2_3:Invalid input. The input must end with a valid float value for the mark.
+Got:P2_3:CMS: Invalid Command. Usage: UPDATE ID=<id>
+
+For command number:19 the following error was found:
+Expected:P2_3:ID length not 7 digits.
+Got:P2_3:CMS: Invalid Command. Usage: DELETE ID=<id>
+
+For command number:20 the following error was found:
+Expected:Invalid Command. Usage: INSERT ID=<id>
+Got:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+
+For command number:20 the following error was found:
+Expected:P2_3:ID length not 7 digits.
+Got:ID        Name                            Programme                       Mark 
+
+For command number:20 the following error was found:
+Expected:Invalid Command. Usage: INSERT ID=<id>
+Got:123456    Jerry Junior                    Digital Business                89.00
+
+For command number:20 the following error was found:
+Expected:P2_3:ID cannot be 0.
+Got:987654    Liam Ang                        AI                              34.00
+
+For command number:20 the following error was found:
+Expected:Invalid Command. Usage: INSERT ID=<id>
+Got:2201234   Isaac Teo                       Computer Science                63.40
+
+For command number:20 the following error was found:
+Expected:P2_3:ID length not 7 digits.
+Got:2301234   Joshua Chen                     Software Engineering            84.00
+
+For command number:20 the following error was found:
+Expected:Invalid Command. Usage: INSERT ID=<id>
+Got:2304367   Sabihah Amirudeen               Cat Lady                        76.00
+
+For command number:20 the following error was found:
+Expected:P2_3:ID cannot be negative.
+Got:2304567   Jason jJ                        Enginerring                     90.00
+
+For command number:20 the following error was found:
+Expected:Invalid Command. Usage: INSERT ID=<id>
+Got:8849304   Holly                           Sales                           87.00
+
+For command number:21 the following error was found:
+Expected:P2_3:ID cannot be negative.
+Got:P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:22 the following error was found:
+Expected:Invalid Command. Usage: UPDATE ID=<id>
+Got:P2_3:CMS: The record with ID=2301234 already exists.
+
+For command number:23 the following error was found:
+Expected:P2_3:ID cannot be negative.
+Got:P2_3:CMS: A new record with ID=2304444 is successfully inserted.
+
+For command number:24 the following error was found:
+Expected:Invalid Command. Usage: DELETE ID=<id>
+Got:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+
+For command number:24 the following error was found:
+Expected:P2_3:ID cannot be negative.
+Got:ID        Name                            Programme                       Mark 
+
+For command number:24 the following error was found:
+Expected:Invalid Command. Usage: QUERY ID=<id>
+Got:123456    Jerry Junior                    Digital Business                89.00
+
+For command number:24 the following error was found:
+Expected:P2_3:
+Got:987654    Liam Ang                        AI                              34.00
+
+For command number:24 the following error was found:
+Expected:The record with ID=2201234 is successfully updated.
+Got:2201234   Isaac Teo                       Computer Science                63.40
+
+For command number:24 the following error was found:
+Expected:P2_3:
+Got:2301234   Joshua Chen                     Software Engineering            84.00
+
+For command number:24 the following error was found:
+Expected:The record with ID=2201234 is successfully updated.
+Got:2304367   Sabihah Amirudeen               Cat Lady                        76.00
+
+For command number:24 the following error was found:
+Expected:P2_3:
+Got:2304444   sam                             cybersecurity                   90.00
+
+For command number:24 the following error was found:
+Expected:The record with ID=2201234 is successfully updated.
+Got:2304567   Jason jJ                        Enginerring                     90.00
+
+For command number:24 the following error was found:
+Expected:P2_3:Invalid input for marks. Please enter a valid number.
+Got:8849304   Holly                           Sales                           87.00
+
+For command number:25 the following error was found:
+Expected:P2_3:Mark cannot be above 100. Update failed 
+Got:P2_3:CMS: Name should only contain letters and spaces.
+
+For command number:26 the following error was found:
+Expected:The record with ID=2304567 is successfully updated.
+Got:P2_3:CMS: A new record with ID=2304461 is successfully inserted.
+
+For command number:27 the following error was found:
+Expected:P2_3:CMS: Here are all the records found in the table "StudentRecords".
+Got:P2_3:CMS: Mark must contain only numeric characters or a single decimal point.
+
+For command number:28 the following error was found:
+Expected:ID        Name                  Programme                  Mark
+Got:P2_3:CMS: ID length not 7 digits.
+
+For command number:28 the following error was found:
+Expected:123456    Jerry Junior          Digital Business           89.00
+Got:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:29 the following error was found:
+Expected:987654    Liam Ang              AI                         34.00
+Got:P2_3:CMS: ID must contain only numbers.
+
+For command number:29 the following error was found:
+Expected:2201234   tester update         AI                         98.00
+Got:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:30 the following error was found:
+Expected:2301234   Joshua Chen           Software Engineering       84.00
+Got:P2_3:CMS: ID cannot be 0.
+
+For command number:30 the following error was found:
+Expected:2304367   Sabihah Amirudeen     Cat Lady                   76.00
+Got:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:31 the following error was found:
+Expected:2304567   Jason jJ              Enginerring                90.00
+Got:P2_3:CMS: ID length not 7 digits.
+
+For command number:31 the following error was found:
+Expected:8849304   Holly                 Sales                      87.00
+Got:CMS: Invalid Command. Usage: INSERT ID=<id>
+
+For command number:32 the following error was found:
+Expected:P2_3:Got:P2_3:CMS: ID must contain only numbers.
 

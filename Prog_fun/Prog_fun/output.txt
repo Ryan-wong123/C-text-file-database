@@ -1,95 +1,118 @@
-P2_3:Invalid Command. 
-P2_3:Database file not open yet.
-P2_3:Database file not open yet.
-P2_3:Database file not open yet.
-P2_3:Database file not open yet.
-P2_3:Database file not open yet.
-P2_3:Database file is not opened.
-P2_3:CMS: The database file "testdb.txt" is successfully opened.
-P2_3:Database file is open already.
-P2_3:Invalid Command. Usage: INSERT ID=<id>
-P2_3:CMS: Here are all the records found in the table "StudentRecords".
-ID        Name                  Programme                  Mark
-123456    Jerry Junior          Digital Business           89.00
-987654    Liam Ang              AI                         34.00
-2201234   Isaac Teo             Computer Science           63.40
-2301234   Joshua Chen           Software Engineering       84.00
-2304367   Sabihah Amirudeen     Cat Lady                   76.00
-2304567   Jason jJ              Enginerring                90.00
-8849304   Holly                 Sales                      87.00
-P2_3:Invalid Command. Usage: QUERY ID=<id>
-P2_3:Invalid Command. Usage: UPDATE ID=<id>
-P2_3:Invalid Command. 
-P2_3:Invalid Command. Usage: INSERT ID=<id>
-P2_3:CMS: Here are all the records found in the table "StudentRecords".
-ID        Name                  Programme                  Mark
-123456    Jerry Junior          Digital Business           89.00
-987654    Liam Ang              AI                         34.00
-2201234   Isaac Teo             Computer Science           63.40
-2301234   Joshua Chen           Software Engineering       84.00
-2304367   Sabihah Amirudeen     Cat Lady                   76.00
-2304567   Jason jJ              Enginerring                90.00
-8849304   Holly                 Sales                      87.00
-P2_3:Invalid Command. Usage: QUERY ID=<id>
-P2_3:Invalid Command. Usage: UPDATE ID=<id>
-P2_3:Invalid Command. Usage: DELETE ID=<id>
-P2_3:CMS: Here are all the records found in the table "StudentRecords".
-ID        Name                  Programme                  Mark
-123456    Jerry Junior          Digital Business           89.00
-987654    Liam Ang              AI                         34.00
-2201234   Isaac Teo             Computer Science           63.40
-2301234   Joshua Chen           Software Engineering       84.00
-2304367   Sabihah Amirudeen     Cat Lady                   76.00
-2304567   Jason jJ              Enginerring                90.00
-8849304   Holly                 Sales                      87.00
-P2_3:Invalid Command. Usage: INSERT ID=<id>
-P2_3:Invalid input. The input must end with a valid float value for the mark.
-P2_3:Invalid input. The input must end with a valid float value for the mark.
-P2_3:CMS: Here are all the records found in the table "StudentRecords".
-ID        Name                  Programme                  Mark
-123456    Jerry Junior          Digital Business           89.00
-987654    Liam Ang              AI                         34.00
-2201234   Isaac Teo             Computer Science           63.40
-2301234   Joshua Chen           Software Engineering       84.00
-2304367   Sabihah Amirudeen     Cat Lady                   76.00
-2304567   Jason jJ              Enginerring                90.00
-8849304   Holly                 Sales                      87.00
-P2_3:Invalid input. The input must end with a valid float value for the mark.
-P2_3:Invalid input. The input must end with a valid float value for the mark.
-P2_3:Invalid input. The input must end with a valid float value for the mark.
-P2_3:ID length not 7 digits.
-Invalid Command. Usage: INSERT ID=<id>
-P2_3:ID length not 7 digits.
-Invalid Command. Usage: INSERT ID=<id>
-P2_3:ID cannot be 0.
-Invalid Command. Usage: INSERT ID=<id>
-P2_3:ID length not 7 digits.
-Invalid Command. Usage: INSERT ID=<id>
-P2_3:ID cannot be negative.
-Invalid Command. Usage: INSERT ID=<id>
-P2_3:ID cannot be negative.
-Invalid Command. Usage: UPDATE ID=<id>
-P2_3:ID cannot be negative.
-Invalid Command. Usage: DELETE ID=<id>
-P2_3:ID cannot be negative.
-Invalid Command. Usage: QUERY ID=<id>
-P2_3:
-The record with ID=2201234 is successfully updated.
-P2_3:
-The record with ID=2201234 is successfully updated.
-P2_3:
-The record with ID=2201234 is successfully updated.
-P2_3:Invalid input for marks. Please enter a valid number.
-P2_3:Mark cannot be above 100. Update failed 
+					Declaration 
+     SIT's policy on copying does not allow the students to copy source code as well as assessment solutions
+     from another person or other places.It is the students' responsibility to guarantee that their assessment
+     solutions are their own work.Meanwhile, the students must also ensure that their work is not accessible
+     by others.Where such plagiarism is detected, both of the assessments involved will receive ZERO mark.
 
-The record with ID=2304567 is successfully updated.
+     We hereby declare that:
+     We fully understand and agree to the abovementioned plagiarism policy.
+     We did not copy any code from others or from other places.
+     We did not share our codes with others or upload to any other places for public access and will
+     not do that in the future.
+     We agree that our project will receive Zero mark if there is any plagiarism detected.
+     We agree that we will not disclose any information or material of the group project to others or
+     upload to any other places for public access.
+
+     Declared by: Group 2-3
+     Team members:
+     1. NAVEEN GOPALKRISHNAN 	(2402612)
+     2. LEE ZHI HONG TIMOTHY 	(2400592)
+     3. DEVIN TAN ZHEN WEI 	(2400649)
+     4. TNG ZHENG YANG 		(2401113)
+     5. SABIHAH AMIRUDEEN 	(2401670)
+     6. WONG HOI YOUNG, RYAN 	(2401725)
+     Date: (please insert the date when you submit your group project)
+
+P2_3:CMS: Invalid Command. 
+P2_3:CMS: Database file not open yet.
+P2_3:CMS: Database file not open yet.
+P2_3:CMS: Database file not open yet.
+P2_3:CMS: Database file not open yet.
+P2_3:CMS: Database file not open yet.
+P2_3:CMS: Database file not open yet.
+P2_3:CMS: The database file "testdb.txt" is successfully opened.
+P2_3:CMS: Database file is open already.
+P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
 P2_3:CMS: Here are all the records found in the table "StudentRecords".
-ID        Name                  Programme                  Mark
-123456    Jerry Junior          Digital Business           89.00
-987654    Liam Ang              AI                         34.00
-2201234   tester update         AI                         98.00
-2301234   Joshua Chen           Software Engineering       84.00
-2304367   Sabihah Amirudeen     Cat Lady                   76.00
-2304567   Jason jJ              Enginerring                90.00
-8849304   Holly                 Sales                      87.00
+ID        Name                            Programme                       Mark 
+123456    Jerry Junior                    Digital Business                89.00
+987654    Liam Ang                        AI                              34.00
+2201234   Isaac Teo                       Computer Science                63.40
+2301234   Joshua Chen                     Software Engineering            84.00
+2304367   Sabihah Amirudeen               Cat Lady                        76.00
+2304567   Jason jJ                        Enginerring                     90.00
+8849304   Holly                           Sales                           87.00
+P2_3:CMS: Invalid Command. Usage: QUERY ID=<id>
+P2_3:CMS: Invalid Command. Usage: UPDATE ID=<id>
+P2_3:CMS: Invalid Command. 
+P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: Here are all the records found in the table "StudentRecords".
+ID        Name                            Programme                       Mark 
+123456    Jerry Junior                    Digital Business                89.00
+987654    Liam Ang                        AI                              34.00
+2201234   Isaac Teo                       Computer Science                63.40
+2301234   Joshua Chen                     Software Engineering            84.00
+2304367   Sabihah Amirudeen               Cat Lady                        76.00
+2304567   Jason jJ                        Enginerring                     90.00
+8849304   Holly                           Sales                           87.00
+P2_3:CMS: Invalid Command. Usage: QUERY ID=<id>
+P2_3:CMS: Invalid Command. Usage: UPDATE ID=<id>
+P2_3:CMS: Invalid Command. Usage: DELETE ID=<id>
+P2_3:CMS: Here are all the records found in the table "StudentRecords".
+ID        Name                            Programme                       Mark 
+123456    Jerry Junior                    Digital Business                89.00
+987654    Liam Ang                        AI                              34.00
+2201234   Isaac Teo                       Computer Science                63.40
+2301234   Joshua Chen                     Software Engineering            84.00
+2304367   Sabihah Amirudeen               Cat Lady                        76.00
+2304567   Jason jJ                        Enginerring                     90.00
+8849304   Holly                           Sales                           87.00
+P2_3:CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: The record with ID=2301234 already exists.
+P2_3:CMS: A new record with ID=2304444 is successfully inserted.
+P2_3:CMS: Here are all the records found in the table "StudentRecords".
+ID        Name                            Programme                       Mark 
+123456    Jerry Junior                    Digital Business                89.00
+987654    Liam Ang                        AI                              34.00
+2201234   Isaac Teo                       Computer Science                63.40
+2301234   Joshua Chen                     Software Engineering            84.00
+2304367   Sabihah Amirudeen               Cat Lady                        76.00
+2304444   sam                             cybersecurity                   90.00
+2304567   Jason jJ                        Enginerring                     90.00
+8849304   Holly                           Sales                           87.00
+P2_3:CMS: Name should only contain letters and spaces.
+P2_3:CMS: A new record with ID=2304461 is successfully inserted.
+P2_3:CMS: Mark must contain only numeric characters or a single decimal point.
+P2_3:CMS: ID length not 7 digits.
+CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: ID must contain only numbers.
+CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: ID cannot be 0.
+CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: ID length not 7 digits.
+CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: ID must contain only numbers.
+CMS: Invalid Command. Usage: INSERT ID=<id>
+P2_3:CMS: ID must contain only numbers.
+CMS: Invalid Command. Usage: UPDATE ID=<id>
+P2_3:CMS: ID must contain only numbers.
+CMS: Invalid Command. Usage: DELETE ID=<id>
+P2_3:CMS: ID must contain only numbers.
+CMS: Invalid Command. Usage: QUERY ID=<id>
+P2_3:CMS: The record with ID=2201234 is successfully updated.
+P2_3:CMS: The record with ID=2201234 is successfully updated.
+P2_3:CMS: The record with ID=2201234 is successfully updated.
+P2_3:CMS: Mark must contain only numeric characters or a single decimal point.
+P2_3:CMS: Mark must be between 0 and 100.
+P2_3:CMS: Here are all the records found in the table "StudentRecords".
+ID        Name                            Programme                       Mark 
+123456    Jerry Junior                    Digital Business                89.00
+987654    Liam Ang                        AI                              34.00
+2201234   tester update                   AI                              98.00
+2301234   Joshua Chen                     Software Engineering            84.00
+2304367   Sabihah Amirudeen               Cat Lady                        76.00
+2304444   sam                             cybersecurity                   90.00
+2304461   tester                          cybersecurity aeoifeoifeofofe   90.00
+2304567   Jason jJ                        Enginerring                     90.00
+8849304   Holly                           Sales                           87.00
 P2_3:

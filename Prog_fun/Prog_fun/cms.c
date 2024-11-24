@@ -9,13 +9,14 @@
 #include <stdbool.h> //Library for boolean
 #include <crtdbg.h> //Library used to detecting memory leaks
 #include <math.h>
+#include "test.h"
 
 
 #define USERNAME "CMS" //Username to display in the console
 #define GROUP_NAME "P2_3" //Group name used to display in the console
 
 
-#define TEST_MODE 0
+#define TEST_MODE 1
 #define DEBUG_MODE 0
 
 #if TEST_MODE == 1
@@ -748,7 +749,7 @@ int main() {
 
     //add test inputs into stdin
     FILE* input_fp = freopen("testinput.txt", "r", stdin);
-    //FILE* output_fp = freopen("output.txt", "w", stdin);
+    FILE* output_fp = freopen("output.txt", "w", stdout);
 
 #endif
 
@@ -968,7 +969,8 @@ int main() {
 #if TEST_MODE == 1
 
         fclose(input_fp);
-        //fclose(output_fp);
+        fclose(output_fp);
+        runTest();
 
 #endif
         return 0;
