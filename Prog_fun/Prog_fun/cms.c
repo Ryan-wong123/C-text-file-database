@@ -9,7 +9,7 @@
 #include <stdbool.h> //Library for boolean
 #include <crtdbg.h> //Library used to detecting memory leaks
 #include <math.h>
-#include "test.h"
+
 
 
 #define USERNAME "CMS" //Username to display in the console
@@ -20,7 +20,7 @@
 #define DEBUG_MODE 0
 
 #if TEST_MODE == 1
-
+#include "test.h"
 #define FILE_PATH "testdb.txt"
 
 #else 
@@ -775,7 +775,7 @@ int main() {
     }
 
     //Display the AI declaration
-    DisplayDeclaration();
+    //DisplayDeclaration();
 
     while (1) {
         printf("%s:", GROUP_NAME);
