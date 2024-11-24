@@ -1,5 +1,10 @@
 Database Name: CMS
 Authors: Ryan Wong, Zheng Yang, Sabihah, Devin, Timothy, Naveen
 
-Table Name: 
-ID	Name	Programme	Mark
+Table Name: StudentRecords
+ID     	Name                          	Programme                     	Mark 
+9876549	Liam Ang                      	AI                            	34.00
+2400649	devin test                    	AI                            	100.00
+2304567	tester update                 	AI                            	98.00
+2301234	sam hello                     	AI                            	9.00
+2304444	sam                           	cybersecurity                 	90.00

@@ -11,15 +11,15 @@
 #include <math.h>
 
 
+
 #define USERNAME "CMS" //Username to display in the console
 #define GROUP_NAME "P2_3" //Group name used to display in the console
 
 
 #define TEST_MODE 0
-#define DEBUG_MODE 0
 
 #if TEST_MODE == 1
-
+#include "test.h"
 #define FILE_PATH "testdb.txt"
 
 #else 
@@ -302,7 +302,15 @@ void DeleteStudent(HashMap* hashmap, int id) {
 
                 //Get the delete input value
                 deleteInput[strcspn(fgets(deleteInput, sizeof(deleteInput), stdin), "\n")] = 0;
-                
+
+                // clear stdin extra char if any
+                if (deleteInput[1] != '\0') {
+                    int clear;
+                    while ((clear = getchar()) != '\n' && clear != EOF);
+
+                }
+
+
                 //Check if want to delete
                 if (_strnicmp(deleteInput, "Y", 1) == 0) {
 
@@ -748,7 +756,7 @@ int main() {
 
     //add test inputs into stdin
     FILE* input_fp = freopen("testinput.txt", "r", stdin);
-    //FILE* output_fp = freopen("output.txt", "w", stdin);
+    FILE* output_fp = freopen("output.txt", "w", stdout);
 
 #endif
 
@@ -774,7 +782,7 @@ int main() {
     }
 
     //Display the AI declaration
-    DisplayDeclaration();
+    //DisplayDeclaration();
 
     while (1) {
         printf("%s:", GROUP_NAME);
@@ -968,7 +976,8 @@ int main() {
 #if TEST_MODE == 1
 
         fclose(input_fp);
-        //fclose(output_fp);
+        fclose(output_fp);
+        runTest();
 
 #endif
         return 0;
