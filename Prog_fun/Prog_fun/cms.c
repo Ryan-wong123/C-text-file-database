@@ -303,7 +303,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
                 //Get the delete input value
                 deleteInput[strcspn(fgets(deleteInput, sizeof(deleteInput), stdin), "\n")] = 0;
 
-                // clear stdin extra char if any
+                //Clear away stdin extra char
                 if (deleteInput[1] != '\0') {
                     int clear;
                     while ((clear = getchar()) != '\n' && clear != EOF);
@@ -539,12 +539,12 @@ int isStringValid(const char* input) {
 
     //Loop through each letter in the string 
     for (int i = 0; input[i] != '\0'; i++) {
-        // Check if it is neither a letter, space, tab
+        //Check if it is neither a letter, space, tab
         if (!isalpha((unsigned char)input[i]) && !isspace((unsigned char)input[i]) && input[i] != '\t') {
-            // Return 0 to show that this string is not valid input
+            //Return 0 to show that this string is not valid input
             return 0;
         }
-        // Explicitly disallow tabs
+        //Return error if there is any spacing
         if (input[i] == '\t') {
             return 0;
         }
@@ -782,7 +782,7 @@ int main() {
     }
 
     //Display the AI declaration
-    //DisplayDeclaration();
+    DisplayDeclaration();
 
     while (1) {
         printf("%s:", GROUP_NAME);
