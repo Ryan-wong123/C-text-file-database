@@ -360,7 +360,10 @@ void OpenFile(HashMap* hashmap) {
     FILE* file = fopen(filePath, "r");
     if (file == NULL) {
         //create new file 
+        strcpy(tableName, "StudentRecords");
+        
         file = fopen(filePath, "w");
+
     }
     //Buffer for output text
     char outputText[256];
