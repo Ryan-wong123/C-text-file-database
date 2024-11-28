@@ -99,7 +99,7 @@ void DisplayDeclaration() {
     4. TNG ZHENG YANG \t\t(2401113)\n \
     5. SABIHAH AMIRUDEEN \t(2401670)\n \
     6. WONG HOI YOUNG, RYAN \t(2401725)\n \
-    Date: (please insert the date when you submit your group project)\n" };
+    Date: 28/11/2024\n" };
 
     puts(declare);
 }
