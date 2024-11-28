@@ -354,7 +354,7 @@ void DeleteStudent(HashMap* hashmap, int id) {
 void OpenFile(HashMap* hashmap) {
 
     //Create file name
-    snprintf(filePath, sizeof(filePath), "%s.txt", USERNAME);
+    snprintf(filePath, sizeof(filePath), "%s-CMS.txt", USERNAME);
 
     //open the file if not create new file
     FILE* file = fopen(filePath, "r");
