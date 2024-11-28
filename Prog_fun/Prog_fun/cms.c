@@ -20,10 +20,10 @@ char USERNAME[20] = ""; //Username name used to display in the console
 
 #if TEST_MODE == 1
 #include "test.h"
-#define FILE_PATH "testdb.txt"
+#define filePath "testdb.txt"
 
 #else 
-#define FILE_PATH "P2_3-CMS.txt" //File path for the db
+char filePath[40] = ""; //File path for the db
 #endif
 
 #define TABLE_NAME_LENGTH 15 //Length of table name
@@ -351,13 +351,16 @@ void DeleteStudent(HashMap* hashmap, int id) {
 }
 
 //Function to open file
-void OpenFile(const char* filename, HashMap* hashmap) {
+void OpenFile(HashMap* hashmap) {
 
-    //open the file and return error message if file not detected
-    FILE* file = fopen(filename, "r");
+    //Create file name
+    snprintf(filePath, sizeof(filePath), "%s.txt", USERNAME);
+
+    //open the file if not create new file
+    FILE* file = fopen(filePath, "r");
     if (file == NULL) {
-        perror("Error opening file");
-        return;
+        //create new file 
+        file = fopen(filePath, "w");
     }
     //Buffer for output text
     char outputText[256];
@@ -479,7 +482,7 @@ void saveToFile(const char* filename, HashMap* hashmap) {
         }
     }
 
-    printf("%s: The database file \"%s\" has been successfully updated.\n", PROGRAMME_NAME, FILE_PATH);
+    printf("%s: The database file \"%s\" has been successfully updated.\n", PROGRAMME_NAME, filePath);
     fclose(file);
 }
 
@@ -536,11 +539,6 @@ void resizeHashMap(HashMap* currentHashmap) {
 
 //Function to check if the string only contains letters
 int isStringValid(const char* input) {
-    //Check if input is empty
-    if (input[0] == '\0') {
-        return 0;
-    }
-
     //Loop through each letter in the string 
     for (int i = 0; input[i] != '\0'; i++) {
         //Check if it is neither a letter, space, tab
@@ -758,13 +756,20 @@ int main() {
     //Display the AI declaration
     DisplayDeclaration();
 
-   
-    while (!isStringValid(USERNAME)) {
+    while (1) {
         printf("%s: Please enter username:", PROGRAMME_NAME);
 
         //Get the username input and store it as username
         USERNAME[strcspn(fgets(USERNAME, sizeof(USERNAME), stdin), "\n")] = 0;
         RemoveTrailingSpaces(USERNAME);
+
+        //Prompt user to re enter username again
+        if (USERNAME[0] == '\0') {
+            printf("%s: Please key in username.\n",PROGRAMME_NAME);
+            continue;
+        }
+
+        break;
     }
 
 
@@ -830,9 +835,9 @@ int main() {
             }
 
             //Else open the file and set the flag to file has been opened
-            OpenFile(FILE_PATH, hashmap);
+            OpenFile(hashmap);
             isFileOpened = 1;
-            printf("%s: The database file \"%s\" is successfully opened.\n", PROGRAMME_NAME, FILE_PATH);
+            printf("%s: The database file \"%s\" is successfully opened.\n", PROGRAMME_NAME, filePath);
         }
         //Show all student records
         else if (_stricmp(input, "show all") == 0) {
@@ -965,7 +970,7 @@ int main() {
 
 
             #else
-            saveToFile(FILE_PATH, hashmap);
+            saveToFile(filePath, hashmap);
 
             #endif
 
