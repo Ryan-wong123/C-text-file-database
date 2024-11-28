@@ -91,7 +91,7 @@ P2_3:CMS: ID length not 7 digits.
 CMS: Invalid Command. Usage: QUERY ID=<id>
 P2_3:CMS: ID cannot be 0.
 CMS: Invalid Command. Usage: QUERY ID=<id>
----------------------------|DELTE TEST|---------------------------------------
+---------------------------|DELETE TEST|---------------------------------------
 P2_3:CMS: A new record with ID=3500356 is successfully inserted.
 P2_3:CMS: A new record with ID=3500357 is successfully inserted.
 P2_3:CMS: A new record with ID=3500352 is successfully inserted.

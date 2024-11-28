@@ -545,12 +545,8 @@ int isStringValid(const char* input) {
     //Loop through each letter in the string 
     for (int i = 0; input[i] != '\0'; i++) {
         //Check if it is neither a letter, space, tab
-        if (!isalpha((unsigned char)input[i]) && !isspace((unsigned char)input[i]) && input[i] != '\t') {
+        if (!isalpha((unsigned char)input[i]) && !isspace((unsigned char)input[i]) || input[i] == '\t') {
             //Return 0 to show that this string is not valid input
-            return 0;
-        }
-        //Return error if there is any spacing
-        if (input[i] == '\t') {
             return 0;
         }
     }
