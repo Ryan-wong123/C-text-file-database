@@ -1,6 +1,6 @@
 # CRUD operations for text file database
 
-## Implemented using hashmap
+### Implemented using hashmap
 
 ### Open database from text file
 ```bash
